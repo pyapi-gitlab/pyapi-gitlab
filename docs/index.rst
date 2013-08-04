@@ -23,6 +23,7 @@ Indices and tables
 Examples
 ==================
 
+``
 import gitlab
 git = gitlab.Gitlab("gitlab", token="")
 git.login("", "")
@@ -79,3 +80,5 @@ git.getMilestones(1)
 git.getMilestone(1,1)
 git.createMilestone(1,"New milestone")
 git.editMilestone(1,1,title="Change milestone title")
+
+``
