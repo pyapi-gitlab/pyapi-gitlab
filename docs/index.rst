@@ -23,7 +23,7 @@ Indices and tables
 Examples
 ==================
 
-::
+..code-block: python
 	import gitlab
 	git = gitlab.Gitlab("gitlab", token="")
 	git.login("", "")
