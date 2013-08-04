@@ -10,7 +10,7 @@ python-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlab
 
 ## Examples/Documentation
 
-[Check the docs here]()
+[Check the docs here](http://python-gitlab.readthedocs.org)
 
 ## License
 
