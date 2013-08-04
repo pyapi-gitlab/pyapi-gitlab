@@ -1,0 +1,5 @@
+# files from the IDE
+.idea
+
+# compiled python files
+*.pyc
