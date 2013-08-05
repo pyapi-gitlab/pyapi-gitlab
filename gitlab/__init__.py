@@ -4,7 +4,6 @@ import requests
 import json
 import markdown
 
-# TODO: add edit user
 # TODO: add edit hook
 # TODO: add edit project team member
 # TODO: snippets
@@ -325,21 +324,24 @@ class Gitlab(object):
             return False
 
     def listBranch(self, id_, branch):
-        r = requests.get(self.projects_url + "/" + str(id_) + "/repository/branches/" + str(branch), headers=self.headers)
+        r = requests.get(self.projects_url + "/" + str(id_) + "/repository/branches/" + str(branch),
+                         headers=self.headers)
         if r.status_code == 200:
             return json.loads(r.content)
         else:
             return False
 
     def protectBranch(self, id_, branch):
-        r = requests.put(self.projects_url + "/" + str(id_) + "/repository/branches/" + str(branch) + "/protect", headers=self.headers)
+        r = requests.put(self.projects_url + "/" + str(id_) + "/repository/branches/" + str(branch) + "/protect",
+                         headers=self.headers)
         if r.status_code == 200:
             return True
         else:
             return False
 
     def unprotectBranch(self, id_, branch):
-        r = requests.put(self.projects_url + "/" + str(id_) + "/repository/branches/" + str(branch) + "/unprotect", headers=self.headers)
+        r = requests.put(self.projects_url + "/" + str(id_) + "/repository/branches/" + str(branch) + "/unprotect",
+                         headers=self.headers)
         if r.status_code == 200:
             return True
         else:
@@ -390,10 +392,12 @@ class Gitlab(object):
         else:
             return False
 
-    def editIssue(self, id_, issue_id, title="", description="", assignee_id="", milestone_id="", labels="", state_event=""):
+    def editIssue(self, id_, issue_id, title="", description="", assignee_id="", milestone_id="", labels="",
+                  state_event=""):
         data = {"id": id, "issue_id": issue_id, "title": title, "description": description, "assignee_id": assignee_id,
                 "milestone_id": milestone_id, "labels": labels, "state_event": state_event}
-        r = requests.put(self.projects_url + "/" + str(id_) + "/issues/" + str(issue_id), headers=self.headers, data=data)
+        r = requests.put(self.projects_url + "/" + str(id_) + "/issues/" + str(issue_id), headers=self.headers,
+                         data=data)
         if r.status_code == 201:
             return True
         else:
