@@ -14,6 +14,9 @@ python-gitlab is a wrapper to access all the functions of Gitlab from our python
 How to use it
 ==================
 
+There are several optional parameters in a lot of the commands, you should check the command documentation or the
+command string, for example adding an user accepts up to 7 extra parameters.
+
 First we import our library::
 
    import gitlab
@@ -56,6 +59,10 @@ Create user::
 Delete user::
 
    git.deleteUser(user_id)
+
+Edit user details::
+
+   git.editUser(user_id)
 
 Get all the users::
 
