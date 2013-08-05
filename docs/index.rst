@@ -6,76 +6,210 @@
 Welcome to python-gitlab's documentation!
 =========================================
 
-Contents:
 
-.. toctree::
-   :maxdepth: 2
+python-gitlab is a wrapper to access all the functions of Gitlab from our python scripts.
 
 
 
-Indices and tables
+How to use it
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+First we import our library::
 
-Examples
-==================
-
-   ::
    import gitlab
-   git = gitlab.Gitlab("gitlab", token="")
-   git.login("", "")
 
+Then we need to authenticate to our Gitlab instance. There is 2 ways of doing this.
+
+Authenticating via user/password
+==================================
+
+First create the instance passing the gitlab server as parameter::
+
+   git = gitlab.Gitlab("our_gitlab_host")
+
+Then call the login() method::
+
+   git.login("user", "password")
+
+
+That's it, now your gitlab instance is using the private token in all the calls. You can see it in the token variable
+
+Authenticating via private_token
+====================================
+
+You can also authenticate via the private_token that you can get from your gitlab profile and it's easier than using user/password
+
+Just call the instance with the parameter token::
+
+    git = gitlab.Gitlab("our_gitlab_host", token="mytoken")
+
+
+Users
+==================
+
+There are several functions to manage users
+
+Create user::
 
    git.createUser("name", "username", "password", "email")
-   git.deleteUser(7)
+
+Delete user::
+
+   git.deleteUser(user_id)
+
+Get all the users::
+
    print git.getUsers()
+
+Get the current user::
+
    print git.currentUser()
 
+Get the user SSH keys::
 
-   print git.getSshKey(3)
    for key in git.getSshKeys():
        print key
 
-   git.addSshKey("nesdfw key", "")
-   addSshKeyUser()
-   git.deleteSshKey()
+Get one key for the current user, specified by the key ID::
+
+   print git.getSshKey(key_id)
+
+Add a new SSH key::
+
+    git.addSshKey("key name", "actual key")
+
+Add a new SSH key for a specified user, identified by ID::
+
+   addSshKeyUser(user_id, "key name", "actual key")
+
+Delete a SSH key for the current user::
+
+   git.deleteSshKey(key_id)
+
+Projects
+===========
+
+Get all the projects::
 
    project = git.getProjects()
    for proj in project:
        print proj
-       readme = git.getReadme(proj['web_url'])
-       print readme
 
-   git.getProject(2)
-   git.getProjectEvents()
+Get one project, identified by ID::
+
+   git.getProject(project_id)
+
+Get project events::
+
+   git.getProjectEvents(project_id)
+
+Create a new project::
+
    git.createProject("test project number 1")
-   git.listProjectMembers(3)
-   git.addProjectMember(3, 6, "developer")
-   git.deleteProjectMember(3, 5)
 
-   git.getProjectHooks(1)
-   git.getProjectHook(1,2)
-   git.addProjectHook(1,"http://google.es")
-   git.deleteProjectHook(1,7)
+List project members::
+
+   git.listProjectMembers(project_id)
+
+Add a member to a project::
+
+   git.addProjectMember(project_id, member_id, access_level)
+
+Delete a member from a project::
+
+   git.deleteProjectMember(project_id, member_id)
+
+Get the project Readme, you have to pass the web_url that getProject() provides::
+
+    git.getReadme(proj['web_url'])
+
+Hooks
+=====
+
+Get all the hooks::
+
+   git.getProjectHooks(project_id)
+
+Get one hook, identified by ID::
+
+   git.getProjectHook(project_id, hook_id)
+
+Add a hook to a project::
+
+    git.addProjectHook(project_id, url_hook)
+
+Delete a hook from a project::
+
+    git.deleteProjectHook(project_id, hook_id)
+
+Branches
+========
+
+Get all the branches for a project::
 
    git.listBranches(1)
+
+Get a specific branch for a project::
+
    git.listBranch(1, "master")
+
+Protect a branch::
+
    git.protectBranch(1, "master")
+
+Unprotect a branch::
+
    git.unprotectBranch(1, "master")
 
+Create a relation between two projects (The usual "forked from xxxxx")::
+
    git.createForkRelation(1, 3)
+
+Remove fork relation::
+
    git.removeForkRelation(1)
 
+
+Issues
+======
+
+Get all the issues::
+
    get.getIssues()
+
+Get a project issues::
+
    git.getProjectIssues(1)
+
+Get a specified issue from a project::
+
    git.getProjectIssue(1,1)
+
+Create an issue::
+
    git.createIssue(1, "pedsdfdwsdne")
+
+Edit an issue, you can pass state_event="closed" to close it::
+
    git.editIssue(1,1, title="Changing title")
 
+
+Milestones
+==========
+
+Get all the milestones::
+
    git.getMilestones(1)
+
+Get a specific milestone from a project::
+
    git.getMilestone(1,1)
+
+Create a new milestone::
+
    git.createMilestone(1,"New milestone")
+
+Edit a milestone, you can pass state_event="closed" to close it::
+
    git.editMilestone(1,1,title="Change milestone title")
+
