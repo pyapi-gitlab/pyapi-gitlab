@@ -90,6 +90,39 @@ class Gitlab(object):
         r = requests.get("http://" + self.host + "/api/v3/user", headers=self.headers)
         return json.loads(r.content)
 
+    def editUser(self, id_, name="", username="", password="", email="", skype="", linkedin="", twitter="",
+                 projects_limit="", extern_uid="", provider="", bio=""):
+        data = {}
+        if name != "":
+            data["name"] = name
+        if username != "":
+            data["username"] = username
+        if password != "":
+            data["password"] = password
+        if email != "":
+            data["email"] = email
+        if skype != "":
+            data["skype"] = skype
+        if linkedin != "":
+            data["linkedin"] = linkedin
+        if twitter != "":
+            data["twitter"] = twitter
+        if projects_limit != "":
+            data["projects_limit"] = projects_limit
+        if extern_uid != "":
+            data["extern_uid"] = extern_uid
+        if provider != "":
+            data["provider"] = provider
+        if bio != "":
+            data["bio"] = bio
+        r = requests.put(self.users_url + "/" + str(id_), headers=self.headers, data=data)
+        if r.status_code == 404:
+            return True
+        # There is a problem here and that is that the api always return 404,
+        #  doesn't matter what heappened with the request, so now ay of knowing what happened
+        else:
+            return False
+
     def getSshKeys(self):
         """
         Gets all the ssh jeys for the current user
