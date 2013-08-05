@@ -3,3 +3,6 @@
 
 # compiled python files
 *.pyc
+
+# sphix builds
+docs/_build
