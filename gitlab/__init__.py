@@ -4,8 +4,6 @@ import requests
 import json
 import markdown
 
-# TODO: add edit hook
-# TODO: add edit project team member
 # TODO: snippets
 # TODO: repositories
 # TODO: deploy keys
