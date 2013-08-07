@@ -118,9 +118,14 @@ List project members::
 
    git.listProjectMembers(project_id)
 
-Add a member to a project::
+Add a member to a project, access_level can be master,developer,reporter or guest::
 
    git.addProjectMember(project_id, member_id, access_level)
+
+
+Edit a project member, access_level can be master,developer,reporter or guest::
+
+   git.editProjectMember(id_, user_id, access_level)
 
 Delete a member from a project::
 
@@ -140,6 +145,10 @@ Get all the hooks::
 Get one hook, identified by ID::
 
    git.getProjectHook(project_id, hook_id)
+
+Edit one hook::
+
+   git.editProjectHook(id_, hook_id, url)
 
 Add a hook to a project::
 
