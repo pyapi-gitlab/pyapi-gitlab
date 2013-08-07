@@ -281,6 +281,23 @@ class Gitlab(object):
         else:
             return False
 
+    def editProjectMember(self,id_, user_id, access_level):
+        if access_level.lower() == "master":
+            access_level = 40
+        elif access_level.lower() == "developer":
+            access_level = 30
+        elif access_level.lower() == "reporter":
+            access_level = 20
+        else:
+            access_level = 10
+        data = {"id": id_, "user_id": user_id, "access_level": access_level}
+        r = requests.put(self.projects_url + "/" + str(id_) + "/members/" + str(user_id), headers=self.headers,
+                         data=data)
+        if r.status_code == 200:
+            return True
+        else:
+            return False
+
     def deleteProjectMember(self, id_, user_id):
         r = requests.delete(self.projects_url + "/" + str(id_) + "/members/" + str(user_id), headers=self.headers)
         if r.status_code == 200:
@@ -305,6 +322,15 @@ class Gitlab(object):
         r = requests.post(self.projects_url + "/" + str(id_) + "/hooks", headers=self.headers, data=data)
         print r.status_code
         if r.status_code == 201:
+            return True
+        else:
+            return False
+
+    def editProjectHook(self, id_, hook_id, url):
+        data = {"id": id_, "hook_id": hook_id, "url": url}
+        r = requests.put(self.projects_url + "/" + str(id_) + "/hooks/" + str(hook_id), headers=self.headers,
+                         data=data)
+        if r.status_code == 200:
             return True
         else:
             return False
