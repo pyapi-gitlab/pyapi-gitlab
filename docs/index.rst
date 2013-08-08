@@ -229,3 +229,21 @@ Edit a milestone, you can pass state_event="closed" to close it::
 
    git.editMilestone(1,1,title="Change milestone title")
 
+Deploy Keys
+===========
+Get all the deployed keys for a project::
+
+   git.listdeployKeys(id_)
+
+Get one key for a project::
+
+   git.listDeployKey(id_, key_id)
+
+Add a key to a project::
+
+   git.addDeployKey(id_, title, key)
+
+Delete a key from a project::
+
+   git.deleteDeployKey(id_, key_id)
+
