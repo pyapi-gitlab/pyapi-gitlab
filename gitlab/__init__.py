@@ -459,6 +459,60 @@ class Gitlab(object):
         else:
             return False
 
+    def listdeployKeys(self, id_):
+        """
+        Get a list of a project's deploy keys.
+        :param id_: project id
+        :return: the keys in a dictionary if success, false if not
+        """
+        r = requests.get(self.projects_url + "/" + str(id_) + "/keys", headers=self.headers)
+        if r.status_code == 200:
+            return json.loads(r.content)
+        else:
+            return False
+
+    def listDeployKey(self, id_, key_id):
+        """
+        Get a single key.
+        :param id_: project id
+        :param key_id: key id
+        :return: the key in a dict if success, false if not
+        """
+        r = requests.get(self.projects_url + "/" + str(id_) + "/keys/" + str(key_id), headers=self.headers)
+        if r.status_code == 200:
+            return json.loads(r.content)
+        else:
+            return False
+
+    def addDeployKey(self, id_, title, key):
+        """
+        Creates a new deploy key for a project. If deploy key already exists in another project - it will be joined
+        to project but only if original one was is accessible by same user
+        :param id_: project id
+        :param title: title of the key
+        :param key: the key itself
+        :return: true if sucess, false if not
+        """
+        data = {"id": id_, "title": title, "key": key}
+        r = requests.post(self.projects_url + "/" + str(id_) + "/keys", headers=self.headers, data=data)
+        if r.status_code == 201:
+            return True
+        else:
+            return False
+
+    def deleteDeployKey(self, id_, key_id):
+        """
+        Delete a deploy key from a project
+        :param id_: project id
+        :param key_id: key id to delete
+        :return: true if success, false if not
+        """
+        r = requests.delete(self.projects_url + "/" + str(id_) + "/keys/" + str(key_id), headers=self.headers)
+        if r.status_code == 200:
+            return True
+        else:
+            return False
+
     def getReadme(self, repo, md=False):
         """
         returns the readme
