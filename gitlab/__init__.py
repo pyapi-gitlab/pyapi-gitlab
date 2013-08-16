@@ -236,7 +236,7 @@ class Gitlab(object):
         """
         Create a project
         :param name: Obligatory
-        :return: True if it created the project, False otherwise
+        :return: Dict of information on the newly created project if successful, False otherwise
         """
         data = {"name": name, "description": description, "default_branch": default_branch,
                 "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
@@ -244,7 +244,7 @@ class Gitlab(object):
                 "snippets_enabled": snippets_enabled}
         r = requests.post(self.projects_url, headers=self.headers, data=data)
         if r.status_code == 201:
-            return True
+            return json.loads(r.content)
         else:
             print r
             return False
