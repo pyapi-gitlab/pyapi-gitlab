@@ -16,13 +16,13 @@ class Gitlab(object):
             self.token = token
             self.headers = {"PRIVATE-TOKEN": self.token}
         self.host = host
-        self.projects_url = "http://" + self.host + "/api/v3/projects"
-        self.users_url = "http://" + self.host + "/api/v3/users"
-        self.keys_url = "http://" + self.host + "/api/v3/user/keys"
+        self.projects_url = self.host + "/api/v3/projects"
+        self.users_url = self.host + "/api/v3/users"
+        self.keys_url = self.host + "/api/v3/user/keys"
 
     def login(self, email, password):
         data = {"email": email, "password": password}
-        r = requests.post("http://" + self.host + "/api/v3/session", data=data)
+        r = requests.post(self.host + "/api/v3/session", data=data)
         if r.status_code == 201:
             self.token = json.loads(r.content)['private_token']
             self.headers = {"PRIVATE-TOKEN": self.token}
@@ -37,7 +37,7 @@ class Gitlab(object):
         return: returs a dictionary of the users, false if there is an error
         """
         if id_ != 0:
-            r = requests.get("http://" + self.host + "/api/v3/users/" + str(id_), headers=self.headers)
+            r = requests.get(self.host + "/api/v3/users/" + str(id_), headers=self.headers)
             user = json.loads(r.content)
             return [user['id'], user['username'], user['name'], user['email'], user['state'], user['created_at']]
         else:
@@ -84,7 +84,7 @@ class Gitlab(object):
         Returns the current user parameters. The current user is linked to the secret token
         :return: a list with the current user properties
         """
-        r = requests.get("http://" + self.host + "/api/v3/user", headers=self.headers)
+        r = requests.get(self.host + "/api/v3/user", headers=self.headers)
         return json.loads(r.content)
 
     def editUser(self, id_, name="", username="", password="", email="", skype="", linkedin="", twitter="",
@@ -387,7 +387,7 @@ class Gitlab(object):
             return False
 
     def getIssues(self):
-        r = requests.get("http://" + self.host + "/api/v3/issues", headers=self.headers)
+        r = requests.get(self.host + "/api/v3/issues", headers=self.headers)
         if r.status_code == 200:
             return json.loads(r.content)
         else:
