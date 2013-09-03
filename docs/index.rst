@@ -135,6 +135,10 @@ Get the project Readme, you have to pass the web_url that getProject() provides:
 
     git.getReadme(proj['web_url'])
 
+Move a project::
+
+    git.moveProject(groupID, projectID)
+
 Hooks
 =====
 
@@ -246,4 +250,38 @@ Add a key to a project::
 Delete a key from a project::
 
    git.deleteDeployKey(id_, key_id)
+
+Groups
+========
+
+Create a group::
+
+    def createGroup(self, name, path):
+
+Get a group. If none are specified returns all the groups::
+
+    def getGroups(self, id_=None):
+
+Merge support
+==============
+
+Get all the merge requests for a project::
+
+    git.getMergeRequests(projectID, page=None, per_page=None)
+
+Get information about a specific merge request::
+
+    git.getMergeRequest(projectID, mergeRequestID)
+
+Create a new merge request::
+
+    git.reateMergeRequest(projectID, sourceBranch, targetBranch, title, assigneeID=None)
+
+Update an existing merge request::
+
+    git.updateMergeRequest(projectID, mergeRequestID, sourceBranch=None, targetBranch=None, title=None, assigneeID=None, closed=None)
+
+Add a comment to a merge request::
+
+    git.addCommentToMergeRequest(projectID, mergeRequestID, note)
 
