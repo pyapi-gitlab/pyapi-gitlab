@@ -11,7 +11,7 @@ import markdown
 
 
 class Gitlab(object):
-    def __init__(self, host, token=""):
+    def __init__(self, host, token="", version=5):
         if token != "":
             self.token = token
             self.headers = {"PRIVATE-TOKEN": self.token}
@@ -20,6 +20,7 @@ class Gitlab(object):
         self.users_url = self.host + "/api/v3/users"
         self.keys_url = self.host + "/api/v3/user/keys"
         self.groups_url = self.host + "/api/v3/groups"
+        self.version = version
 
     def login(self, email, password):
         data = {"email": email, "password": password}
@@ -252,7 +253,7 @@ class Gitlab(object):
     def createProject(self, name, description="", default_branch="",
                       issues_enabled="", wall_enabled="",
                       merge_requests_enabled="", wiki_enabled="",
-                      snippets_enabled=""):
+                      snippets_enabled="", public=""):
         """
         Create a project
         :param name: Obligatory
@@ -265,6 +266,11 @@ class Gitlab(object):
                 "merge_requests_enabled": merge_requests_enabled,
                 "wiki_enabled": wiki_enabled,
                 "snippets_enabled": snippets_enabled}
+
+        # if gitlab is the new 6th version, there is a public option for the
+        # project creation
+        if self.version == 6:
+            data['public'] = public
         r = requests.post(self.projects_url, headers=self.headers, data=data)
         if r.status_code == 201:
             return json.loads(r.content)
