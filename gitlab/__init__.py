@@ -24,13 +24,13 @@ class Gitlab(object):
 
     def login(self, email, password):
         data = {"email": email, "password": password}
-        r = requests.post(self.host + "/api/v3/session", data=data)
-        if r.status_code == 201:
-            self.token = json.loads(r.content)['private_token']
+        request = requests.post(self.host + "/api/v3/session", data=data)
+        if request.status_code == 201:
+            self.token = json.loads(request.content)['private_token']
             self.headers = {"PRIVATE-TOKEN": self.token}
             return True
         else:
-            print r
+            print request
             return False
 
     def getUsers(self, id_=0):
@@ -41,15 +41,15 @@ class Gitlab(object):
         return: returs a dictionary of the users, false if there is an error
         """
         if id_ != 0:
-            r = requests.get(self.host + "/api/v3/users/" + str(id_),
+            request = requests.get(self.host + "/api/v3/users/" + str(id_),
                              headers=self.headers)
-            user = json.loads(r.content)
+            user = json.loads(request.content)
             return [user['id'], user['username'], user['name'], user['email'],
                     user['state'], user['created_at']]
         else:
-            r = requests.get(self.users_url, headers=self.headers)
-            if r.status_code == 200:
-                return json.loads(r.content)
+            request = requests.get(self.users_url, headers=self.headers)
+            if request.status_code == 200:
+                return json.loads(request.content)
             else:
                 return False
 
@@ -62,18 +62,18 @@ class Gitlab(object):
         :param username: Obligatory
         :param password: Obligatory
         :param email: Obligatory
-        :return: TRue if the user was created, false if it wasn't (already exists)
+        :return: TRue if the user was created,false if it wasn't(already exists)
         """
         data = {"name": name, "username": username, "password": password,
                 "email": email, "skype": skype,
                 "twitter": twitter, "linkedin": linkedin,
                 "projects_limit": projects_limit, "extern_uid": extern_uid,
                 "provider": provider, "bio": bio}
-        r = requests.post(self.users_url, headers=self.headers, data=data)
-        if r.status_code == 201:
+        request = requests.post(self.users_url, headers=self.headers, data=data)
+        if request.status_code == 201:
             return True
-        elif r.status_code == 404:
-            print r
+        elif request.status_code == 404:
+            print request
             return False
 
     def deleteUser(self, id_):
@@ -84,22 +84,23 @@ class Gitlab(object):
         for several reasons, but there isn't a
         good way of differenting them
         """
-        r = requests.delete(self.users_url + "/" + str(id_),
+        request = requests.delete(self.users_url + "/" + str(id_),
                             headers=self.headers)
-        if r.status_code == 200:
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def currentUser(self):
         """
-        Returns the current user parameters. The current user is linked to the secret token
+        Returns the current user parameters. The current user is linked
+        to the secret token
         :return: a list with the current user properties
         """
-        r = requests.get(self.host + "/api/v3/user",
+        request = requests.get(self.host + "/api/v3/user",
                          headers=self.headers)
-        return json.loads(r.content)
+        return json.loads(request.content)
 
     def editUser(self, id_, name="", username="", password="", email="",
                  skype="", linkedin="", twitter="",
@@ -127,9 +128,9 @@ class Gitlab(object):
             data["provider"] = provider
         if bio != "":
             data["bio"] = bio
-        r = requests.put(self.users_url + "/" + str(id_), headers=self.headers,
-                         data=data)
-        if r.status_code == 404:
+        request = requests.put(self.users_url + "/" + str(id_),
+                               headers=self.headers, data=data)
+        if request.status_code == 404:
             return True
         # There is a problem here and that is that the api always return 404,
         #  doesn't matter what heappened with the request,
@@ -142,11 +143,11 @@ class Gitlab(object):
         Gets all the ssh keys for the current user
         :return: a dictionary with the lists
         """
-        r = requests.get(self.keys_url, headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        request = requests.get(self.keys_url, headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getSshKey(self, id_):
@@ -155,11 +156,12 @@ class Gitlab(object):
         :param id_: the id of the key
         :return: the key itself
         """
-        r = requests.get(self.keys_url + "/" + str(id_), headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        request = requests.get(self.keys_url + "/" + str(id_),
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def addSshKey(self, title, key):
@@ -167,14 +169,15 @@ class Gitlab(object):
         Add a new ssh key for the current user
         :param title: title of the new key
         :param key: the key itself
-        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
+        :return: true if added, false if it didn't add it
+        (it could be because the name or key already exists)
         """
         data = {"title": title, "key": key}
-        r = requests.post(self.keys_url, headers=self.headers, data=data)
-        if r.status_code == 201:
+        request = requests.post(self.keys_url, headers=self.headers, data=data)
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def addSshKeyUser(self, id_, title, key):
@@ -183,15 +186,16 @@ class Gitlab(object):
         :param id_: id of the user to add the key to
         :param title: title of the new key
         :param key: the key itself
-        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
+        :return: true if added, false if it didn't add it
+        (it could be because the name or key already exists)
         """
         data = {"title": title, "key": key}
-        r = requests.post(self.keys_url + "/" + str(id_) + "/keys",
+        request = requests.post(self.keys_url + "/" + str(id_) + "/keys",
                           headers=self.headers, data=data)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def deleteSshKey(self, id_):
@@ -200,10 +204,10 @@ class Gitlab(object):
         :param id_: the id of the key
         :return: False if it didn't delete it, True if it was deleted
         """
-        r = requests.delete(self.keys_url + "/" + str(id_),
+        request = requests.delete(self.keys_url + "/" + str(id_),
                             headers=self.headers)
-        if r.content == "null":
-            print r
+        if request.content == "null":
+            print request
             return False
         else:
             return True
@@ -214,11 +218,11 @@ class Gitlab(object):
         :return: list with the repo name, description, last activity,
          web url, ssh url, owner and if its public
         """
-        r = requests.get(self.projects_url, headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        request = requests.get(self.projects_url, headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getProject(self, id_):
@@ -227,12 +231,12 @@ class Gitlab(object):
         :param id_: id of the project
         :return: False if not found, a dictionary if found
         """
-        r = requests.get(self.projects_url + "/" + str(id_),
+        request = requests.get(self.projects_url + "/" + str(id_),
                          headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getProjectEvents(self, id_):
@@ -242,12 +246,12 @@ class Gitlab(object):
         :return: False if no project with that id, a dictionary
          with the events if found
         """
-        r = requests.get(self.projects_url + "/" + str(id_) +
+        request = requests.get(self.projects_url + "/" + str(id_) +
                          "/events", headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def createProject(self, name, description="", default_branch="",
@@ -271,11 +275,12 @@ class Gitlab(object):
         # project creation
         if self.version == 6:
             data['public'] = public
-        r = requests.post(self.projects_url, headers=self.headers, data=data)
-        if r.status_code == 201:
-            return json.loads(r.content)
+        request = requests.post(self.projects_url, headers=self.headers,
+                                data=data)
+        if request.status_code == 201:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def createProjectUser(self, id_, name, description="", default_branch="",
@@ -294,21 +299,21 @@ class Gitlab(object):
                 "merge_requests_enabled": merge_requests_enabled,
                 "wiki_enabled": wiki_enabled,
                 "snippets_enabled": snippets_enabled}
-        r = requests.post(self.projects_url + "/user/" + str(id_),
+        request = requests.post(self.projects_url + "/user/" + str(id_),
                           headers=self.headers, data=data)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def listProjectMembers(self, id_):
-        r = requests.get(self.projects_url + "/" + str(id_) + "/members",
+        request = requests.get(self.projects_url + "/" + str(id_) + "/members",
                          headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def addProjectMember(self, id_, user_id, access_level):
@@ -322,13 +327,12 @@ class Gitlab(object):
         else:
             access_level = 10
         data = {"id": id_, "user_id": user_id, "access_level": access_level}
-        r = requests.post(self.projects_url + "/" + str(id_) + "/members",
+        request = requests.post(self.projects_url + "/" + str(id_) + "/members",
                           headers=self.headers, data=data)
-        print r.status_code
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def editProjectMember(self, id_, user_id, access_level):
@@ -341,153 +345,154 @@ class Gitlab(object):
         else:
             access_level = 10
         data = {"id": id_, "user_id": user_id, "access_level": access_level}
-        r = requests.put(self.projects_url + "/" + str(id_) + "/members/" +
-                         str(user_id), headers=self.headers,
-                         data=data)
-        if r.status_code == 200:
+        request = requests.put(self.projects_url + "/" + str(id_) + "/members/"
+                               + str(user_id), headers=self.headers, data=data)
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def deleteProjectMember(self, id_, user_id):
-        r = requests.delete(self.projects_url + "/" + str(id_) + "/members/" +
-                            str(user_id), headers=self.headers)
-        if r.status_code == 200:
+        request = requests.delete(self.projects_url + "/" + str(id_)
+                                  + "/members/" + str(user_id),
+                                  headers=self.headers)
+        if request.status_code == 200:
             return True  # It always returns true
 
     def getProjectHooks(self, id_):
-        r = requests.get(self.projects_url + "/" + str(id_) + "/hooks",
+        request = requests.get(self.projects_url + "/" + str(id_) + "/hooks",
                          headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getProjectHook(self, id_, hook_id):
-        r = requests.get(self.projects_url + "/" + str(id_) + "/hooks/" +
+        request = requests.get(self.projects_url + "/" + str(id_) + "/hooks/" +
                          str(hook_id), headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def addProjectHook(self, id_, url):
         data = {"id": id_, "url": url}
-        r = requests.post(self.projects_url + "/" + str(id_) + "/hooks",
+        request = requests.post(self.projects_url + "/" + str(id_) + "/hooks",
                           headers=self.headers, data=data)
-        print r.status_code
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def editProjectHook(self, id_, hook_id, url):
         data = {"id": id_, "hook_id": hook_id, "url": url}
-        r = requests.put(self.projects_url + "/" + str(id_) + "/hooks/" +
+        request = requests.put(self.projects_url + "/" + str(id_) + "/hooks/" +
                          str(hook_id), headers=self.headers,
                          data=data)
-        if r.status_code == 200:
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def deleteProjectHook(self, id_, hook_id):
-        r = requests.delete(self.projects_url + "/" + str(id_) + "/hooks/" +
-                            str(hook_id), headers=self.headers)
-        if r.status_code == 200:
+        request = requests.delete(self.projects_url + "/" + str(id_)
+                                  + "/hooks/"
+                                  + str(hook_id), headers=self.headers)
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def listBranches(self, id_):
-        r = requests.get(self.projects_url + "/" + str(id_) +
+        request = requests.get(self.projects_url + "/" + str(id_) +
                          "/repository/branches", headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def listBranch(self, id_, branch):
-        r = requests.get(self.projects_url + "/" + str(id_) +
+        request = requests.get(self.projects_url + "/" + str(id_) +
                          "/repository/branches/" + str(branch),
                          headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def protectBranch(self, id_, branch):
-        r = requests.put(self.projects_url + "/" + str(id_) +
+        request = requests.put(self.projects_url + "/" + str(id_) +
                          "/repository/branches/" + str(branch) + "/protect",
                          headers=self.headers)
-        if r.status_code == 200:
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def unprotectBranch(self, id_, branch):
-        r = requests.put(self.projects_url + "/" + str(id_) +
+        request = requests.put(self.projects_url + "/" + str(id_) +
                          "/repository/branches/" + str(branch) + "/unprotect",
                          headers=self.headers)
-        if r.status_code == 200:
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def createForkRelation(self, id_, from_):
         data = {"id": id_, "forked_from_id": from_}
-        r = requests.post(self.projects_url + "/" + str(id_) +
+        request = requests.post(self.projects_url + "/" + str(id_) +
                           "/fork/" + str(from_), headers=self.headers,
                           data=data)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def removeForkRelation(self, id_):
-        r = requests.delete(self.projects_url + "/" + str(id_) +
+        request = requests.delete(self.projects_url + "/" + str(id_) +
                             "/fork", headers=self.headers)
-        if r.status_code == 200:
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def getIssues(self):
-        r = requests.get(self.host + "/api/v3/issues", headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        request = requests.get(self.host + "/api/v3/issues",
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getProjectIssues(self, id_):
-        r = requests.get(self.projects_url + "/" + str(id_) +
+        request = requests.get(self.projects_url + "/" + str(id_) +
                          "/issues", headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getProjectIssue(self, id_, issue_id):
-        r = requests.get(self.projects_url + "/" + str(id_) +
+        request = requests.get(self.projects_url + "/" + str(id_) +
                          "/issues/" + str(issue_id), headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def createIssue(self, id_, title, description="", assignee_id="",
@@ -495,12 +500,12 @@ class Gitlab(object):
         data = {"id": id, "title": title, "description": description,
                 "assignee_id": assignee_id,
                 "milestone_id": milestone_id, "labels": labels}
-        r = requests.post(self.projects_url + "/" + str(id_) + "/issues",
+        request = requests.post(self.projects_url + "/" + str(id_) + "/issues",
                           headers=self.headers, data=data)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def editIssue(self, id_, issue_id, title="", description="",
@@ -510,42 +515,43 @@ class Gitlab(object):
                 "description": description, "assignee_id": assignee_id,
                 "milestone_id": milestone_id, "labels": labels,
                 "state_event": state_event}
-        r = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
+        request = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
                          str(issue_id), headers=self.headers,
                          data=data)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def getMilestones(self, id_):
-        r = requests.get(self.projects_url + "/" + str(id_) +
+        request = requests.get(self.projects_url + "/" + str(id_) +
                          "/milestones", headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getMilestone(self, id_, milestone_id):
-        r = requests.get(self.projects_url + "/" + str(id_) + "/milestones/" +
-                         str(milestone_id), headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        request = requests.get(self.projects_url + "/" + str(id_)
+                               + "/milestones/"
+                               + str(milestone_id), headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def createMilestone(self, id_, title, description="", due_date=""):
         data = {"id": id_, "title": title, "description": description,
                 "due_date": due_date}
-        r = requests.post(self.projects_url + "/" + str(id_) +
+        request = requests.post(self.projects_url + "/" + str(id_) +
                           "/milestones", headers=self.headers, data=data)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def editMilestone(self, id_, milestone_id, title="", description="",
@@ -553,13 +559,14 @@ class Gitlab(object):
         data = {"id": id_, "milestone_id": milestone_id, "title": title,
                 "description": description,
                 "due_date": due_date, "state_event": state_event}
-        r = requests.put(self.projects_url + "/" + str(id_) + "/milestones/" +
-                         str(milestone_id), headers=self.headers,
+        request = requests.put(self.projects_url + "/" + str(id_)
+                               + "/milestones/"
+                               + str(milestone_id), headers=self.headers,
                          data=data)
-        if r.status_code == 200:
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def listdeployKeys(self, id_):
@@ -568,12 +575,12 @@ class Gitlab(object):
         :param id_: project id
         :return: the keys in a dictionary if success, false if not
         """
-        r = requests.get(self.projects_url + "/" + str(id_) + "/keys",
+        request = requests.get(self.projects_url + "/" + str(id_) + "/keys",
                          headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def listDeployKey(self, id_, key_id):
@@ -583,17 +590,18 @@ class Gitlab(object):
         :param key_id: key id
         :return: the key in a dict if success, false if not
         """
-        r = requests.get(self.projects_url + "/" + str(id_) + "/keys/" +
+        request = requests.get(self.projects_url + "/" + str(id_) + "/keys/" +
                          str(key_id), headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def addDeployKey(self, id_, title, key):
         """
-        Creates a new deploy key for a project. If deploy key already exists in another project - it will be joined
+        Creates a new deploy key for a project.
+        If deploy key already exists in another project - it will be joined
         to project but only if original one was is accessible by same user
         :param id_: project id
         :param title: title of the key
@@ -601,12 +609,12 @@ class Gitlab(object):
         :return: true if sucess, false if not
         """
         data = {"id": id_, "title": title, "key": key}
-        r = requests.post(self.projects_url + "/" + str(id_) + "/keys",
+        request = requests.post(self.projects_url + "/" + str(id_) + "/keys",
                           headers=self.headers, data=data)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def deleteDeployKey(self, id_, key_id):
@@ -616,12 +624,12 @@ class Gitlab(object):
         :param key_id: key id to delete
         :return: true if success, false if not
         """
-        r = requests.delete(self.projects_url + "/" + str(id_) + "/keys/" +
-                            str(key_id), headers=self.headers)
-        if r.status_code == 200:
+        request = requests.delete(self.projects_url + "/" + str(id_) + "/keys/"
+                                  + str(key_id), headers=self.headers)
+        if request.status_code == 200:
             return True
         else:
-            print r
+            print request
             return False
 
     def getReadme(self, repo, md=False):
@@ -631,18 +639,18 @@ class Gitlab(object):
         else returns the readme parsed by markdown
         :param repo: the web url to the project
         """
-        r = requests.get(repo + "/raw/master/README.md?private_token=" +
+        request = requests.get(repo + "/raw/master/README.md?private_token=" +
                          self.token)  # setting the headers doesn't work
-        if "<!DOCTYPE html>" in r.content:  # having HTML means we got a 404
+        if "<!DOCTYPE html>" in request.content:  # having HTML means a 404
             if md:
                 return "<p>There isn't a README.md for that project</p>"
             else:
                 return "There isn't a README.md for that project"
         else:
             if md:
-                return markdown.markdown(r.content)
+                return markdown.markdown(request.content)
             else:
-                return r.content
+                return request.content
 
     def createGroup(self, name, path):
         """
@@ -650,12 +658,13 @@ class Gitlab(object):
         :param name: The name of the group
         :param path: The path for the group
         """
-        r = requests.post(self.groups_url, data={'name': name, 'path': path},
-                          headers=self.headers)
-        if r.status_code == 201:
+        request = requests.post(self.groups_url,
+                                data={'name': name, 'path': path},
+                                headers=self.headers)
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def getGroups(self, id_=None):
@@ -663,12 +672,13 @@ class Gitlab(object):
         Retrieve group information
         :param id_: Specify a group. Otherwise, all groups are returned
         """
-        r = requests.get("{0}/{1}".format(self.groups_url, id_ if id_ else ""),
-                         headers=self.headers)
-        if r.status_code == 200:
-            return json.loads(r.content)
+        request = requests.get("{0}/{1}".format(self.groups_url,
+                                                id_ if id_ else ""),
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def moveProject(self, groupID, projectID):
@@ -677,13 +687,13 @@ class Gitlab(object):
         :param groupID: ID of the destination group
         :param projectID: ID of the project to be moved
         """
-        r = requests.post("{0}/{1}/projects/{2}".format(self.groups_url,
+        request = requests.post("{0}/{1}/projects/{2}".format(self.groups_url,
                                                         groupID, projectID),
                           headers=self.headers)
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def getMergeRequests(self, projectID, page=None, per_page=None):
@@ -695,12 +705,12 @@ class Gitlab(object):
         """
         params = {'page': page, 'per_page': per_page}
         url_str = '{0}/{1}/merge_requests'.format(self.projects_url, projectID)
-        r = requests.get(url_str, params=params, headers=self.headers)
+        request = requests.get(url_str, params=params, headers=self.headers)
 
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
 
     def getMergeRequest(self, projectID, mergeRequestID):
@@ -711,12 +721,12 @@ class Gitlab(object):
         """
         url_str = '{0}/{1}/merge_request/{2}'.format(self.projects_url,
                                                      projectID, mergeRequestID)
-        r = requests.get(url_str, headers=self.headers)
+        request = requests.get(url_str, headers=self.headers)
 
-        if r.status_code == 200:
-            return json.loads(r.content)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            print r
+            print request
             return False
             
     def createMergeRequest(self, projectID, sourceBranch, targetBranch,
@@ -735,11 +745,11 @@ class Gitlab(object):
                   'title': title,
                   'assignee_id': assigneeID}
 
-        r = requests.post(url_str, data=params, headers=self.headers)
-        if r.status_code == 201:
+        request = requests.post(url_str, data=params, headers=self.headers)
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def updateMergeRequest(self, projectID, mergeRequestID, sourceBranch=None,
@@ -763,11 +773,11 @@ class Gitlab(object):
                   'assignee_id': assigneeID,
                   'closed': closed}
 
-        r = requests.post(url_str, data=params, headers=self.headers)
-        if r.status_code == 201:
+        request = requests.post(url_str, data=params, headers=self.headers)
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
 
     def addCommentToMergeRequest(self, projectID, mergeRequestID, note):
@@ -780,10 +790,11 @@ class Gitlab(object):
         url_str = '{0}/{1}/merge_request/{2}/comments'.format(self.projects_url,
                                                               projectID,
                                                               mergeRequestID)
-        r = requests.post(url_str, data={'note': note}, headers=self.headers)
+        request = requests.post(url_str, data={'note': note},
+                                headers=self.headers)
 
-        if r.status_code == 201:
+        if request.status_code == 201:
             return True
         else:
-            print r
+            print request
             return False
