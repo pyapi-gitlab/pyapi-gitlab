@@ -34,3 +34,11 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+
+# pycharm files
+
+.idea
+
+# build dir
+docs/_build
