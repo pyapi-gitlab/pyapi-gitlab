@@ -480,9 +480,15 @@ class Gitlab(object):
             print request
             return False
 
-    def getIssues(self):
+    def getIssues(self, page=1, per_page=20):
+        """
+        Return a global list of issues for your user.
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
+        """
+        params = {'page': page, 'per_page': per_page}
         request = requests.get(self.host + "/api/v3/issues",
-                               headers=self.headers)
+                               params=params, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
