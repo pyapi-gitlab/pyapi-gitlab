@@ -495,9 +495,16 @@ class Gitlab(object):
             print request
             return False
 
-    def getProjectIssues(self, id_):
+    def getProjectIssues(self, id_, page=1, per_page=20):
+        """
+        Return a list of issues for project id_.
+        :param id_: The id for the project.
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
+        """
+        params = {'page': page, 'per_page': per_page}
         request = requests.get(self.projects_url + "/" + str(id_) +
-                         "/issues", headers=self.headers)
+                         "/issues", params=params, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
