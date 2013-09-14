@@ -35,21 +35,22 @@ class Gitlab(object):
             print request
             return False
 
-    def getUsers(self, id_=0):
+    def getUsers(self, id_=0,page=1, per_page=20):
         """
         Return a user list
         :param id_: the id of the user to get instead of getting all users,
          return all users if 0
         return: returs a dictionary of the users, false if there is an error
         """
+        params = {'page': page, 'per_page': per_page}
         if id_ != 0:
             request = requests.get(self.host + "/api/v3/users/" + str(id_),
-                             headers=self.headers)
+                             params=params, headers=self.headers)
             user = json.loads(request.content)
             return [user['id'], user['username'], user['name'], user['email'],
                     user['state'], user['created_at']]
         else:
-            request = requests.get(self.users_url, headers=self.headers)
+            request = requests.get(self.users_url, params=params, headers=self.headers)
             if request.status_code == 200:
                 return json.loads(request.content)
             else:
