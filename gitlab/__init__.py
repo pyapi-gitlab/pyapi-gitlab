@@ -247,15 +247,18 @@ class Gitlab(object):
             print request
             return False
 
-    def getProjectEvents(self, id_):
+    def getProjectEvents(self, id_, page=1, per_page=20):
         """
         Get the project identified by id, events(commits)
         :param id_: id of the project
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
         :return: False if no project with that id, a dictionary
          with the events if found
         """
+        params = {'page': page, 'per_page': per_page}
         request = requests.get(self.projects_url + "/" + str(id_) +
-                         "/events", headers=self.headers)
+                         "/events", params=params, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
