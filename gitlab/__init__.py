@@ -35,11 +35,13 @@ class Gitlab(object):
             print request
             return False
 
-    def getUsers(self, id_=0,page=1, per_page=20):
+    def getUsers(self, id_=0, page=1, per_page=20):
         """
         Return a user list
         :param id_: the id of the user to get instead of getting all users,
          return all users if 0
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
         return: returs a dictionary of the users, false if there is an error
         """
         params = {'page': page, 'per_page': per_page}
@@ -218,6 +220,8 @@ class Gitlab(object):
     def getProjects(self, page=1, per_page=20):
         """
         Returns a dictionary of all the projects
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
         :return: list with the repo name, description, last activity,
          web url, ssh url, owner and if its public
         """
@@ -672,14 +676,17 @@ class Gitlab(object):
             print request
             return False
 
-    def getGroups(self, id_=None):
+    def getGroups(self, id_=None, page=1, per_page=20):
         """
         Retrieve group information
         :param id_: Specify a group. Otherwise, all groups are returned
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
         """
+        params = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}".format(self.groups_url,
                                                 id_ if id_ else ""),
-                               headers=self.headers)
+                               params=params, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
