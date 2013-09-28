@@ -174,7 +174,7 @@ Branches
 
 Get all the branches for a project::
 
-   git.listBranches(1)
+   git.listbranches(1)
 
 Get a specific branch for a project::
 
