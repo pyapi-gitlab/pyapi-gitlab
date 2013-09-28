@@ -35,7 +35,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getUsers(self, id_=0, page=1, per_page=20):
+    def getusers(self, id_=0, page=1, per_page=20):
         """
         Return a user list
         :param id_: the id of the user to get instead of getting all users,
@@ -58,7 +58,7 @@ class Gitlab(object):
             else:
                 return False
 
-    def createUser(self, name, username, password, email, skype="", linkedin="",
+    def createuser(self, name, username, password, email, skype="", linkedin="",
                    twitter="",
                    projects_limit="", extern_uid="", provider="", bio=""):
         """
@@ -81,7 +81,7 @@ class Gitlab(object):
             print request
             return False
 
-    def deleteUser(self, id_):
+    def deleteuser(self, id_):
         """
         Deletes an user by ID
         :param id_: id of the user to delete
@@ -97,7 +97,7 @@ class Gitlab(object):
             print request
             return False
 
-    def currentUser(self):
+    def currentuser(self):
         """
         Returns the current user parameters. The current user is linked
         to the secret token
@@ -107,7 +107,7 @@ class Gitlab(object):
                          headers=self.headers)
         return json.loads(request.content)
 
-    def editUser(self, id_, name="", username="", password="", email="",
+    def edituser(self, id_, name="", username="", password="", email="",
                  skype="", linkedin="", twitter="",
                  projects_limit="", extern_uid="", provider="", bio=""):
         data = {}
@@ -143,7 +143,7 @@ class Gitlab(object):
         else:
             return False
 
-    def getSshKeys(self):
+    def getsshkeys(self):
         """
         Gets all the ssh keys for the current user
         :return: a dictionary with the lists
@@ -155,7 +155,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getSshKey(self, id_):
+    def getsshkey(self, id_):
         """
         Get a single ssh key identified by id_
         :param id_: the id of the key
@@ -169,7 +169,7 @@ class Gitlab(object):
             print request
             return False
 
-    def addSshKey(self, title, key):
+    def addsshkey(self, title, key):
         """
         Add a new ssh key for the current user
         :param title: title of the new key
@@ -185,7 +185,7 @@ class Gitlab(object):
             print request
             return False
 
-    def addSshKeyUser(self, id_, title, key):
+    def addsshkeyuser(self, id_, title, key):
         """
         Add a new ssh key for the user identified by id
         :param id_: id of the user to add the key to
@@ -203,7 +203,7 @@ class Gitlab(object):
             print request
             return False
 
-    def deleteSshKey(self, id_):
+    def deletesshkey(self, id_):
         """
         Deletes an sshkey for the current user identified by id
         :param id_: the id of the key
@@ -217,7 +217,7 @@ class Gitlab(object):
         else:
             return True
 
-    def getProjects(self, page=1, per_page=20):
+    def getprojects(self, page=1, per_page=20):
         """
         Returns a dictionary of all the projects
         :param page: Which page to return (default is 1)
@@ -233,7 +233,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getProject(self, id_):
+    def getproject(self, id_):
         """
         Get info for a project identified by id
         :param id_: id of the project
@@ -247,7 +247,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getProjectEvents(self, id_, page=1, per_page=20):
+    def getprojectevents(self, id_, page=1, per_page=20):
         """
         Get the project identified by id, events(commits)
         :param id_: id of the project
@@ -265,7 +265,7 @@ class Gitlab(object):
             print request
             return False
 
-    def createProject(self, name, description="", default_branch="",
+    def createproject(self, name, description="", default_branch="",
                       issues_enabled=0, wall_enabled=0,
                       merge_requests_enabled=0, wiki_enabled=0,
                       snippets_enabled=0, public=0):
@@ -295,7 +295,7 @@ class Gitlab(object):
             print request
             return False
 
-    def createProjectUser(self, id_, name, description="", default_branch="",
+    def createprojectuser(self, id_, name, description="", default_branch="",
                           issues_enabled=0, wall_enabled=0,
                           merge_requests_enabled=0, wiki_enabled=0,
                           snippets_enabled=0):
@@ -319,7 +319,7 @@ class Gitlab(object):
             print request
             return False
 
-    def listProjectMembers(self, id_):
+    def listprojectmembers(self, id_):
         request = requests.get(self.projects_url + "/" + str(id_) + "/members",
                          headers=self.headers)
         if request.status_code == 200:
@@ -328,7 +328,7 @@ class Gitlab(object):
             print request
             return False
 
-    def addProjectMember(self, id_, user_id, access_level):
+    def addprojectmember(self, id_, user_id, access_level):
         # check the access level and put into a number
         if access_level.lower() == "master":
             access_level = 40
@@ -347,7 +347,7 @@ class Gitlab(object):
             print request
             return False
 
-    def editProjectMember(self, id_, user_id, access_level):
+    def editprojectmember(self, id_, user_id, access_level):
         if access_level.lower() == "master":
             access_level = 40
         elif access_level.lower() == "developer":
@@ -365,14 +365,14 @@ class Gitlab(object):
             print request
             return False
 
-    def deleteProjectMember(self, id_, user_id):
+    def deleteprojectmember(self, id_, user_id):
         request = requests.delete(self.projects_url + "/" + str(id_)
                                   + "/members/" + str(user_id),
                                   headers=self.headers)
         if request.status_code == 200:
             return True  # It always returns true
 
-    def getProjectHooks(self, id_):
+    def getprojecthooks(self, id_):
         request = requests.get(self.projects_url + "/" + str(id_) + "/hooks",
                          headers=self.headers)
         if request.status_code == 200:
@@ -381,7 +381,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getProjectHook(self, id_, hook_id):
+    def getprojecthook(self, id_, hook_id):
         request = requests.get(self.projects_url + "/" + str(id_) + "/hooks/" +
                          str(hook_id), headers=self.headers)
         if request.status_code == 200:
@@ -390,7 +390,7 @@ class Gitlab(object):
             print request
             return False
 
-    def addProjectHook(self, id_, url):
+    def addprojecthook(self, id_, url):
         data = {"id": id_, "url": url}
         request = requests.post(self.projects_url + "/" + str(id_) + "/hooks",
                           headers=self.headers, data=data)
@@ -400,7 +400,7 @@ class Gitlab(object):
             print request
             return False
 
-    def editProjectHook(self, id_, hook_id, url):
+    def editprojecthook(self, id_, hook_id, url):
         data = {"id": id_, "hook_id": hook_id, "url": url}
         request = requests.put(self.projects_url + "/" + str(id_) + "/hooks/" +
                          str(hook_id), headers=self.headers,
@@ -411,7 +411,7 @@ class Gitlab(object):
             print request
             return False
 
-    def deleteProjectHook(self, id_, hook_id):
+    def deleteprojecthook(self, id_, hook_id):
         request = requests.delete(self.projects_url + "/" + str(id_)
                                   + "/hooks/"
                                   + str(hook_id), headers=self.headers)
@@ -430,7 +430,7 @@ class Gitlab(object):
             print request
             return False
 
-    def listBranch(self, id_, branch):
+    def listbranch(self, id_, branch):
         request = requests.get(self.projects_url + "/" + str(id_) +
                          "/repository/branches/" + str(branch),
                          headers=self.headers)
@@ -440,7 +440,7 @@ class Gitlab(object):
             print request
             return False
 
-    def protectBranch(self, id_, branch):
+    def protectbranch(self, id_, branch):
         request = requests.put(self.projects_url + "/" + str(id_) +
                          "/repository/branches/" + str(branch) + "/protect",
                          headers=self.headers)
@@ -450,7 +450,7 @@ class Gitlab(object):
             print request
             return False
 
-    def unprotectBranch(self, id_, branch):
+    def unprotectbranch(self, id_, branch):
         request = requests.put(self.projects_url + "/" + str(id_) +
                          "/repository/branches/" + str(branch) + "/unprotect",
                          headers=self.headers)
@@ -460,7 +460,7 @@ class Gitlab(object):
             print request
             return False
 
-    def createForkRelation(self, id_, from_):
+    def createforkrelation(self, id_, from_):
         data = {"id": id_, "forked_from_id": from_}
         request = requests.post(self.projects_url + "/" + str(id_) +
                           "/fork/" + str(from_), headers=self.headers,
@@ -471,7 +471,7 @@ class Gitlab(object):
             print request
             return False
 
-    def removeForkRelation(self, id_):
+    def removeforkrelation(self, id_):
         request = requests.delete(self.projects_url + "/" + str(id_) +
                             "/fork", headers=self.headers)
         if request.status_code == 200:
@@ -480,7 +480,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getIssues(self, page=1, per_page=20):
+    def getissues(self, page=1, per_page=20):
         """
         Return a global list of issues for your user.
         :param page: Which page to return (default is 1)
@@ -495,7 +495,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getProjectIssues(self, id_, page=1, per_page=20):
+    def getprojectissues(self, id_, page=1, per_page=20):
         """
         Return a list of issues for project id_.
         :param id_: The id for the project.
@@ -511,7 +511,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getProjectIssue(self, id_, issue_id):
+    def getprojectissue(self, id_, issue_id):
         request = requests.get(self.projects_url + "/" + str(id_) +
                          "/issues/" + str(issue_id), headers=self.headers)
         if request.status_code == 200:
@@ -520,7 +520,7 @@ class Gitlab(object):
             print request
             return False
 
-    def createIssue(self, id_, title, description="", assignee_id="",
+    def createissue(self, id_, title, description="", assignee_id="",
                     milestone_id="", labels=""):
         data = {"id": id, "title": title, "description": description,
                 "assignee_id": assignee_id,
@@ -533,7 +533,7 @@ class Gitlab(object):
             print request
             return False
 
-    def editIssue(self, id_, issue_id, title="", description="",
+    def editissue(self, id_, issue_id, title="", description="",
                   assignee_id="", milestone_id="", labels="",
                   state_event=""):
         data = {"id": id, "issue_id": issue_id, "title": title,
@@ -549,7 +549,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getMilestones(self, id_):
+    def getmilestones(self, id_):
         request = requests.get(self.projects_url + "/" + str(id_) +
                          "/milestones", headers=self.headers)
         if request.status_code == 200:
@@ -558,7 +558,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getMilestone(self, id_, milestone_id):
+    def getmilestone(self, id_, milestone_id):
         request = requests.get(self.projects_url + "/" + str(id_)
                                + "/milestones/"
                                + str(milestone_id), headers=self.headers)
@@ -568,7 +568,7 @@ class Gitlab(object):
             print request
             return False
 
-    def createMilestone(self, id_, title, description="", due_date=""):
+    def createmilestone(self, id_, title, description="", due_date=""):
         data = {"id": id_, "title": title, "description": description,
                 "due_date": due_date}
         request = requests.post(self.projects_url + "/" + str(id_) +
@@ -579,7 +579,7 @@ class Gitlab(object):
             print request
             return False
 
-    def editMilestone(self, id_, milestone_id, title="", description="",
+    def editmilestone(self, id_, milestone_id, title="", description="",
                       due_date="", state_event=""):
         data = {"id": id_, "milestone_id": milestone_id, "title": title,
                 "description": description,
@@ -594,7 +594,7 @@ class Gitlab(object):
             print request
             return False
 
-    def listdeployKeys(self, id_):
+    def listdeploykeys(self, id_):
         """
         Get a list of a project's deploy keys.
         :param id_: project id
@@ -608,7 +608,7 @@ class Gitlab(object):
             print request
             return False
 
-    def listDeployKey(self, id_, key_id):
+    def listdeploykey(self, id_, key_id):
         """
         Get a single key.
         :param id_: project id
@@ -623,7 +623,7 @@ class Gitlab(object):
             print request
             return False
 
-    def addDeployKey(self, id_, title, key):
+    def adddeploykey(self, id_, title, key):
         """
         Creates a new deploy key for a project.
         If deploy key already exists in another project - it will be joined
@@ -642,7 +642,7 @@ class Gitlab(object):
             print request
             return False
 
-    def deleteDeployKey(self, id_, key_id):
+    def deletedeploykey(self, id_, key_id):
         """
         Delete a deploy key from a project
         :param id_: project id
@@ -657,7 +657,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getReadme(self, repo, md=False):
+    def getreadme(self, repo, md=False):
         """
         returns the readme
         :param md: If false returns the raw readme,
@@ -677,7 +677,7 @@ class Gitlab(object):
             else:
                 return request.content
 
-    def createGroup(self, name, path):
+    def creategroup(self, name, path):
         """
         Creates a new group
         :param name: The name of the group
@@ -692,7 +692,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getGroups(self, id_=None, page=1, per_page=20):
+    def getgroups(self, id_=None, page=1, per_page=20):
         """
         Retrieve group information
         :param id_: Specify a group. Otherwise, all groups are returned
@@ -709,7 +709,7 @@ class Gitlab(object):
             print request
             return False
 
-    def moveProject(self, groupID, projectID):
+    def moveproject(self, groupID, projectID):
         """
         Move a given project into a given group
         :param groupID: ID of the destination group
@@ -724,7 +724,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getMergeRequests(self, projectID, page=None, per_page=None):
+    def getmergerequests(self, projectID, page=None, per_page=None):
         """
         Get all the merge requests for a project.
         :param projectID: ID of the project to retrieve merge requests for
@@ -741,7 +741,7 @@ class Gitlab(object):
             print request
             return False
 
-    def getMergeRequest(self, projectID, mergeRequestID):
+    def getmergerequest(self, projectID, mergeRequestID):
         """
         Get information about a specific merge request.
         :param projectID: ID of the project
@@ -757,7 +757,7 @@ class Gitlab(object):
             print request
             return False
             
-    def createMergeRequest(self, projectID, sourceBranch, targetBranch,
+    def createmergerequest(self, projectID, sourceBranch, targetBranch,
                            title, assigneeID=None):
         """
         Create a new merge request.
@@ -780,7 +780,7 @@ class Gitlab(object):
             print request
             return False
 
-    def updateMergeRequest(self, projectID, mergeRequestID, sourceBranch=None,
+    def updatemergerequest(self, projectID, mergeRequestID, sourceBranch=None,
                            targetBranch=None, title=None,
                            assigneeID=None, closed=None):
         """
@@ -808,7 +808,7 @@ class Gitlab(object):
             print request
             return False
 
-    def addCommentToMergeRequest(self, projectID, mergeRequestID, note):
+    def addcommenttomergerequest(self, projectID, mergeRequestID, note):
         """
         Add a comment to a merge request.
         :param projectID: ID of the project originating the merge request
