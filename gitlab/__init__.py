@@ -314,6 +314,8 @@ class Gitlab(object):
 
         # if gitlab is the new 6th version, there is a public option for the
         # project creation
+        if type(public) != int:
+            raise TypeError
         if public != 0:
             data['public'] = public
         #request now works with both GitLab 5 and GitLab 6.
