@@ -3,12 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to python-gitlab's documentation!
+Welcome to i-python-gitlab's documentation!
 =========================================
 
 
-python-gitlab is a wrapper to access all the functions of Gitlab from our python scripts.
+i-python-gitlab is a wrapper to access all the functions of Gitlab from our python scripts.
 
+Installation
+=============
+
+
+   pip install i-python-gitlab
 
 
 How to use it
@@ -46,6 +51,66 @@ Just call the instance with the parameter token::
 
     git = gitlab.Gitlab("our_gitlab_host", token="mytoken")
 
+
+
+Using sudo on the functions
+===========================
+
+From version 6, gitlab accepts a sudo parameter in order to execute an order as if you were another user.
+This has been implemente in -i-python-gitlab on the following functions:
+
+   getusers()
+   
+   createuser()
+   
+   edituser()
+   
+   addsshkey()
+   
+   addsshkeyuser()
+   
+   getprojects()
+   
+   createproject()
+   
+   createprojectuser()
+   
+   addprojectmember()
+   
+   editprojectmember()
+   
+   editprojecthook()
+   
+   getissues()
+   
+   getprojectissues()
+   
+   createissue()
+   
+   editissue()
+   
+   createmilestone()
+   
+   editmilestone()
+   
+   adddeploykey()
+   
+   getgroups()
+   
+   getmergerequests()
+   
+   createmergerequest()
+   
+   updatemergerequest()
+   
+
+
+All you need to do is add a sudo="user" parameter when calling the function like this::
+
+   git.createuser("name", "username", "password", "email", sudo="admin")
+
+
+If no user is specified, sudo will default to the current user, obtained when login into gitlab.
 
 Users
 ==================
