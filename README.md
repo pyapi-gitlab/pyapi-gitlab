@@ -7,6 +7,13 @@ python-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlab
 - requests
 - markdown
 
+## Installation
+
+i-python-gitlab is now on Pypi! Install it with:
+
+```bash
+pip install i-python-gitlab
+```
 
 ## Examples/Documentation
 
