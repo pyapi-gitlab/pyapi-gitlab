@@ -47,6 +47,65 @@ Just call the instance with the parameter token::
     git = gitlab.Gitlab("our_gitlab_host", token="mytoken")
 
 
+Using sudo on the functions
+=============================
+
+From version 6, gitlab accepts a sudo parameter in order to execute an order as if you were another user.
+This has been implemente in -i-python-gitlab on the following functions:
+
+   getusers()
+   
+   createuser()
+   
+   edituser()
+   
+   addsshkey()
+   
+   addsshkeyuser()
+   
+   getprojects()
+   
+   createproject()
+   
+   createprojectuser()
+   
+   addprojectmember()
+   
+   editprojectmember()
+   
+   editprojecthook()
+   
+   getissues()
+   
+   getprojectissues()
+   
+   createissue()
+   
+   editissue()
+   
+   createmilestone()
+   
+   editmilestone()
+   
+   adddeploykey()
+   
+   getgroups()
+   
+   getmergerequests()
+   
+   createmergerequest()
+   
+   updatemergerequest()
+   
+
+
+All you need to do is add a sudo="user" parameter when calling the function like this::
+
+   git.createuser("name", "username", "password", "email", sudo="admin")
+
+
+If no user is specified, sudo will default to the current user, obtained when login into gitlab.
+
 Users
 ==================
 
