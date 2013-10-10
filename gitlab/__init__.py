@@ -48,7 +48,7 @@ class Gitlab(object):
             self.headers = {"PRIVATE-TOKEN": self.token}
             return True
         else:
-            print request
+            print(request)
             return False
 
     def getusers(self, id_=0, page=1, per_page=20, sudo=""):
@@ -62,17 +62,17 @@ class Gitlab(object):
         defaults to the login user
         return: returs a dictionary of the users, false if there is an error
         """
-        if sudo == "":
-            sudo = self.user
-        params = {'page': page, 'per_page': per_page, "sudo": sudo}
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
         if id_ != 0:
             request = requests.get(self.host + "/api/v3/users/" + str(id_),
-                                   params=params, headers=self.headers)
+                                   params=data, headers=self.headers)
             user = json.loads(request.content)
             return [user['id'], user['username'], user['name'], user['email'],
                     user['state'], user['created_at']]
         else:
-            request = requests.get(self.users_url, params=params,
+            request = requests.get(self.users_url, params=data,
                                    headers=self.headers)
             if request.status_code == 200:
                 return json.loads(request.content)
@@ -99,18 +99,18 @@ class Gitlab(object):
         :param email: Obligatory
         :return: TRue if the user was created,false if it wasn't(already exists)
         """
-        if sudo == "":
-            sudo = self.user
         data = {"name": name, "username": username, "password": password,
                 "email": email, "skype": skype,
                 "twitter": twitter, "linkedin": linkedin,
                 "projects_limit": projects_limit, "extern_uid": extern_uid,
-                "provider": provider, "bio": bio, "sudo": sudo}
+                "provider": provider, "bio": bio}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.users_url, headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         elif request.status_code == 404:
-            print request
+            print(request)
             return False
 
     def deleteuser(self, id_):
@@ -126,7 +126,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def currentuser(self):
@@ -194,9 +194,8 @@ class Gitlab(object):
             data["provider"] = provider
         if bio != "":
             data["bio"] = bio
-        if sudo == "":
-            sudo = self.user
-        data["sudo"] = sudo
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.put(self.users_url + "/" + str(id_),
                                headers=self.headers, data=data)
         if request.status_code == 404:
@@ -216,7 +215,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getsshkey(self, id_):
@@ -230,7 +229,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def addsshkey(self, title, key, sudo=""):
@@ -241,14 +240,14 @@ class Gitlab(object):
         :return: true if added, false if it didn't add it
         (it could be because the name or key already exists)
         """
-        if sudo == "":
-            sudo = self.user
-        data = {"title": title, "key": key, "sudo": sudo}
+        data = {"title": title, "key": key}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.keys_url, headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def addsshkeyuser(self, id_, title, key, sudo=""):
@@ -260,15 +259,15 @@ class Gitlab(object):
         :return: true if added, false if it didn't add it
         (it could be because the name or key already exists)
         """
-        if sudo == "":
-            sudo = self.user
-        data = {"title": title, "key": key, "sudo": sudo}
+        data = {"title": title, "key": key}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.keys_url + "/" + str(id_) + "/keys",
                                 headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def deletesshkey(self, id_):
@@ -280,7 +279,7 @@ class Gitlab(object):
         request = requests.delete(self.keys_url + "/" + str(id_),
                                   headers=self.headers)
         if request.content == "null":
-            print request
+            print(request)
             return False
         else:
             return True
@@ -293,15 +292,15 @@ class Gitlab(object):
         :return: list with the repo name, description, last activity,
          web url, ssh url, owner and if its public
         """
-        if sudo == "":
-            sudo = self.user
-        params = {'page': page, 'per_page': per_page, 'sudo': sudo}
-        request = requests.get(self.projects_url, params=params,
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
+        request = requests.get(self.projects_url, params=data,
                                headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getproject(self, id_):
@@ -315,7 +314,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getprojectevents(self, id_, page=1, per_page=20):
@@ -327,13 +326,13 @@ class Gitlab(object):
         :return: False if no project with that id, a dictionary
          with the events if found
         """
-        params = {'page': page, 'per_page': per_page}
+        data = {'page': page, 'per_page': per_page}
         request = requests.get(self.projects_url + "/" + str(id_) +
-                               "/events", params=params, headers=self.headers)
+                               "/events", params=data, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def createproject(self, name, description="", default_branch="",
@@ -346,14 +345,14 @@ class Gitlab(object):
         :return: Dict of information on the newly created project if successful,
          False otherwise
         """
-        if sudo == "":
-            sudo = self.user
         data = {"name": name, "description": description,
                 "default_branch": default_branch,
                 "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
                 "merge_requests_enabled": merge_requests_enabled,
                 "wiki_enabled": wiki_enabled,
-                "snippets_enabled": snippets_enabled, "sudo": sudo}
+                "snippets_enabled": snippets_enabled}
+        if sudo != "":
+            data['sudo'] = sudo
 
         # if gitlab is the new 6th version, there is a public option for the
         # project creation
@@ -366,7 +365,7 @@ class Gitlab(object):
         if request.status_code == 201:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def createprojectuser(self, id_, name, description="", default_branch="",
@@ -379,20 +378,20 @@ class Gitlab(object):
         :param name: Obligatory
         :return: True if it created the project, False otherwise
         """
-        if sudo == "":
-            sudo = self.user
         data = {"name": name, "description": description,
                 "default_branch": default_branch,
                 "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
                 "merge_requests_enabled": merge_requests_enabled,
                 "wiki_enabled": wiki_enabled,
-                "snippets_enabled": snippets_enabled, "sudo": sudo}
+                "snippets_enabled": snippets_enabled}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.projects_url + "/user/" + str(id_),
                                 headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def listprojectmembers(self, id_):
@@ -406,7 +405,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def addprojectmember(self, id_, user_id, access_level, sudo=""):
@@ -419,8 +418,6 @@ class Gitlab(object):
         :param sudo: do the request with another user
         :return: True if success
         """
-        if sudo == "":
-            sudo = self.user
         if access_level.lower() == "master":
             access_level = 40
         elif access_level.lower() == "developer":
@@ -429,14 +426,15 @@ class Gitlab(object):
             access_level = 20
         else:
             access_level = 10
-        data = {"id": id_, "user_id": user_id, "access_level": access_level,
-                "sudo": sudo}
+        data = {"id": id_, "user_id": user_id, "access_level": access_level}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.projects_url + "/" + str(id_) + "/members",
                                 headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def editprojectmember(self, id_, user_id, access_level, sudo=""):
@@ -448,8 +446,6 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: True if success
         """
-        if sudo == "":
-            sudo = self.user
         if access_level.lower() == "master":
             access_level = 40
         elif access_level.lower() == "developer":
@@ -459,14 +455,15 @@ class Gitlab(object):
         else:
             access_level = 10
         data = {"id": id_, "user_id": user_id,
-                "access_level": access_level,
-                "sudo": sudo}
+                "access_level": access_level}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/members/"
                                + str(user_id), headers=self.headers, data=data)
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def deleteprojectmember(self, id_, user_id):
@@ -493,7 +490,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getprojecthook(self, id_, hook_id):
@@ -508,7 +505,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def addprojecthook(self, id_, url):
@@ -524,7 +521,7 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def editprojecthook(self, id_, hook_id, url, sudo=""):
@@ -536,16 +533,16 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: True if success
         """
-        if sudo == "":
-            sudo = self.user
-        data = {"id": id_, "hook_id": hook_id, "url": url, "sudo": sudo}
+        data = {"id": id_, "hook_id": hook_id, "url": url}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/hooks/" +
                                str(hook_id), headers=self.headers,
                                data=data)
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def deleteprojecthook(self, id_, hook_id):
@@ -561,7 +558,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def listbranches(self, id_):
@@ -575,7 +572,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def listbranch(self, id_, branch):
@@ -591,7 +588,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def protectbranch(self, id_, branch):
@@ -608,7 +605,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def unprotectbranch(self, id_, branch):
@@ -625,7 +622,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def createforkrelation(self, id_, from_):
@@ -643,7 +640,7 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def removeforkrelation(self, id_):
@@ -658,7 +655,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def getissues(self, page=1, per_page=20, sudo=""):
@@ -667,15 +664,15 @@ class Gitlab(object):
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
         """
-        if sudo == "":
-            sudo = self.user
-        params = {'page': page, 'per_page': per_page, "sudo": sudo}
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.get(self.host + "/api/v3/issues",
-                               params=params, headers=self.headers)
+                               params=data, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getprojectissues(self, id_, page=1, per_page=20, sudo=""):
@@ -685,15 +682,15 @@ class Gitlab(object):
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
         """
-        if sudo == "":
-            sudo = self.user
-        params = {'page': page, 'per_page': per_page, "sudo": sudo}
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.get(self.projects_url + "/" + str(id_) +
-                               "/issues", params=params, headers=self.headers)
+                               "/issues", params=data, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getprojectissue(self, id_, issue_id):
@@ -708,7 +705,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def createissue(self, id_, title, description="", assignee_id="",
@@ -724,17 +721,17 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: true if success
         """
-        if sudo == "":
-            sudo = self.user
         data = {"id": id, "title": title, "description": description,
                 "assignee_id": assignee_id,
-                "milestone_id": milestone_id, "labels": labels, "sudo": sudo}
+                "milestone_id": milestone_id, "labels": labels}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.projects_url + "/" + str(id_) + "/issues",
                                 headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def editissue(self, id_, issue_id, title="", description="",
@@ -753,19 +750,19 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: true if success
         """
-        if sudo == "":
-            sudo = self.user
         data = {"id": id, "issue_id": issue_id, "title": title,
                 "description": description, "assignee_id": assignee_id,
                 "milestone_id": milestone_id, "labels": labels,
-                "state_event": state_event, "sudo": sudo}
+                "state_event": state_event}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
                                str(issue_id), headers=self.headers,
                                data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def getmilestones(self, id_):
@@ -779,7 +776,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getmilestone(self, id_, milestone_id):
@@ -795,7 +792,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def createmilestone(self, id_, title, description="", due_date="", sudo=""):
@@ -808,16 +805,16 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: true if success
         """
-        if sudo == "":
-            sudo = self.user
         data = {"id": id_, "title": title, "description": description,
-                "due_date": due_date, "sudo": sudo}
+                "due_date": due_date}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.projects_url + "/" + str(id_) +
                                 "/milestones", headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def editmilestone(self, id_, milestone_id, title="", description="",
@@ -833,11 +830,11 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: true if success
         """
-        if sudo == "":
-            sudo = self.user
         data = {"id": id_, "milestone_id": milestone_id, "title": title,
                 "description": description,
-                "due_date": due_date, "state_event": state_event, "sudo": sudo}
+                "due_date": due_date, "state_event": state_event}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_)
                                + "/milestones/"
                                + str(milestone_id), headers=self.headers,
@@ -845,7 +842,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def listdeploykeys(self, id_):
@@ -859,7 +856,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def listdeploykey(self, id_, key_id):
@@ -874,7 +871,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def adddeploykey(self, id_, title, key, sudo=""):
@@ -887,15 +884,15 @@ class Gitlab(object):
         :param key: the key itself
         :return: true if sucess, false if not
         """
-        if sudo == "":
-            sudo = self.user
-        data = {"id": id_, "title": title, "key": key, "sudo": sudo}
+        data = {"id": id_, "title": title, "key": key}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.post(self.projects_url + "/" + str(id_) + "/keys",
                                 headers=self.headers, data=data)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def deletedeploykey(self, id_, key_id):
@@ -910,7 +907,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def getreadme(self, repo, mark=False):
@@ -945,7 +942,7 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def getgroups(self, id_=None, page=1, per_page=20, sudo=""):
@@ -955,16 +952,16 @@ class Gitlab(object):
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
         """
-        if sudo == "":
-            sudo = self.user
-        params = {'page': page, 'per_page': per_page, "sudo": sudo}
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.get("{0}/{1}".format(self.groups_url,
                                                 id_ if id_ else ""),
-                               params=params, headers=self.headers)
+                               params=data, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def moveproject(self, group_id, project_id):
@@ -980,26 +977,26 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
-    def getmergerequests(self, project_id, page=None, per_page=None, sudo=""):
+    def getmergerequests(self, project_id, page=1, per_page=20, sudo=""):
         """
         Get all the merge requests for a project.
         :param project_id: ID of the project to retrieve merge requests for
         :param page: If pagination is set, which page to return
         :param per_page: Number of merge requests to return per page
         """
-        if sudo == "":
-            sudo = self.user
-        params = {'page': page, 'per_page': per_page, "sudo": sudo}
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
         url_str = '{0}/{1}/merge_requests'.format(self.projects_url, project_id)
-        request = requests.get(url_str, params=params, headers=self.headers)
+        request = requests.get(url_str, params=data, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def getmergerequest(self, project_id, mergerequest_id):
@@ -1017,7 +1014,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content)
         else:
-            print request
+            print(request)
             return False
 
     def createmergerequest(self, project_id, sourcebranch, targetbranch,
@@ -1030,19 +1027,19 @@ class Gitlab(object):
         :param title: Title of the merge request
         :param assignee_id: Assignee user ID
         """
-        if sudo == "":
-            sudo = self.user
         url_str = '{0}/{1}/merge_requests'.format(self.projects_url, project_id)
-        params = {'source_branch': sourcebranch,
+        data = {'source_branch': sourcebranch,
                   'target_branch': targetbranch,
                   'title': title,
-                  'assignee_id': assignee_id, "sudo": sudo}
+                  'assignee_id': assignee_id}
+        if sudo != "":
+            data['sudo'] = sudo
 
-        request = requests.post(url_str, data=params, headers=self.headers)
+        request = requests.post(url_str, data=data, headers=self.headers)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def updatemergerequest(self, project_id, mergerequest_id, sourcebranch=None,
@@ -1058,23 +1055,22 @@ class Gitlab(object):
         :param assignee_id: Assignee user ID
         :param closed: MR status.  True = closed
         """
-        if sudo == "":
-            sudo = self.user
         url_str = '{0}/{1}/merge_request/{2}'.format(self.projects_url,
                                                      project_id,
                                                      mergerequest_id)
-        params = {'source_branch': sourcebranch,
+        data = {'source_branch': sourcebranch,
                   'target_branch': targetbranch,
                   'title': title,
                   'assignee_id': assignee_id,
-                  'closed': closed,
-                  'sudo': sudo}
+                  'closed': closed}
+        if sudo != "":
+            data['sudo'] = sudo
 
-        request = requests.post(url_str, data=params, headers=self.headers)
+        request = requests.post(url_str, data=data, headers=self.headers)
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
 
     def addcommenttomergerequest(self, project_id, mergerequest_id, note):
@@ -1093,5 +1089,5 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            print request
+            print(request)
             return False
