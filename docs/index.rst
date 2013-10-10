@@ -1,13 +1,13 @@
-.. python-gitlab documentation master file, created by
+.. pyapi-gitlab documentation master file, created by
    sphinx-quickstart on Sun Aug 04 20:46:27 2013.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to python-gitlab's documentation!
+Welcome to pyapi-gitlab's documentation!
 =========================================
 
 
-python-gitlab is a wrapper to access all the functions of Gitlab from our python scripts.
+pyapi-gitlab is a wrapper to access all the functions of Gitlab from our python scripts.
 
 
 
@@ -51,7 +51,7 @@ Using sudo on the functions
 =============================
 
 From version 6, gitlab accepts a sudo parameter in order to execute an order as if you were another user.
-This has been implemente in -i-python-gitlab on the following functions:
+This has been implemente in pyapi-gitlab on the following functions:
 
    getusers()
    

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-python-gitlab, a gitlab python wrapper for the gitlab API
+pyapi-gitlab, a gitlab python wrapper for the gitlab API
 by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 """
 
