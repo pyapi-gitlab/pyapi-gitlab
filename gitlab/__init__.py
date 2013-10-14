@@ -262,7 +262,7 @@ class Gitlab(object):
         data = {"title": title, "key": key}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.post(self.keys_url + "/" + str(id_) + "/keys",
+        request = requests.post(self.users_url + "/" + str(id_) + "/keys",
                                 headers=self.headers, data=data)
         if request.status_code == 201:
             return True
