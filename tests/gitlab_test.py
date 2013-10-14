@@ -26,26 +26,26 @@ class UsersTest(unittest.TestCase):
     def testgetusers(self):
         # get all users
         assert isinstance(git.getusers(), list)  # compatible with 2.6
-        self.assertIsNot(git.getusers(), False)
+        self.assertTrue(git.getusers())
         # get X pages
         assert isinstance(git.getusers(page=2), list)  # compatible with 2.6
         assert isinstance(git.getusers(per_page=4), list)  # compatible with 2.6
-        self.assertIsNot(git.getusers(page=7), False)  # check against false
-        self.assertIsNot(git.getusers(per_page=43), False)  # check against false
+        self.assertIsNotNone(git.getusers(page=7))  # check against false
+        self.assertTrue(git.getusers(per_page=43))  # check against false
 
     def testcurrentuser(self):
         assert isinstance(git.currentuser(), dict)  # compatible with 2.6
-        self.assertIsNot(git.currentuser(), False)
+        self.assertTrue(git.currentuser())
 
 
 class SshTest(unittest.TestCase):
     def testsshkeys(self):
         git.addsshkey(title="test key", key=key)
         assert isinstance(git.getsshkeys(), list)  # compatible with 2.6
-        self.assertIsNot(git.getsshkeys(), False)
+        self.assertTrue(git.getsshkeys())
         # pass the id of the first key
         assert isinstance(git.getsshkey(id_=git.getsshkeys()[0]['id']), dict)  # compatible with 2.6
-        self.assertIsNot(git.getsshkey(id_=git.getsshkeys()[0]['id']), False)
+        self.assertTrue(git.getsshkey(id_=git.getsshkeys()[0]['id']))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
         self.assertTrue(git.addsshkey(title="test key", key=key))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
