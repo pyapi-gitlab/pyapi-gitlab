@@ -2,6 +2,11 @@
 
 pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabhq/gitlabhq/tree/master/doc/api).
 
+
+## Build status
+
+[![Build Status](https://travis-ci.org/Itxaka/pyapi-gitlab.png?branch=6.1)](https://travis-ci.org/Itxaka/pyapi-gitlab)
+
 ## Requirements
 
 - requests
