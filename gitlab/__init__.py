@@ -48,7 +48,6 @@ class Gitlab(object):
             self.headers = {"PRIVATE-TOKEN": self.token}
             return True
         else:
-            print(request)
             return False
 
     def getusers(self, id_=0, page=1, per_page=20, sudo=""):
