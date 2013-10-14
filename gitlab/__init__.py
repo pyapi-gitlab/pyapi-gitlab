@@ -50,33 +50,20 @@ class Gitlab(object):
         else:
             return False
 
-    def getusers(self, id_=0, page=1, per_page=20, sudo=""):
+    def getusers(self, page=1, per_page=20):
         """
         Return a user list
-        :param id_: the id of the user to get instead of getting all users,
-         return all users if 0
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
-        :parm sudo: Username to execute the request under,
-        defaults to the login user
         return: returs a dictionary of the users, false if there is an error
         """
         data = {'page': page, 'per_page': per_page}
-        if sudo != "":
-            data['sudo'] = sudo
-        if id_ != 0:
-            request = requests.get(self.host + "/api/v3/users/" + str(id_),
-                                   params=data, headers=self.headers)
-            user = json.loads(request.content)
-            return [user['id'], user['username'], user['name'], user['email'],
-                    user['state'], user['created_at']]
+        request = requests.get(self.users_url, params=data,
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content)
         else:
-            request = requests.get(self.users_url, params=data,
-                                   headers=self.headers)
-            if request.status_code == 200:
-                return json.loads(request.content)
-            else:
-                return False
+            return False
 
     def createuser(self, name,
                    username,
