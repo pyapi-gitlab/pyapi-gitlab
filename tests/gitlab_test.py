@@ -39,7 +39,7 @@ class UsersTest(unittest.TestCase):
 
 
 class SshTest(unittest.TestCase):
-    def testgetsshkeys(self):
+    def testsshkeys(self):
         git.addsshkey(title="test key", key=key)
         self.assertIs(type(git.getsshkeys()), list)
         self.assertIsNot(git.getsshkeys(), False)
@@ -47,8 +47,6 @@ class SshTest(unittest.TestCase):
         self.assertIs(type(git.getsshkey(id_=git.getsshkeys()[0]['id'])), dict)
         self.assertIsNot(git.getsshkey(id_=git.getsshkeys()[0]['id']), False)
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
-
-    def testaddremovekeys(self):
         self.assertTrue(git.addsshkey(title="test key", key=key))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
         # on the demo gitlab there is no way to add a key for another user if you are not an admin
