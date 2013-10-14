@@ -30,7 +30,7 @@ class UsersTest(unittest.TestCase):
         # get X pages
         assert isinstance(git.getusers(page=2), list)  # compatible with 2.6
         assert isinstance(git.getusers(per_page=4), list)  # compatible with 2.6
-        self.assertEqual(git.getusers(page=800), list(""))  # check against false
+        self.assertEqual(git.getusers(page=800), list(""))  # check against empty list
         self.assertTrue(git.getusers(per_page=43))  # check against false
 
     def testcurrentuser(self):
