@@ -1,3 +1,2 @@
 markdown
 requests
-pytest

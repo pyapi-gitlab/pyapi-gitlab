@@ -7,7 +7,6 @@ host = "http://demo.gitlabhq.com"
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD0WZg/LJenhWSm1toLLhMVplLd4tUthdEc7G2MafER91gLqZaGVfp2FcohDR9I7hU+9g52RtyoGzNbeLF1L7jVULe/OG1Ta8snxqpZ8Lgdgj2SYCsHjAebSozHzoxxz/TIBvZix4yMervMESLH1uBzkmdw1cT4LCFsrd+n/uhX6uMwjVggu1m+VPJfq2CE+mzbE/kUWua+h7F7Kf5+sNeTio26thUjxDx/10W3e119EeNO3JObi/dvmKGZ5IlSPfbnZ+Q0IKe6VwmHwRfc649MW9JZJJjgRISxUgN70g0TsfAF7+Yv8QketOSXfv0mwtixiUQXuf+TDGm6ilOufHhP network@base"
 git = gitlab.Gitlab(host=host, user=user)
 
-
 class GitlabTest(unittest.TestCase):
     def testlogin(self):
         """
@@ -53,5 +52,5 @@ class SshTest(unittest.TestCase):
         self.assertTrue(git.addsshkey(title="test key", key=key))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
         # on the demo gitlab there is no way to add a key for another user if you are not an admin
-        #self.assertTrue(git.addsshkeyuser(id_=git.currentuser()['id'], title="test key", key=key))
+        #self.assertTrue(git.addsshkeyuser(id_=git.currentuser()['id'], title="tests key", key=key))
         #self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
