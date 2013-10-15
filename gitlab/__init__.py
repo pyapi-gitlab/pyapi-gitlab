@@ -94,7 +94,7 @@ class Gitlab(object):
             data['sudo'] = sudo
         request = requests.post(self.users_url, headers=self.headers, data=data)
         if request.status_code == 201:
-            return True
+            return json.loads(request.content)
         elif request.status_code == 404:
             print(request)
             return False
@@ -350,9 +350,16 @@ class Gitlab(object):
                                 data=data)
         if request.status_code == 201:
             return json.loads(request.content)
+        elif request.status_code == 403:
+            if "Your own projects limit is 0" in request.content:
+                print(request.content)
+                return False
         else:
             print(request)
             return False
+
+    def deleteproject(self, id_):
+        request = requests.delete(self.projects_url + "/" + str(id_))
 
     def createprojectuser(self, id_, name, description="", default_branch="",
                           issues_enabled=0, wall_enabled=0,
