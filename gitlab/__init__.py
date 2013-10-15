@@ -358,9 +358,6 @@ class Gitlab(object):
             print(request)
             return False
 
-    def deleteproject(self, id_):
-        request = requests.delete(self.projects_url + "/" + str(id_))
-
     def createprojectuser(self, id_, name, description="", default_branch="",
                           issues_enabled=0, wall_enabled=0,
                           merge_requests_enabled=0, wiki_enabled=0,
