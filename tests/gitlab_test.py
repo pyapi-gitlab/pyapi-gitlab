@@ -52,7 +52,6 @@ class GitlabTest(unittest.TestCase):
         git.login(user=user, password=password)
         git.addsshkey(title="test key", key=key)
         assert isinstance(git.getsshkeys(), list)  # compatible with 2.6
-        self.assertTrue(git.getsshkeys())
         # pass the id of the first key
         assert isinstance(git.getsshkey(id_=git.getsshkeys()[0]['id']), dict)  # compatible with 2.6
         self.assertTrue(git.getsshkey(id_=git.getsshkeys()[0]['id']))
