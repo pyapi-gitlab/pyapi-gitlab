@@ -44,7 +44,7 @@ class Gitlab(object):
         data = {"email": user, "password": password}
         request = requests.post(self.host + "/api/v3/session", data=data)
         if request.status_code == 201:
-            self.token = json.loads(request.content)['private_token']
+            self.token = json.loads((request.content).decode("utf-8"))['private_token']
             self.headers = {"PRIVATE-TOKEN": self.token}
             return True
         else:
@@ -61,7 +61,7 @@ class Gitlab(object):
         request = requests.get(self.users_url, params=data,
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             return False
 
@@ -94,7 +94,7 @@ class Gitlab(object):
             data['sudo'] = sudo
         request = requests.post(self.users_url, headers=self.headers, data=data)
         if request.status_code == 201:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         elif request.status_code == 404:
             return False
 
@@ -122,7 +122,7 @@ class Gitlab(object):
         """
         request = requests.get(self.host + "/api/v3/user",
                                headers=self.headers)
-        return json.loads(request.content)
+        return json.loads((request.content).decode("utf-8"))
 
     def edituser(self, id_,
                  name="",
@@ -198,7 +198,7 @@ class Gitlab(object):
         """
         request = requests.get(self.keys_url, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -212,7 +212,7 @@ class Gitlab(object):
         request = requests.get(self.keys_url + "/" + str(id_),
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -283,7 +283,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url, params=data,
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -297,7 +297,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_),
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -315,7 +315,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) +
                                "/events", params=data, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -348,7 +348,7 @@ class Gitlab(object):
         request = requests.post(self.projects_url, headers=self.headers,
                                 data=data)
         if request.status_code == 201:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         elif request.status_code == 403:
             if "Your own projects limit is 0" in request.content:
                 print(request.content)
@@ -392,7 +392,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) + "/members",
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -477,7 +477,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) + "/hooks",
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -492,7 +492,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) + "/hooks/" +
                                str(hook_id), headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -559,7 +559,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) +
                                "/repository/branches", headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -575,7 +575,7 @@ class Gitlab(object):
                                "/repository/branches/" + str(branch),
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -659,7 +659,7 @@ class Gitlab(object):
         request = requests.get(self.host + "/api/v3/issues",
                                params=data, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -677,7 +677,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) +
                                "/issues", params=data, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -692,7 +692,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) +
                                "/issues/" + str(issue_id), headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -763,7 +763,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) +
                                "/milestones", headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -779,7 +779,7 @@ class Gitlab(object):
                                + "/milestones/"
                                + str(milestone_id), headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -843,7 +843,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) + "/keys",
                                headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -858,7 +858,7 @@ class Gitlab(object):
         request = requests.get(self.projects_url + "/" + str(id_) + "/keys/" +
                                str(key_id), headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -948,7 +948,7 @@ class Gitlab(object):
                                                 id_ if id_ else ""),
                                params=data, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -983,7 +983,7 @@ class Gitlab(object):
         request = requests.get(url_str, params=data, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
@@ -1001,7 +1001,7 @@ class Gitlab(object):
         request = requests.get(url_str, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content)
+            return json.loads((request.content).decode("utf-8"))
         else:
             
             return False
