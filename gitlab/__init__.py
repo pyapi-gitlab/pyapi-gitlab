@@ -423,7 +423,6 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            
             return False
 
     def editprojectmember(self, id_, user_id, access_level, sudo=""):

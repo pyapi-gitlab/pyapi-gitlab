@@ -84,9 +84,18 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(git.getprojectevents(git.getprojects()[0]['id']), list)
         assert isinstance(git.getprojectevents(git.getprojects()[0]['id'], page=3), list)
         assert isinstance(git.getprojectevents(git.getprojects()[0]['id'], per_page=4), list)
+        self.assertTrue(git.addprojectmember(id_=2, user_id=3, access_level="reporter", sudo=1))
         assert isinstance(git.listprojectmembers(id_=2), list)
-        self.assertTrue(git.addprojectmember(id_=2, user_id=3, access_level="reporter"))
+        self.assertTrue(git.editprojectmember(id_=2, user_id=3, access_level="master", sudo=2))
         self.assertTrue(git.deleteprojectmember(id_=2, user_id=3))
+        self.assertTrue(git.addprojecthook(id_=2, url="http://test.com"))
+        assert isinstance(git.getprojecthooks(id_=2), list)
+        assert isinstance(git.getprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id']), dict)
+        self.assertTrue(git.editprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id'], url="http://anothest.com"))
+        self.assertTrue(git.deleteprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id']))
+
+
+
 
     def test_branch(self):
         git.login(user=user, password=password)
