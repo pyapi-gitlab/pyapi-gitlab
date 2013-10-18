@@ -561,7 +561,6 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads((request.content).decode("utf-8"))
         else:
-            
             return False
 
     def listbranch(self, id_, branch):

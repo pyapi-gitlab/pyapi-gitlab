@@ -1,3 +1,13 @@
+"""
+pyapi-gitlab tests
+Covered:
+Ssh keys
+login
+user
+deploy keys
+some list cases
+"""
+
 import unittest
 import gitlab
 
@@ -74,3 +84,18 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(git.getprojectevents(git.getprojects()[0]['id']), list)
         assert isinstance(git.getprojectevents(git.getprojects()[0]['id'], page=3), list)
         assert isinstance(git.getprojectevents(git.getprojects()[0]['id'], per_page=4), list)
+        assert isinstance(git.listprojectmembers(id_=2), list)
+        self.assertTrue(git.addprojectmember(id_=2, user_id=3, access_level="reporter"))
+        self.assertTrue(git.deleteprojectmember(id_=2, user_id=3))
+
+    def test_branch(self):
+        git.login(user=user, password=password)
+        assert isinstance(git.listbranches(id_=2), list)
+        assert isinstance(git.listbranch(id_=2,branch="master"), dict)
+
+
+    def test_deploykeys(self):
+        git.login(user=user, password=password)
+        self.assertTrue(git.adddeploykey(id_=2, title="test", key=key))
+        assert isinstance(git.listdeploykey(id_=2, key_id=110), dict)
+        assert isinstance(git.listdeploykeys(id_=2), list)
