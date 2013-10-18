@@ -94,13 +94,12 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(git.editprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id'], url="http://anothest.com"))
         self.assertTrue(git.deleteprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id']))
 
-
-
-
     def test_branch(self):
         git.login(user=user, password=password)
         assert isinstance(git.listbranches(id_=2), list)
         assert isinstance(git.listbranch(id_=2,branch="master"), dict)
+        self.assertTrue(git.protectbranch(id_=2, branch="master"))
+        self.assertTrue(git.unprotectbranch(id_=2, branch="master"))
 
 
     def test_deploykeys(self):
