@@ -13,7 +13,7 @@ class Gitlab(object):
     """
     Gitlab class
     """
-    def __init__(self, host, user, token="", verify_ssl=False):
+    def __init__(self, host, user, token="", verify_ssl=True):
         """
         on init we setup the token used for all the api calls and all the urls
         :param host: host of gitlab
