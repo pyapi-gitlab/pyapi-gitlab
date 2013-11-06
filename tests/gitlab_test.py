@@ -67,20 +67,20 @@ class GitlabTest(unittest.TestCase):
         # this below doesn't really matter. Gilab always answers a 404
         #self.assertTrue(git.edituser(newuser['id'], twitter="tweeeeet", skype="Microsoft", username="Changed"))
         self.assertTrue(git.deleteuser(newuser['id']))
-    """
-    def test_sshkeys(self):
-        git.login(user=user, password=password)
-        git.addsshkey(title="testkey", key=key)
-        assert isinstance(git.getsshkeys(), list)  # compatible with 2.6
+
+#    def test_sshkeys(self):
+#        git.login(user=user, password=password)
+#        git.addsshkey(title="testkey", key=key)
+#        assert isinstance(git.getsshkeys(), list)  # compatible with 2.6
         # pass the id of the first key
-        assert isinstance(git.getsshkey(id_=git.getsshkeys()[0]['id']), dict)  # compatible with 2.6
-        self.assertTrue(git.getsshkey(id_=git.getsshkeys()[0]['id']))
-        self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
-        self.assertTrue(git.addsshkey(title="test key", key=key))
-        self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
-        self.assertTrue(git.addsshkeyuser(id_=git.currentuser()['id'], title="testkey", key=key))
-        self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
-    """
+#        assert isinstance(git.getsshkey(id_=git.getsshkeys()[0]['id']), dict)  # compatible with 2.6
+#        self.assertTrue(git.getsshkey(id_=git.getsshkeys()[0]['id']))
+#        self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
+#        self.assertTrue(git.addsshkey(title="test key", key=key))
+#        self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
+#        self.assertTrue(git.addsshkeyuser(id_=git.currentuser()['id'], title="testkey", key=key))
+#        self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
+
     def test_project(self):
         git.login(user=user, password=password)
         # we won't test the creation of the project as there is no way of deleting it trougth the api
