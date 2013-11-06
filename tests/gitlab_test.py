@@ -10,12 +10,20 @@ some list cases
 
 import unittest
 import gitlab
-from random import randint
+
 user = "pyapi-gitlab"
 password = "pyapi-gitlab"
 host = "http://gitlab.garciaperez.net/"
-key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD+lqMTzThs9DZWV5ys892UUoKM55xAEpNkan2Xp6Gj+p+1vqdFkRGfItJUAlxOeW+3kPD83AIJ/F+uxyAZ5ERd9cdyBFr2efMDbgxOJKj4VmyXpO2UOsvil1wP4+CEPxS95LgMqBAUOi7ypukQb3vr7R+MJ7G+vOpwZev8WbQ6aB9Hywu8GbUQk91pdkbvWOcJS783nI9TpZZm7m4ONeLwd2XVpY7yBD7v1tL96i1CQRYaN/RosjxZU2ncHA8DBC91BNsl9Gcztg6UGteuIClqfzvetwlB66KlL71ZHZPmmV pyapi-gitlab@local.host"
-print key
+key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
+      "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
+      "+lqMTzThs9DZWV5ys892UUoKM55xAEpNkan2Xp6Gj" \
+      "+p+1vqdFkRGfItJUAlxOeW+3kPD83AIJ/F+uxyAZ5E" \
+      "Rd9cdyBFr2efMDbgxOJKj4VmyXpO2UOsvil1wP4+CE" \
+      "PxS95LgMqBAUOi7ypukQb3vr7R+MJ7G+vOpwZev8Wb" \
+      "Q6aB9Hywu8GbUQk91pdkbvWOcJS783nI9TpZZm7m4O" \
+      "NeLwd2XVpY7yBD7v1tL96i1CQRYaN/RosjxZU2ncHA" \
+      "8DBC91BNsl9Gcztg6UGteuIClqfzvetwlB66KlL71Z" \
+      "HZPmmV pyapi-gitlab@local.host"
 
 git = gitlab.Gitlab(host=host, user=user)
 
@@ -59,7 +67,7 @@ class GitlabTest(unittest.TestCase):
         # this below doesn't really matter. Gilab always answers a 404
         #self.assertTrue(git.edituser(newuser['id'], twitter="tweeeeet", skype="Microsoft", username="Changed"))
         self.assertTrue(git.deleteuser(newuser['id']))
-"""
+    """
     def test_sshkeys(self):
         git.login(user=user, password=password)
         git.addsshkey(title="testkey", key=key)
@@ -72,7 +80,7 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
         self.assertTrue(git.addsshkeyuser(id_=git.currentuser()['id'], title="testkey", key=key))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
-"""
+    """
     def test_project(self):
         git.login(user=user, password=password)
         # we won't test the creation of the project as there is no way of deleting it trougth the api
@@ -93,13 +101,14 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(git.addprojecthook(id_=2, url="http://test.com"))
         assert isinstance(git.getprojecthooks(id_=2), list)
         assert isinstance(git.getprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id']), dict)
-        self.assertTrue(git.editprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id'], url="http://anothest.com"))
+        self.assertTrue(git.editprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id'],
+                                            url="http://anothest.com"))
         self.assertTrue(git.deleteprojecthook(id_=2, hook_id=git.getprojecthooks(id_=2)[0]['id']))
 
     def test_branch(self):
         git.login(user=user, password=password)
         assert isinstance(git.listbranches(id_=2), list)
-        assert isinstance(git.listbranch(id_=2,branch="master"), dict)
+        assert isinstance(git.listbranch(id_=2, branch="master"), dict)
         self.assertTrue(git.protectbranch(id_=2, branch="master"))
         self.assertTrue(git.unprotectbranch(id_=2, branch="master"))
 
