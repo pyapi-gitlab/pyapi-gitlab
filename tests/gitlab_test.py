@@ -14,7 +14,15 @@ import gitlab
 user = "pyapi-gitlab"
 password = "pyapi-gitlab"
 host = "http://gitlab.garciaperez.net/"
-key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD0WZg/LJenhWSm1toLLhMVplLd4tUthdEc7G2MafER91gLqZaGVfp2FcohDR9I7hU+9g52RtyoGzNbeLF1L7jVULe/OG1Ta8snxqpZ8Lgdgj2SYCsHjAebSozHzoxxz/TIBvZix4yMervMESLH1uBzkmdw1cT4LCFsrd+n/uhX6uMwjVggu1m+VPJfq2CE+mzbE/kUWua+h7F7Kf5+sNeTio26thUjxDx/10W3e119EeNO3JObi/dvmKGZ5IlSPfbnZ+Q0IKe6VwmHwRfc649MW9JZJJjgRISxUgN70g0TsfAF7+Yv8QketOSXfv0mwtixiUQXuf+TDGm6ilOufHhP network@base"
+key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDlH8WnTTdkK/dHA" \
+      "hxma4zlw0t8OHEqeAcLFPg4uYMGEZK8K/m0O4zj4mXU5iFgabQKWz" \
+      "ax8J42/7ht45kv/pajRH4kmuFag7tqcvVa2sshZ8SaVs1TbEiUJwU4" \
+      "hQsDG1WSIaZAEi45PSxIvFu1ev+TDjFHqyrWhQ8CQOIo1ECMJ6WFTd" \
+      "Ot/MfOPRT+2Wq0KCBz9a1EzZk0v0U9n2ee2mpiJPweOh8X0wkc/Wmst" \
+      "IQ4+rJYNI39wsvcwdztiOvQuAgI35L2EfSAkmUyel2+K1U0WP6bDDbyE" \
+      "+3Bexaw1sT6RgQaAI4qAyorWt2LN+/ah3gXCLqwzLsWU5TQlb6YEGkH" \
+      " itxaka@MacBook-Air-de-Itxaka.local"
+
 git = gitlab.Gitlab(host=host, user=user)
 
 
@@ -60,15 +68,15 @@ class GitlabTest(unittest.TestCase):
 
     def test_sshkeys(self):
         git.login(user=user, password=password)
-        git.addsshkey(title="test key", key=key)
-        #assert isinstance(git.getsshkeys(), list)  # compatible with 2.6
+        git.addsshkey(title="testkey", key=key)
+        assert isinstance(git.getsshkeys(), list)  # compatible with 2.6
         # pass the id of the first key
         assert isinstance(git.getsshkey(id_=git.getsshkeys()[0]['id']), dict)  # compatible with 2.6
         self.assertTrue(git.getsshkey(id_=git.getsshkeys()[0]['id']))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
         self.assertTrue(git.addsshkey(title="test key", key=key))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
-        self.assertTrue(git.addsshkeyuser(id_=git.currentuser()['id'], title="tests key", key=key))
+        self.assertTrue(git.addsshkeyuser(id_=git.currentuser()['id'], title="testkey", key=key))
         self.assertTrue(git.deletesshkey(id_=git.getsshkeys()[0]['id']))
 
     def test_project(self):
@@ -100,7 +108,6 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(git.listbranch(id_=2,branch="master"), dict)
         self.assertTrue(git.protectbranch(id_=2, branch="master"))
         self.assertTrue(git.unprotectbranch(id_=2, branch="master"))
-
 
     def test_deploykeys(self):
         git.login(user=user, password=password)
