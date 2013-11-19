@@ -25,7 +25,7 @@ key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "8DBC91BNsl9Gcztg6UGteuIClqfzvetwlB66KlL71Z" \
       "HZPmmV pyapi-gitlab@local.host"
 
-git = gitlab.Gitlab(host=host, user=user)
+git = gitlab.Gitlab(host=host)
 
 
 class GitlabTest(unittest.TestCase):

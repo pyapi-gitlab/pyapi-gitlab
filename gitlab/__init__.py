@@ -13,7 +13,7 @@ class Gitlab(object):
     """
     Gitlab class
     """
-    def __init__(self, host, user, token="", verify_ssl=True):
+    def __init__(self, host, token="", verify_ssl=True):
         """
         on init we setup the token used for all the api calls and all the urls
         :param host: host of gitlab
@@ -31,7 +31,6 @@ class Gitlab(object):
         self.users_url = self.host + "/api/v3/users"
         self.keys_url = self.host + "/api/v3/user/keys"
         self.groups_url = self.host + "/api/v3/groups"
-        self.user = user
         self.verify_ssl = verify_ssl
 
     def login(self, user, password):
@@ -41,7 +40,6 @@ class Gitlab(object):
         :param password: gitlab password
         :return: True if login successfull
         """
-        self.user = user
         data = {"email": user, "password": password}
         request = requests.post(self.host + "/api/v3/session", data=data, 
                                     verify=self.verify_ssl)
@@ -746,19 +744,27 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: true if success
         """
-        data = {"id": id, "issue_id": issue_id, "title": title,
-                "description": description, "assignee_id": assignee_id,
-                "milestone_id": milestone_id, "labels": labels,
-                "state_event": state_event}
+        data = {"id": id_, "issue_id": issue_id}
+        if title != "":
+            data['title'] = title
+        if description != "":
+            data['description'] = description
+        if assignee_id != "":
+            data['assignee_id'] = assignee_id
+        if milestone_id != "":
+            data['milestone_id'] = milestone_id
+        if labels != "":
+            data['labels'] = labels
+        if state_event != "":
+            data['state_event'] = state_event
         if sudo != "":
             data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
                                str(issue_id), headers=self.headers,
                                data=data)
-        if request.status_code == 201:
+        if request.status_code == 200:
             return True
         else:
-            
             return False
 
     def getmilestones(self, id_):
