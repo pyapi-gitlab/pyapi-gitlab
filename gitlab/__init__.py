@@ -744,19 +744,27 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: true if success
         """
-        data = {"id": id, "issue_id": issue_id, "title": title,
-                "description": description, "assignee_id": assignee_id,
-                "milestone_id": milestone_id, "labels": labels,
-                "state_event": state_event}
+        data = {"id": id_, "issue_id": issue_id}
+        if title != "":
+            data['title'] = title
+        if description != "":
+            data['description'] = description
+        if assignee_id != "":
+            data['assignee_id'] = assignee_id
+        if milestone_id != "":
+            data['milestone_id'] = milestone_id
+        if labels != "":
+            data['labels'] = labels
+        if state_event != "":
+            data['state_event'] = state_event
         if sudo != "":
             data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
                                str(issue_id), headers=self.headers,
                                data=data)
-        if request.status_code == 201:
+        if request.status_code == 200:
             return True
         else:
-            
             return False
 
     def getmilestones(self, id_):

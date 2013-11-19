@@ -300,7 +300,7 @@ Create an issue::
 
    git.createissue(1, "pedsdfdwsdne")
 
-Edit an issue, you can pass state_event="closed" to close it::
+Edit an issue, you can pass state_event="close" to close it::
 
    git.editissue(1,1, title="Changing title")
 
