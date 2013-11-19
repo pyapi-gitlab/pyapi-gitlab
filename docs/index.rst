@@ -44,7 +44,7 @@ You can also authenticate via the private_token that you can get from your gitla
 
 Just call the instance with the parameter token::
 
-    git = gitlab.Gitlab("our_gitlab_host", "user", token="mytoken")
+    git = gitlab.Gitlab("our_gitlab_host", token="mytoken")
 
 
 Using sudo on the functions
@@ -104,7 +104,32 @@ All you need to do is add a sudo="user" parameter when calling the function like
    git.createuser("name", "username", "password", "email", sudo="admin")
 
 
-If no user is specified, sudo will default to the current user, obtained when login into gitlab.
+Pagination
+===========
+
+The following functions now accept pagination:
+
+    getusers()
+
+    getprojects()
+
+    getprojectevents()
+
+    getissues()
+
+    getprojectissues()
+
+    getgroups()
+
+    getmergerequests()
+
+
+You can pass 2 parameters: page= and per_page= to them in order to get a especific page or change the results per page::
+
+    git.getissues(page=1, per_page=40)
+
+
+The default is to get page 1 and 20 results per page. The max value for per_page is 100.
 
 Users
 ==================
