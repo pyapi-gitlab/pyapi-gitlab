@@ -41,10 +41,12 @@ class Gitlab(object):
         """
         data = {"email": user, "password": password}
         request = requests.post(self.host + "/api/v3/session", data=data, 
-                                verify=self.verify_ssl)
+                                verify=self.verify_ssl,
+                                headers={"connection": "close"})
         if request.status_code == 201:
             self.token = json.loads(request.content.decode("utf-8"))['private_token']
-            self.headers = {"PRIVATE-TOKEN": self.token}
+            self.headers = {"PRIVATE-TOKEN": self.token,
+                            "connection": "close"}
             return True
         else:
             return False
