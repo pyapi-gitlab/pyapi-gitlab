@@ -1097,3 +1097,67 @@ class Gitlab(object):
         else:
             
             return False
+
+    def getsnippets(self, project_id):
+        """
+        Get all the snippets of the project identified by project_id
+        @param project_id: project id to get the snippets from
+        @return: list of dictionaries
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets",
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def getsnippet(self, project_id, snippet_id):
+        """
+        Get one snippet from a project
+        @param project_id: project id to get the snippet from
+        @param snippet_id: snippet id
+        @return: dictionary
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id),
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode('utf-8'))
+        else:
+            return False
+
+    def createsnippet(self, project_id, title, file_name, code, lifetime=""):
+        """
+        Creates an snippet
+        @param project_id: project id to create the snippet under
+        @param title: title of the snippet
+        @param file_name: filename for the snippet
+        @param code: content of the snippet
+        @param lifetime: expiration date
+        @return: True if correct, false if failed
+        """
+        data = {"id": project_id, "title": title, "file_name": file_name, "code": code}
+        if lifetime != "":
+            data["lifetime"] = lifetime
+        request = requests.post(self.projects_url + "/" + str(project_id) + "/snippets",
+                                data=data, headers=self.headers)
+        if request.status_code == 201:
+            return True
+        else:
+            return False
+
+    def getsnippetcontent(self, project_id, snippet_id):
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/snippets/" + str(snippet_id) + "/raw",
+                               headers=self.headers)
+        if request.status_code == 200:
+            return request.content
+        else:
+            return False
+
+    def deletesnippet(self, project_id, snippet_id):
+        request = requests.delete(self.projects_url + "/" + str(project_id) +
+                                  "/snippets/" + str(snippet_id), headers=self.headers)
+        if request.status_code == 200:
+            return True
+        else:
+            return False
