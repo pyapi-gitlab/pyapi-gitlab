@@ -10,9 +10,10 @@ some list cases
 
 import unittest
 import gitlab
+import os
 
-user = "pyapi-gitlab"
-password = "pyapi-gitlab"
+user = os.environ['gitlab_user']
+password = os.environ['gitlab_password']
 host = "http://gitlab.garciaperez.net/"
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
