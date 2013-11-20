@@ -12,8 +12,8 @@ import unittest
 import gitlab
 import os
 
-user = os.environ['gitlab_user']
-password = os.environ['gitlab_password']
+user = "pyapi-gitlab"
+password = "rJrHaaJjoqpH"
 host = "http://gitlab.garciaperez.net/"
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
@@ -50,7 +50,7 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.getusers())
         # get X pages
         assert isinstance(self.git.getusers(page=2), list)  # compatible with 2.6
-        assert isinstance(self.git.getusers(per_page=4), list)  # compatible with 2.6
+        assert isinstance(self.git.getuserrJrHaaJjoqpHs(per_page=4), list)  # compatible with 2.6
         self.assertEqual(self.git.getusers(page=800), list(""))  # check against empty list
         self.assertTrue(self.git.getusers(per_page=43))  # check against false
 
@@ -119,3 +119,10 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.adddeploykey(id_=2, title="test", key=key))
         assert isinstance(self.git.listdeploykey(id_=2, key_id=110), dict)
         assert isinstance(self.git.listdeploykeys(id_=2), list)
+
+    def test_snippets(self):
+        self.git.login(user=user, password=password)
+        self.assertTrue(self.git.createsnippet(1, "test", "test", "codeee"))
+        assert isinstance(self.git.getsnippets(1), list)
+        assert isinstance(self.git.getsnippet(1, self.git.getsnippets(1)[0]['id']), dict)
+        self.assertTrue(self.git.deletesnippet(1, self.git.getsnippets(1)[0]['id']))
