@@ -1,3 +1,7 @@
+env:
+  global:
+    - secure: "FzuwvQ3w3oL7HSBC9ykQXCdlgtI6jwHn7TPBItOw67nLRLkFzZP4TXgSjyWqqIPYVPCA+qSRwYZc0jo2AlEWb6RKiMC6E/DWt58QEEbv9elyV3aFZ0fce/q9Adk28CQlDjNEkbhRT0Si+ippPCNX6DgdgTtHQn5FJbanYMf3xC8="
+    - secure: "KYAtWIiR2BEu8srRoR036UfYV3EHfM9Aguu/zA32eNxrxxrTLqNwpAIbgFv4VKXsttdfU5IvZP5GVaimTrCGzvK8KhpNurfirxbB3ZgdndRhv+zmXzBH9PnU9dmmmAMybG1lnM/Tf36LsOnWKLAAqiOFP5gXSTcZDalzzc6hN24="
 language: python
 python:
   - "2.6"
