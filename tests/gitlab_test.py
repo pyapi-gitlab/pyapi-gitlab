@@ -50,7 +50,7 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.getusers())
         # get X pages
         assert isinstance(self.git.getusers(page=2), list)  # compatible with 2.6
-        assert isinstance(self.git.getuserrJrHaaJjoqpHs(per_page=4), list)  # compatible with 2.6
+        assert isinstance(self.git.getusers(per_page=4), list)  # compatible with 2.6
         self.assertEqual(self.git.getusers(page=800), list(""))  # check against empty list
         self.assertTrue(self.git.getusers(per_page=43))  # check against false
 
