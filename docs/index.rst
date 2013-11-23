@@ -376,3 +376,26 @@ Add a comment to a merge request::
 
     git.addcommenttomergerequest(projectID, mergeRequestID, note)
 
+Snippets
+==========
+
+Get all the snippets from a project::
+
+    git.getsnippets(project_id)
+
+Get one snippet from a project::
+
+    git.getsnippet(project_id, snippet_id)
+
+Create a new snippet::
+
+    git.createsnippet(project_id, title, file_name, code, lifetime="")
+
+Get a snippet content(raw content)::
+
+    git.getsnippetcontent(project_id, snippet_id)
+
+Delete a snippet::
+
+    git.deletesnippet(project_id, snippet_id)
+
