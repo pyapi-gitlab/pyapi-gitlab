@@ -12,8 +12,9 @@ import unittest
 import gitlab
 import os
 
-user = "pyapi-gitlab"
-password = "rJrHaaJjoqpH"
+
+user = os.environ['gitlab_user']
+password = os.environ['gitlab_password']
 host = "http://gitlab.garciaperez.net/"
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
@@ -126,3 +127,18 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getsnippets(1), list)
         assert isinstance(self.git.getsnippet(1, self.git.getsnippets(1)[0]['id']), dict)
         self.assertTrue(self.git.deletesnippet(1, self.git.getsnippets(1)[0]['id']))
+
+    def test_repositories(self):
+        self.git.login(user=user, password=password)
+        assert isinstance(self.git.getrepositories(2), list)
+        assert isinstance(self.git.getrepositorybranch(2, "master"), dict)
+        assert isinstance(self.git.protectrepositorybranch(2, "master"), dict)
+        assert isinstance(self.git.unprotectrepositorybranch(2, "master"), dict)
+        assert isinstance(self.git.listrepositorytags(2), list)
+        assert isinstance(self.git.listrepositorycommits(2), list)
+        assert isinstance(self.git.listrepositorycommit(2, self.git.listrepositorycommits(2)[0]['id']), dict)
+        assert isinstance(self.git.listrepositorycommitdiff(2, self.git.listrepositorycommits(2)[0]['id']), dict)
+        assert isinstance(self.git.listrepositorytree(2), list)
+        assert isinstance(self.git.listrepositorytree(2, path="docs"), list)
+        assert isinstance(self.git.listrepositorytree(2, ref_name="master"), list)
+        assert isinstance(self.git.getrawblob(2, self.git.listrepositorycommits(2)[0]['id'], "setup.py"), unicode)

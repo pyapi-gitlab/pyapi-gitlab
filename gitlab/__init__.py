@@ -1161,3 +1161,105 @@ class Gitlab(object):
             return True
         else:
             return False
+
+    def getrepositories(self, project_id):
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/repository/branches",
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def getrepositorybranch(self, project_id, branch):
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/branches/" + str(branch),
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        elif request.status_code == 404:
+            if json.loads(request.content.decode("utf-8"))['message'] == "404 Branch does not exist Not Found":
+                # In the future we should raise an exception here
+                return False
+        else:
+            return False
+
+    def protectrepositorybranch(self, project_id, branch_name):
+        request = requests.put(self.projects_url + "/" + str(project_id) +
+                               "/repository/branches/" + str(branch_name) + "/protect",
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def unprotectrepositorybranch(self, project_id, branch_name):
+        request = requests.put(self.projects_url + "/" + str(project_id) +
+                               "/repository/branches/" + str(branch_name) + "/unprotect",
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return
+
+    def listrepositorytags(self, project_id):
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/tags", headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def listrepositorycommits(self, project_id):
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/commits", headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def listrepositorycommit(self, project_id, sha1):
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/commits/" + str(sha1),
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def listrepositorycommitdiff(self, project_id, sha1):
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/commits/" + str(sha1) + "/diff",
+                               headers=self.headers)
+        if request.status_code == 200:
+            # it returns a list of dicts, which is nonsense as we are requesting
+            # just one diff, so we use the [0] to return only the first and only
+            # element
+            return json.loads(request.content.decode("utf-8"))[0]
+        else:
+            return False
+
+    def listrepositorytree(self, project_id, path="", ref_name=""):
+        data = {}
+        if path != "":
+            data['path'] = path
+        if ref_name != "":
+            data['ref_name'] = ref_name
+
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/tree/", data=data,
+                               headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def getrawblob(self, project_id, sha1, path):
+        data = {"filepath": path}
+
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/blobs/" + str(sha1),
+                               data=data, headers=self.headers)
+        if request.status_code == 200:
+            return request.content.decode("utf-8")
+        else:
+            return False
