@@ -399,3 +399,68 @@ Delete a snippet::
 
     git.deletesnippet(project_id, snippet_id)
 
+Repositories
+==============
+
+Caution: Gitlab has a mixed feeling of repositories/projects. For example, to get the commits for a project you call the listrepositorycommits part, same with the tags.
+Have that in mind when working with commits and such, as I believe it should be included into the projects part and it may chage to that in the future.
+
+
+Get all the repositories for a project::
+
+    git.getrepositories(project_id)
+
+Get a branch from a repository::
+
+    git.getrepositorybranch(project_id, branch_name)
+
+Protect a repository branch::
+
+    git.protectrepositorybranch(project_id, branch_name)
+
+Unprotect a repository branch::
+
+    git.unprotectrepositorybranch(project_id, branch_name)
+
+List the the project tags::
+
+    git.listrepositorytags(project_id)
+
+List the the project commits::
+
+    git.listrepositorycommits(project_id)
+
+List on commit from a project::
+
+    git.listrepositorycommit(project_id, sha1)
+
+
+List the complete diff, lines changed included::
+
+    git.listrepositorycommitdiff(project_id, sha1)
+
+List the project tree, files and dirs. Use the path to explore subdirs::
+
+    git.listrepositorytree(project_id, path="", ref_name="")
+
+Get the raw blob from a project file::
+
+    git.getrawblob(project_id, sha1, path)
+
+Examples
+=========
+
+Getting the SHA1 of the commit
+===============================
+To call this, you need to pass the actual hash of the commit. You can access the sha1 by doing this::
+
+    git.listrepositorycommits(project_id)
+
+This would return a list of dicts with all the commits for that project. You can extract the sha1 of the commit by
+accessing the commit you want and using the key 'id' like this::
+
+    git.listrepositorycommits(2)[0]['id']
+
+In turn the whole thing (that is, if you know which commit number you need) would turn like this::
+
+    git.listrepositorycommit(2, self.git.listrepositorycommits(2)[0]['id'])
