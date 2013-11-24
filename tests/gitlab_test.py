@@ -141,4 +141,4 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.listrepositorytree(2), list)
         assert isinstance(self.git.listrepositorytree(2, path="docs"), list)
         assert isinstance(self.git.listrepositorytree(2, ref_name="master"), list)
-        assert isinstance(self.git.getrawblob(2, self.git.listrepositorycommits(2)[0]['id'], "setup.py"), unicode)
+        assert isinstance(str(self.git.getrawblob(2, self.git.listrepositorycommits(2)[0]['id'], "setup.py")), str)
