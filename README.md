@@ -15,11 +15,26 @@ pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabh
 
 ## Installation
 
-pyapi-gitlab is now on Pypi! Install it with:
+pyapi-gitlab is now on Pypi!
 
+Depending on the gitlab version you are using (check it on your help section on gitlab) you will need a different version.
+
+Gitlab 5.4:
 ```bash
-pip install pyapi-gitlab
+pip install pyapi-gitlab==5.4-0
 ```
+
+Gitlab 6.0 or 6.1:
+```bash
+pip install pyapi-gitlab==6.1.6
+```
+
+Gitlab 6.2 (Not available yet):
+```bash
+pip install pyapi-gitlab==6.2.0
+```
+
+pyapi-gitlab supports python version 2.6, 2.7 and 3.3
 
 ## Examples/Documentation
 
