@@ -472,6 +472,9 @@ class Gitlab(object):
         if request.status_code == 200:
             return True  # It always returns true
 
+    # TODO: hooks are now system wide and under the /hooks url
+    # TODO: change all the hooks methods, not valid anymore
+    # TODO: write tests for the hooks
     def getprojecthooks(self, id_):
         """
         get all the hooks from a project
@@ -1263,3 +1266,67 @@ class Gitlab(object):
             return request.content.decode("utf-8")
         else:
             return False
+
+    def searchproject(self, projec_name):
+        """
+        projects section
+        """
+        pass
+
+    def getfilearchive(self, project_id, sha1, filepath):
+        """
+        repository section
+        """
+        pass
+
+    def deletegroup(self, group_id):
+        """
+        groups section, new in 6.2
+        """
+        pass
+
+    def listgroupmembers(self, id):
+        """
+        list group members
+        new in 6.2
+        """
+        pass
+
+    def addgroupmember(self, group_id, user_id, access_level):
+        """
+        add a user to a group
+        new in 6.2
+        """
+        pass
+
+    def removegroupmember(self, group_id, user_id):
+        """
+        remove a user from a group
+        new in 6.2
+        """
+        pass
+
+
+    # There is now a wall where you can post notes. All this below is new in 6.2
+    # there is also notes in issues, merge_requests and snippets so we need to
+    # create methods for all of them
+    def getprojectwallnotes(self, project_id):
+        """
+        get the notes from the wall of a project
+        new in 6.2
+        """
+        pass
+
+    def getprojectwallnote(self, project_id, note_id):
+        """
+        get one note from the wall of the project
+        """
+        pass
+
+    def createprojectwallnote(self, project_id, content):
+        """
+        create a new note
+        """
+        pass
+
+
