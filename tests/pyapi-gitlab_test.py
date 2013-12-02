@@ -15,6 +15,7 @@ import os
 
 user = os.environ['gitlab_user']
 password = os.environ['gitlab_password']
+host = "http://gitlab.garciaperez.net"
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
       "+lqMTzThs9DZWV5ys892UUoKM55xAEpNkan2Xp6Gj" \
