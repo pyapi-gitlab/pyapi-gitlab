@@ -15,7 +15,6 @@ import os
 
 user = os.environ['gitlab_user']
 password = os.environ['gitlab_password']
-host = "http://gitlab.garciaperez.net/"
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
       "+lqMTzThs9DZWV5ys892UUoKM55xAEpNkan2Xp6Gj" \
@@ -142,3 +141,7 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.listrepositorytree(2, path="docs"), list)
         assert isinstance(self.git.listrepositorytree(2, ref_name="master"), list)
         assert isinstance(str(self.git.getrawblob(2, self.git.listrepositorycommits(2)[0]['id'], "setup.py")), str)
+
+    def test_search(self):
+        self.git.login(user=user, password=password)
+        assert isinstance(self.git.searchproject("gitlab"), list)

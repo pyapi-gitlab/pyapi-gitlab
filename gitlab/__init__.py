@@ -26,10 +26,13 @@ class Gitlab(object):
             self.host = host[:-1]
         else:
             self.host = host
+        if host[7:] != 'http://':
+            self.host = 'http://' + host
         self.projects_url = self.host + "/api/v3/projects"
         self.users_url = self.host + "/api/v3/users"
         self.keys_url = self.host + "/api/v3/user/keys"
         self.groups_url = self.host + "/api/v3/groups"
+        self.search_url = self.host + "/api/v3/projects/search/"
         self.verify_ssl = verify_ssl
 
     def login(self, user, password):
@@ -1267,11 +1270,19 @@ class Gitlab(object):
         else:
             return False
 
-    def searchproject(self, projec_name):
+    def searchproject(self, search, page=1, per_page=20):
         """
         projects section
         """
-        pass
+        data = {'page': page, 'per_page': per_page}
+        request = requests.get(self.search_url + str(search), data=data,
+                               headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
 
     def getfilearchive(self, project_id, sha1, filepath):
         """
