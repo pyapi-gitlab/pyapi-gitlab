@@ -7,6 +7,7 @@ by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 import requests
 import json
 import markdown
+from . import exceptions
 
 
 class Gitlab(object):
@@ -52,7 +53,7 @@ class Gitlab(object):
                             "connection": "close"}
             return True
         else:
-            return False
+            raise exceptions.HttpError(json.loads(request.content)['message'])
 
     def getusers(self, page=1, per_page=20):
         """
@@ -1283,12 +1284,22 @@ class Gitlab(object):
         else:
             return False
 
-
-    def getfilearchive(self, project_id, sha1, filepath):
+    def getfilearchive(self, project_id, filepath="", sha1=""):
         """
         repository section
         """
-        pass
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/archive", headers=self.headers)
+        if request.status_code == 200:
+            if filepath == "":
+                filepath = request.headers['content-disposition'].split(";")[1].split("=")[1].strip('"')
+            with open(filepath, "wb") as filesave:
+                filesave.write(request.content)
+                # TODO: Catch oserror exceptions as no permissions and such
+                # TODO: change the filepath to a path and keep always the filename?
+            return True
+        else:
+            raise exceptions.HttpError(json.loads(request.content)['message'])
 
     def deletegroup(self, group_id):
         """

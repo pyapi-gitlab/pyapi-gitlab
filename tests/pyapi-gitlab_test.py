@@ -42,7 +42,7 @@ class GitlabTest(unittest.TestCase):
         """
         Test to see if login fails with no credentials
         """
-        self.assertFalse(self.git.login("", ""))
+        self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.login, user="caca", password="caca")
 
     def test_getusers(self):
         self.git.login(user=user, password=password)
@@ -146,3 +146,7 @@ class GitlabTest(unittest.TestCase):
     def test_search(self):
         self.git.login(user=user, password=password)
         assert isinstance(self.git.searchproject("gitlab"), list)
+
+    def test_filearchive(self):
+        self.git.login(user=user, password=password)
+        self.git.getfilearchive(1)
