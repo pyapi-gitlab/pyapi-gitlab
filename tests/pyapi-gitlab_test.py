@@ -15,6 +15,7 @@ import os
 
 user = os.environ['gitlab_user']
 password = os.environ['gitlab_password']
+
 host = "http://gitlab.garciaperez.net"
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
@@ -149,4 +150,7 @@ class GitlabTest(unittest.TestCase):
 
     def test_filearchive(self):
         self.git.login(user=user, password=password)
-        self.git.getfilearchive(1)
+        # test it works
+        self.assertTrue(self.git.getfilearchive(2))
+        # test for failure
+        self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.getfilearchive, 999999)

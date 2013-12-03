@@ -1282,7 +1282,7 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-            return False
+            raise exceptions.HttpError(json.loads(request.content)['message'])
 
     def getfilearchive(self, project_id, filepath="", sha1=""):
         """
