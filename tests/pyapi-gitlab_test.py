@@ -63,8 +63,8 @@ class GitlabTest(unittest.TestCase):
 
     def test_addremoveusers(self):
         self.git.login(user=user, password=password)
-        newuser = self.git.createuser("Test", "test", "123456",
-                                      "test@test.com", "skype",
+        newuser = self.git.createuser("dfgfegre", "erreret", "123456",
+                                      "retetert@6yhyhyth5.com", "skype",
                                       "linkedin", "twitter", "25",
                                       bio="bio")
         assert isinstance(newuser, dict)
