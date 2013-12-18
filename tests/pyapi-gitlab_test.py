@@ -154,3 +154,10 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.getfilearchive(2))
         # test for failure
         self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.getfilearchive, 999999)
+
+    def test_group(self):
+        self.git.login(user=user, password=password)
+        self.assertTrue(self.git.creategroup("test_group", "test"))
+        assert isinstance(self.git.getgroups(), list)
+        print self.git.getgroups()
+        #self.assertTrue(self.git.deletegroup(self.git.getgroups()[:-1]))
