@@ -1409,7 +1409,6 @@ class Gitlab(object):
     def getprojectwallnotes(self, project_id):
         """
         get the notes from the wall of a project
-        new in 6.2
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/notes",
                                   headers=self.headers)
@@ -1447,7 +1446,6 @@ class Gitlab(object):
     def getissuewallnotes(self, project_id, issue_id):
         """
         get the notes from the wall of a issue
-        new in 6.2
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/issues/" + str(issue_id) + "/notes",
                                   headers=self.headers)
@@ -1485,7 +1483,6 @@ class Gitlab(object):
     def getsnippetwallnotes(self, project_id, snippet_id):
         """
         get the notes from the wall of a snippet
-        new in 6.2
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id) + "/notes",
                                   headers=self.headers)
@@ -1523,7 +1520,6 @@ class Gitlab(object):
     def getmergerequestwallnotes(self, project_id, merge_request_id):
         """
         get the notes from the wall of a merge request
-        new in 6.2
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/merge_requests/" + str(merge_request_id) + "/notes",
                                   headers=self.headers)
