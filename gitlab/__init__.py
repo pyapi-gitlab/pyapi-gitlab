@@ -70,6 +70,19 @@ class Gitlab(object):
         else:
             return False
 
+    def getuser(self, id_):
+        """
+        Get info for a user identified by id
+        :param id_: id of the user
+        :return: False if not found, a dictionary if found
+        """
+        request = requests.get(self.users_url + "/" + str(id_),
+                               headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
     def createuser(self, name,
                    username,
                    password,
