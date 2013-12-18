@@ -1253,7 +1253,7 @@ class Gitlab(object):
             data['ref_name'] = ref_name
 
         request = requests.get(self.projects_url + "/" + str(project_id) +
-                               "/repository/tree/", data=data,
+                               "/repository/tree/", params=data,
                                headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1265,7 +1265,7 @@ class Gitlab(object):
 
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/repository/blobs/" + str(sha1),
-                               data=data, headers=self.headers)
+                               params=data, headers=self.headers)
         if request.status_code == 200:
             return request.content.decode("utf-8")
         else:
@@ -1276,7 +1276,7 @@ class Gitlab(object):
         projects section
         """
         data = {'page': page, 'per_page': per_page}
-        request = requests.get(self.search_url + str(search), data=data,
+        request = requests.get(self.search_url + str(search), params=data,
                                headers=self.headers)
 
         if request.status_code == 200:
