@@ -29,11 +29,13 @@ class Gitlab(object):
             self.host = host
         if self.host[:7] != 'http://':
             self.host = 'http://' + self.host
-        self.projects_url = self.host + "/api/v3/projects"
-        self.users_url = self.host + "/api/v3/users"
-        self.keys_url = self.host + "/api/v3/user/keys"
-        self.groups_url = self.host + "/api/v3/groups"
-        self.search_url = self.host + "/api/v3/projects/search/"
+
+        self.api_url = self.host + "/api/v3"
+        self.projects_url = self.api_url + "/projects"
+        self.users_url = self.api_url + "/users"
+        self.keys_url = self.api_url + "/user/keys"
+        self.groups_url = self.api_url + "/groups"
+        self.search_url = self.api_url + "/projects/search/"
         self.verify_ssl = verify_ssl
 
     def login(self, user, password):
@@ -378,6 +380,18 @@ class Gitlab(object):
         else:
             
             return False
+
+    def deleteproject(self, project_id):
+        """
+        Delete a project
+        :param id_: project id
+        :return: always true
+        """
+        request = requests.delete(self.projects_url + "/" + str(project_id),
+                                  headers=self.headers)
+        if request.status_code == 200:
+            return True
+
 
     def createprojectuser(self, id_, name, description="", default_branch="",
                           issues_enabled=0, wall_enabled=0,
@@ -1317,51 +1331,230 @@ class Gitlab(object):
     def deletegroup(self, group_id):
         """
         groups section, new in 6.2
-        """
-        pass
 
-    def listgroupmembers(self, id):
+        Deletes an group by ID
+        :param id_: id of the group to delete
+        :return: True if it deleted, False if it couldn't. False could happen
+        for several reasons, but there isn't a
+        good way of differentiating them
+        """
+        request = requests.delete(self.groups_url + "/" + str(group_id),
+                                  headers=self.headers)
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
+    def listgroupmembers(self, group_id):
         """
         list group members
         new in 6.2
-        """
-        pass
 
-    def addgroupmember(self, group_id, user_id, access_level):
+        lists the members of a given group id
+        :param group_id: the group id
+        :return: the group's members
+        """
+        request = requests.get(self.groups_url + "/" + str(group_id) + "/members",
+                               headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def addgroupmember(self, group_id, user_id, access_level, sudo=""):
         """
         add a user to a group
         new in 6.2
-        """
-        pass
 
-    def removegroupmember(self, group_id, user_id):
-        """
-        remove a user from a group
-        new in 6.2
-        """
-        pass
+        # check the access level and put into a number
 
+        adds a project member to a project
+        :param id_: project id
+        :param user_id: user id
+        :param access_level: access level, see gitlab help to know more
+        :param sudo: do the request with another user
+        :return: True if success
+        """
+        if access_level.lower() == "master":
+            access_level = 40
+        elif access_level.lower() == "developer":
+            access_level = 30
+        elif access_level.lower() == "reporter":
+            access_level = 20
+        else:
+            access_level = 10
+        data = {"id": group_id, "user_id": user_id, "access_level": access_level}
+        if sudo != "":
+            data['sudo'] = sudo
+        request = requests.post(self.groups_url + "/" + str(group_id) + "/members",
+                                headers=self.headers, data=data, verify=self.verify_ssl)
+        if request.status_code == 201:
+            return True
+        else:
+            return False
 
-    # There is now a wall where you can post notes. All this below is new in 6.2
-    # there is also notes in issues, merge_requests and snippets so we need to
-    # create methods for all of them
+    def deletegroupmember(self, group_id, user_id):
+        """
+        Delete a group member
+        :param id_: project id
+        :param user_id: user id
+        :return: always true
+        """
+        request = requests.delete(self.groups_url + "/" + str(group_id)
+                                  + "/members/" + str(user_id),
+                                  headers=self.headers)
+        if request.status_code == 200:
+            return True  # It always returns true
+
     def getprojectwallnotes(self, project_id):
         """
         get the notes from the wall of a project
         new in 6.2
         """
-        pass
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/notes",
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
 
     def getprojectwallnote(self, project_id, note_id):
         """
         get one note from the wall of the project
         """
-        pass
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/notes/" + str(note_id),
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
 
     def createprojectwallnote(self, project_id, content):
         """
         create a new note
         """
-        pass
+        data = {"body": content}
+        request = requests.post(self.projects_url + "/" + str(project_id) + "/notes",
+                                  headers=self.headers, data=data)
 
+        if request.status_code == 201:
+            return True
+        else:
+            return False
+
+    def getissuewallnotes(self, project_id, issue_id):
+        """
+        get the notes from the wall of a issue
+        new in 6.2
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/issues/" + str(issue_id) + "/notes",
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def getissuewallnote(self, project_id, issue_id, note_id):
+        """
+        get one note from the wall of the issue
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/issues/" + str(issue_id) + "/notes/" + str(note_id),
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def createissuewallnote(self, project_id, issue_id, content):
+        """
+        create a new note
+        """
+        data = {"body": content}
+        request = requests.post(self.projects_url + "/" + str(project_id) + "/issues/" + str(issue_id) + "/notes",
+                                  headers=self.headers, data=data)
+
+        if request.status_code == 201:
+            return True
+        else:
+            return False
+
+    def getsnippetwallnotes(self, project_id, snippet_id):
+        """
+        get the notes from the wall of a snippet
+        new in 6.2
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id) + "/notes",
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def getsnippetwallnote(self, project_id, snippet_id, note_id):
+        """
+        get one note from the wall of the snippet
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id) + "/notes/" + str(note_id),
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def createsnippetewallnote(self, project_id, snippet_id, content):
+        """
+        create a new note
+        """
+        data = {"body": content}
+        request = requests.post(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id) + "/notes",
+                                  headers=self.headers, data=data)
+
+        if request.status_code == 201:
+            return True
+        else:
+            return False
+
+    def getmergerequestwallnotes(self, project_id, merge_request_id):
+        """
+        get the notes from the wall of a merge request
+        new in 6.2
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/merge_requests/" + str(merge_request_id) + "/notes",
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def getmergerequestwallnote(self, project_id, merge_request_id, note_id):
+        """
+        get one note from the wall of the merge request
+        """
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/merge_requests/" + str(merge_request_id) + "/notes/" + str(note_id),
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def createmergerequestewallnote(self, project_id, merge_request_id, content):
+        """
+        create a new note
+        """
+        data = {"body": content}
+        request = requests.post(self.projects_url + "/" + str(project_id) + "/merge_requests/" + str(merge_request_id) + "/notes",
+                                  headers=self.headers, data=data)
+
+        if request.status_code == 201:
+            return True
+        else:
+            return False
 
