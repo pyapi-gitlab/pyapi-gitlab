@@ -6,9 +6,7 @@
 Welcome to pyapi-gitlab's documentation!
 =========================================
 
-
 pyapi-gitlab is a wrapper to access all the functions of Gitlab from our python scripts.
-
 
 
 How to use it
@@ -205,6 +203,10 @@ Please note that Gitlab 5 doesn't have this option and using it will probably en
                       merge_requests_enabled=0, wiki_enabled=0,
                       snippets_enabled=0, public=0)
 
+Delete a project::
+
+    git.deleteproject(project_id)
+
 List project members::
 
    git.listprojectmembers(project_id)
@@ -347,11 +349,28 @@ Groups
 
 Create a group::
 
-    def creategroup(self, name, path):
+    git.creategroup(self, name, path):
+
+Delete a group::
+
+    git.deletegroup(group_id)
 
 Get a group. If none are specified returns all the groups::
 
-    def getgroups(self, id_=None):
+    git.getgroups(self, id_=None):
+
+List group members::
+
+    git.listgroupmembers(group_id)
+
+Add a member to a group::
+
+    git.addgroupmember(group_id, user_id, access_level, sudo="")
+
+Delete a member from a group::
+
+    git.deletegroupmember(group_id, user_id)
+
 
 Merge support
 ==============
@@ -447,6 +466,58 @@ Get the raw blob from a project file::
 
     git.getrawblob(project_id, sha1, path)
 
+
+Notes (from projects, issues, snippets)
+=======================================
+Get a project wall notes::
+
+    git.getprojectwallnotes(project_id)
+
+Get one specific wall note from a project::
+
+    git.getprojectwallnote(project_id, note_id)
+
+Create a wall note for a project::
+
+    git.createprojectwallnote(project_id, content)
+
+Get all the notes from an issue wall::
+
+    git.getissuewallnotes(project_id, issued_id)
+
+Get one note from an issue wall::
+
+    git.getissuewallnote(project_id, issue_id, note_id)
+
+Create a note in the wall of an issue::
+
+    git.createissuewallnote(project_id, issue_id, content)
+
+
+Get all the notes from a snippet wall::
+
+    git.getsnippetwallnotes(project_id, snippet_id)
+
+Get one note from a snippet wall::
+
+    git.getsnippetwallnote(project_id, snippet_id, note_id)
+
+Create a note in the wall of a snippet::
+
+    git.createsnippetewallnote(project_id, snippet_id, content)
+
+Get all the notes from a merge request wall::
+
+    git.getmergerequestwallnotes(project_id, merge_request_id)
+
+Get one note from a merge request wall::
+
+    git.getmergerequestwallnote(project_id, merge_request_id, note_id)
+
+Creat a note in the wall of a merge request::
+
+    git.createmergerequestewallnote(project_id, merge_request_id, content)
+
 Examples
 =========
 
@@ -464,3 +535,4 @@ accessing the commit you want and using the key 'id' like this::
 In turn the whole thing (that is, if you know which commit number you need) would turn like this::
 
     git.listrepositorycommit(2, self.git.listrepositorycommits(2)[0]['id'])
+
