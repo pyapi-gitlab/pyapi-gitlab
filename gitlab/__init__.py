@@ -308,7 +308,24 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-            
+            return False
+
+    def getallprojects(self, page=1, per_page=20, sudo=""):
+        """
+        Returns a dictionary of all the projects for admins only
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
+        :return: list with the repo name, description, last activity,
+         web url, ssh url, owner and if its public
+        """
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
+        request = requests.get(self.projects_url + '/all', params=data,
+                               headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
             return False
 
     def getproject(self, id_):
@@ -344,7 +361,7 @@ class Gitlab(object):
             
             return False
 
-    def createproject(self, name, description="", default_branch="",
+    def createproject(self, name, description="",
                       issues_enabled=0, wall_enabled=0,
                       merge_requests_enabled=0, wiki_enabled=0,
                       snippets_enabled=0, public=0, sudo=""):
@@ -355,7 +372,6 @@ class Gitlab(object):
          False otherwise
         """
         data = {"name": name, "description": description,
-                "default_branch": default_branch,
                 "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
                 "merge_requests_enabled": merge_requests_enabled,
                 "wiki_enabled": wiki_enabled,
@@ -1555,3 +1571,91 @@ class Gitlab(object):
         else:
             return False
 
+    def createfile(self, project_id, file_path, branch_name, content, commit_message):
+        """
+        Creates a new file in the repository
+        :param project_id: project id
+        :param file_path: Full path to new file. Ex. lib/class.rb
+        :param branch_name: The name of branch
+        :param content: File content
+        :param commit_message: Commit message
+        :return: true if success, false if not
+        """
+        data = {"file_path": file_path, "branch_name": branch_name,
+                "content": content, "commit_message": commit_message}
+        request = requests.post(self.projects_url + "/" + str(project_id) + "/repository/files",
+                                  headers=self.headers, data=data)
+
+        if request.status_code == 201:
+            return True
+        else:
+            return False
+
+    def updatefile(self, project_id, file_path, branch_name, content, commit_message):
+        """
+        Updates an existing file in the repository
+        :param project_id: project id
+        :param file_path: Full path to new file. Ex. lib/class.rb
+        :param branch_name: The name of branch
+        :param content: File content
+        :param commit_message: Commit message
+        :return: true if success, false if not
+        """
+        data = {"file_path": file_path, "branch_name": branch_name,
+                "content": content, "commit_message": commit_message}
+        request = requests.put(self.projects_url + "/" + str(project_id) + "/repository/files",
+                                  headers=self.headers, data=data)
+
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
+    def deletefile(self, project_id, file_path, branch_name, commit_message):
+        """
+        Deletes existing file in the repository
+        :param project_id: project id
+        :param file_path: Full path to new file. Ex. lib/class.rb
+        :param branch_name: The name of branch
+        :param commit_message: Commit message
+        :return: true if success, false if not
+        """
+        data = {"file_path": file_path, "branch_name": branch_name,
+                "commit_message": commit_message}
+        request = requests.delete(self.projects_url + "/" + str(project_id) + "/repository/files",
+                                  headers=self.headers, data=data)
+
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
+    def setgitlabciservice(self, project_id, token, project_url):
+        """
+        Set GitLab CI service for project
+        :param project_id: project id
+        :param token: CI project token
+        :param project_url: CI project url
+        :return: true if success, false if not
+        """
+        data = {"token": token, "project_url": project_url}
+        request = requests.put(self.projects_url + "/" + str(project_id) + "/services/gitlab-ci",
+                                  headers=self.headers, data=data)
+
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
+    def deletegitlabciservice(self, project_id, token, project_url):
+        """
+        Delete GitLab CI service settings
+        :return: true if success, false if not
+        """
+        request = requests.delete(self.projects_url + "/" + str(project_id) + "/services/gitlab-ci",
+                                  headers=self.headers)
+
+        if request.status_code == 200:
+            return True
+        else:
+            return False
