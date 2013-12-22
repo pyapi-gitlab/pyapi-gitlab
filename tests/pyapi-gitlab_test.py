@@ -31,25 +31,35 @@ key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
 
 class GitlabTest(unittest.TestCase):
     def setUp(self):
+        # set up the connection
         self.git = gitlab.Gitlab(host=host)
 
-    def test_login(self):
-        """
-        Test to see if login works with proper credentials
-        """
-        self.assertTrue(self.git.login(user=user, password=password))
-
-    def test_badlogin(self):
-        """
-        Test to see if login fails with no credentials
-        """
+        # test the failure first
         self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.login, user="caca", password="caca")
 
+        # now test login and leave it set up for the rest of the tests
+        self.assertTrue(self.git.login(user, password))
+
+        # create a project to use on the testing
+        self.project = self.git.createproject("Pyapi-gitlab")
+        self.project_id = self.project['id']
+        assert isinstance(self.project, dict)
+
+        # create a user to use in the testing
+        self.user = self.git.createuser("caca", "test", "testpass", "test@test.com")
+        self.user_id = self.user['id']
+        assert isinstance(self.user, dict)
+
+    def tearDown(self):
+        # remove projects and users
+        self.assertTrue(self.git.deleteuser(self.user_id))
+        self.assertTrue(self.git.deleteproject(self.project_id))
+
     def test_getusers(self):
-        self.git.login(user=user, password=password)
         # get all users
         assert isinstance(self.git.getusers(), list)  # compatible with 2.6
         self.assertTrue(self.git.getusers())
+
         # get X pages
         assert isinstance(self.git.getusers(page=2), list)  # compatible with 2.6
         assert isinstance(self.git.getusers(per_page=4), list)  # compatible with 2.6
@@ -57,80 +67,59 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.getusers(per_page=43))  # check against false
 
     def test_currentuser(self):
-        self.git.login(user=user, password=password)
         assert isinstance(self.git.currentuser(), dict)  # compatible with 2.6
         self.assertTrue(self.git.currentuser())
 
-    def test_addremoveusers(self):
-        self.git.login(user=user, password=password)
-        newuser = self.git.createuser("dfgfegre", "erreret", "123456",
-                                      "retetert@6yhyhyth5.com", "skype",
-                                      "linkedin", "twitter", "25",
-                                      bio="bio")
-        assert isinstance(newuser, dict)
-        # this below doesn't really matter. Gilab always answers a 404
-        #self.assertTrue(self.git.edituser(newuser['id'], twitter="tweeeeet", skype="Microsoft", username="Changed"))
-        self.assertTrue(self.git.deleteuser(newuser['id']))
-
-#    def test_sshkeys(self):
-#        self.git.login(user=user, password=password)
-#        self.git.addsshkey(title="testkey", key=key)
-#        assert isinstance(self.git.getsshkeys(), list)  # compatible with 2.6
-        # pass the id of the first key
-#        assert isinstance(self.git.getsshkey(id_=self.git.getsshkeys()[0]['id']), dict)  # compatible with 2.6
-#        self.assertTrue(self.git.getsshkey(id_=self.git.getsshkeys()[0]['id']))
-#        self.assertTrue(self.git.deletesshkey(id_=self.git.getsshkeys()[0]['id']))
-#        self.assertTrue(self.git.addsshkey(title="test key", key=key))
-#        self.assertTrue(self.git.deletesshkey(id_=self.git.getsshkeys()[0]['id']))
-#        self.assertTrue(self.git.addsshkeyuser(id_=self.git.currentuser()['id'], title="testkey", key=key))
-#        self.assertTrue(self.git.deletesshkey(id_=self.git.getsshkeys()[0]['id']))
-
     def test_project(self):
-        self.git.login(user=user, password=password)
-        # we won't test the creation of the project as there is no way of deleting it trougth the api
-        # so we would end with a million test projects. Next Gitlab version allows to delete projects
-        #self.assertTrue(self.git.createproject("Test-pyapy-gitlab"))
+        # test project
         assert isinstance(self.git.getprojects(), list)
         assert isinstance(self.git.getprojects(page=5), list)
         assert isinstance(self.git.getprojects(per_page=7), list)
-        assert isinstance(self.git.getproject(self.git.getprojects()[0]['id']), dict)
+        assert isinstance(self.git.getproject(self.project_id), dict)
         self.assertFalse(self.git.getproject("wrong"))
-        assert isinstance(self.git.getprojectevents(self.git.getprojects()[0]['id']), list)
-        assert isinstance(self.git.getprojectevents(self.git.getprojects()[0]['id'], page=3), list)
-        assert isinstance(self.git.getprojectevents(self.git.getprojects()[0]['id'], per_page=4), list)
-        self.assertTrue(self.git.addprojectmember(id_=2, user_id=3, access_level="reporter", sudo=1))
-        assert isinstance(self.git.listprojectmembers(id_=2), list)
-        self.assertTrue(self.git.editprojectmember(id_=2, user_id=3, access_level="master", sudo=2))
-        self.assertTrue(self.git.deleteprojectmember(id_=2, user_id=3))
-        self.assertTrue(self.git.addprojecthook(id_=2, url="http://test.com"))
-        assert isinstance(self.git.getprojecthooks(id_=2), list)
-        assert isinstance(self.git.getprojecthook(id_=2, hook_id=self.git.getprojecthooks(id_=2)[0]['id']), dict)
-        self.assertTrue(self.git.editprojecthook(id_=2, hook_id=self.git.getprojecthooks(id_=2)[0]['id'],
-                                                 url="http://anothest.com"))
-        self.assertTrue(self.git.deleteprojecthook(id_=2, hook_id=self.git.getprojecthooks(id_=2)[0]['id']))
+
+        # test events
+        assert isinstance(self.git.getprojectevents(self.project_id), list)
+        assert isinstance(self.git.getprojectevents(self.project_id, page=3), list)
+        assert isinstance(self.git.getprojectevents(self.project_id, per_page=4), list)
+
+        # add-remove project members
+        self.assertTrue(self.git.addprojectmember(id_=self.project_id, user_id=1, access_level="reporter", sudo=1))
+        assert isinstance(self.git.listprojectmembers(id_=self.project_id), list)
+        self.assertTrue(self.git.editprojectmember(id_=self.project_id, user_id=1, access_level="master", sudo=2))
+        self.assertTrue(self.git.deleteprojectmember(id_=self.project_id, user_id=1))
+
+        # Hooks testing
+        self.assertTrue(self.git.addprojecthook(self.project_id, "http://web.com"))
+        assert isinstance(self.git.getprojecthooks(self.project_id), list)
+        assert isinstance(self.git.getprojecthook(self.project_id,
+                                                  self.git.getprojecthooks(self.project_id)[0]['id']), dict)
+        self.assertTrue(self.git.editprojecthook(self.project_id,
+                                                 self.git.getprojecthooks(self.project_id)[0]['id'], "http://another.com"))
+        self.assertTrue(self.git.deleteprojecthook(self.project_id,
+                                                   self.git.getprojecthooks(self.project_id)[0]['id']))
+
+        # Delete the created project
+        self.assertTrue(self.git.deleteproject(self.project_id))
 
     def test_branch(self):
-        self.git.login(user=user, password=password)
-        assert isinstance(self.git.listbranches(id_=2), list)
-        assert isinstance(self.git.listbranch(id_=2, branch="master"), dict)
-        self.assertTrue(self.git.protectbranch(id_=2, branch="master"))
-        self.assertTrue(self.git.unprotectbranch(id_=2, branch="master"))
+        assert isinstance(self.git.listbranches(id_=self.project_id), list)
+        assert isinstance(self.git.listbranch(id_=self.project_id, branch="master"), dict)
+        self.assertTrue(self.git.protectbranch(id_=self.project_id, branch="master"))
+        self.assertTrue(self.git.unprotectbranch(id_=self.project_id, branch="master"))
 
     def test_deploykeys(self):
-        self.git.login(user=user, password=password)
         self.assertTrue(self.git.adddeploykey(id_=2, title="test", key=key))
         assert isinstance(self.git.listdeploykey(id_=2, key_id=110), dict)
         assert isinstance(self.git.listdeploykeys(id_=2), list)
 
     def test_snippets(self):
-        self.git.login(user=user, password=password)
         self.assertTrue(self.git.createsnippet(1, "test", "test", "codeee"))
         assert isinstance(self.git.getsnippets(1), list)
         assert isinstance(self.git.getsnippet(1, self.git.getsnippets(1)[0]['id']), dict)
         self.assertTrue(self.git.deletesnippet(1, self.git.getsnippets(1)[0]['id']))
 
     def test_repositories(self):
-        self.git.login(user=user, password=password)
         assert isinstance(self.git.getrepositories(2), list)
         assert isinstance(self.git.getrepositorybranch(2, "master"), dict)
         assert isinstance(self.git.protectrepositorybranch(2, "master"), dict)
@@ -145,18 +134,15 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(str(self.git.getrawblob(2, self.git.listrepositorycommits(2)[0]['id'], "setup.py")), str)
 
     def test_search(self):
-        self.git.login(user=user, password=password)
         assert isinstance(self.git.searchproject("gitlab"), list)
 
     def test_filearchive(self):
-        self.git.login(user=user, password=password)
         # test it works
         self.assertTrue(self.git.getfilearchive(2))
         # test for failure
         self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.getfilearchive, 999999)
 
     def test_group(self):
-        self.git.login(user=user, password=password)
         self.assertTrue(self.git.creategroup("test_group", "test"))
         assert isinstance(self.git.getgroups(), list)
         print self.git.getgroups()
