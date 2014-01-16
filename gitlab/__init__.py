@@ -1362,16 +1362,19 @@ class Gitlab(object):
         else:
             return False
 
-    def listgroupmembers(self, group_id):
+    def listgroupmembers(self, group_id, page=1, per_page=20):
         """
         list group members
         new in 6.2
 
         lists the members of a given group id
         :param group_id: the group id
+        :param page: which page to return (default is 1)
+        :param per_page: number of items to return per page (default is 20)
         :return: the group's members
         """
-        request = requests.get(self.groups_url + "/" + str(group_id) + "/members",
+        data = {'page': page, 'per_page': per_page}
+        request = requests.get(self.groups_url + "/" + str(group_id) + "/members", params=data,
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
