@@ -42,7 +42,7 @@ You can also authenticate via the private_token that you can get from your gitla
 
 Just call the instance with the parameter token::
 
-    git = gitlab.Gitlab("our_gitlab_host", token="mytoken")
+    git = gitlab.Gitlab("our_gitlab_host", private_token="mytoken")
 
 
 Using sudo on the functions
