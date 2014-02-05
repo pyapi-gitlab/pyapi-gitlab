@@ -517,6 +517,23 @@ Get one note from a merge request wall::
 Creat a note in the wall of a merge request::
 
     git.createmergerequestewallnote(project_id, merge_request_id, content)
+    
+Files
+=====
+
+Version 6.2 added support for files.
+
+Create a new file in the repository::
+
+    git.createfile(project_id, file_path, branch_name, content, commit_message)
+    
+Update an existing file::
+
+    git.updatefile(project_id, file_path, branch_name, content, commit_message)
+    
+Deleting a file::
+
+    git.deletefile(project_id, file_path, branch_name, commit_message)
 
 Examples
 =========
