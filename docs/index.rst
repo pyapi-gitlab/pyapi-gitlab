@@ -385,7 +385,7 @@ Get information about a specific merge request::
 
 Create a new merge request::
 
-    git.reateMergeRequest(projectID, sourceBranch, targetBranch, title, assigneeID=None)
+    git.createmergerequest(projectID, sourceBranch, targetBranch, title, assigneeID=None)
 
 Update an existing merge request::
 
