@@ -991,8 +991,6 @@ class Gitlab(object):
         request = requests.post(self.groups_url,
                                 data={'name': name, 'path': path},
                                 headers=self.headers, verify=self.verify_ssl)
-        print request.status_code
-        print request.content
         if request.status_code == 201:
             return True
         else:
