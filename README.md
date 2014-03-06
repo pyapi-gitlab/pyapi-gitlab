@@ -29,9 +29,9 @@ Gitlab 6.0 or 6.1:
 pip install pyapi-gitlab==6.1.6
 ```
 
-Gitlab 6.2 (Not available yet):
+Gitlab 6.2:
 ```bash
-pip install pyapi-gitlab==6.2.0
+pip install pyapi-gitlab==6.2.1
 ```
 
 pyapi-gitlab supports python version 2.6, 2.7 and 3.3
