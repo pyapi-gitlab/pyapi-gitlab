@@ -27,8 +27,10 @@ class Gitlab(object):
             self.host = host[:-1]
         else:
             self.host = host
-        if self.host[:7] != 'http://':
-            self.host = 'http://' + self.host
+        if self.host[:7] == 'http://' or self.host[:8] == 'https://':
+            pass
+        else:
+            self.host = 'https://' + self.host
 
         self.api_url = self.host + "/api/v3"
         self.projects_url = self.api_url + "/projects"
