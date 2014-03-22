@@ -1156,7 +1156,7 @@ class Gitlab(object):
         @return: list of dictionaries
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets",
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1170,7 +1170,7 @@ class Gitlab(object):
         @return: dictionary
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id),
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode('utf-8'))
         else:
@@ -1190,7 +1190,7 @@ class Gitlab(object):
         if lifetime != "":
             data["lifetime"] = lifetime
         request = requests.post(self.projects_url + "/" + str(project_id) + "/snippets",
-                                data=data, headers=self.headers)
+                                data=data, verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 201:
             return True
         else:
@@ -1199,7 +1199,7 @@ class Gitlab(object):
     def getsnippetcontent(self, project_id, snippet_id):
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/snippets/" + str(snippet_id) + "/raw",
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             return request.content
         else:
@@ -1215,7 +1215,7 @@ class Gitlab(object):
 
     def getrepositories(self, project_id):
         request = requests.get(self.projects_url + "/" + str(project_id) + "/repository/branches",
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1224,7 +1224,7 @@ class Gitlab(object):
     def getrepositorybranch(self, project_id, branch):
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/repository/branches/" + str(branch),
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         elif request.status_code == 404:
@@ -1254,7 +1254,8 @@ class Gitlab(object):
 
     def listrepositorytags(self, project_id):
         request = requests.get(self.projects_url + "/" + str(project_id) +
-                               "/repository/tags", headers=self.headers)
+                               "/repository/tags", verify=self.verify_ssl,
+                               headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1262,7 +1263,8 @@ class Gitlab(object):
 
     def listrepositorycommits(self, project_id):
         request = requests.get(self.projects_url + "/" + str(project_id) +
-                               "/repository/commits", headers=self.headers)
+                               "/repository/commits", verify=self.verify_ssl,
+                               headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1271,7 +1273,7 @@ class Gitlab(object):
     def listrepositorycommit(self, project_id, sha1):
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/repository/commits/" + str(sha1),
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1280,7 +1282,7 @@ class Gitlab(object):
     def listrepositorycommitdiff(self, project_id, sha1):
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/repository/commits/" + str(sha1) + "/diff",
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             # it returns a list of dicts, which is nonsense as we are requesting
             # just one diff, so we use the [0] to return only the first and only
@@ -1298,7 +1300,7 @@ class Gitlab(object):
 
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/repository/tree/", params=data,
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1309,7 +1311,8 @@ class Gitlab(object):
 
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/repository/blobs/" + str(sha1),
-                               params=data, headers=self.headers)
+                               params=data, verify=self.verify_ssl,
+                               headers=self.headers)
         if request.status_code == 200:
             return request.content.decode("utf-8")
         else:
@@ -1321,7 +1324,7 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get(self.search_url + str(search), params=data,
-                               headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1333,7 +1336,8 @@ class Gitlab(object):
         repository section
         """
         request = requests.get(self.projects_url + "/" + str(project_id) +
-                               "/repository/archive", headers=self.headers)
+                               "/repository/archive", verify=self.verify_ssl,
+                               headers=self.headers)
         if request.status_code == 200:
             if filepath == "":
                 filepath = request.headers['content-disposition'].split(";")[1].split("=")[1].strip('"')
@@ -1431,7 +1435,7 @@ class Gitlab(object):
         get the notes from the wall of a project
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/notes",
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1443,7 +1447,7 @@ class Gitlab(object):
         get one note from the wall of the project
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/notes/" + str(note_id),
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1456,7 +1460,7 @@ class Gitlab(object):
         """
         data = {"body": content}
         request = requests.post(self.projects_url + "/" + str(project_id) + "/notes",
-                                  headers=self.headers, data=data)
+                                verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
             return True
@@ -1468,7 +1472,7 @@ class Gitlab(object):
         get the notes from the wall of a issue
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/issues/" + str(issue_id) + "/notes",
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1480,7 +1484,7 @@ class Gitlab(object):
         get one note from the wall of the issue
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/issues/" + str(issue_id) + "/notes/" + str(note_id),
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1493,7 +1497,7 @@ class Gitlab(object):
         """
         data = {"body": content}
         request = requests.post(self.projects_url + "/" + str(project_id) + "/issues/" + str(issue_id) + "/notes",
-                                  headers=self.headers, data=data)
+                                verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
             return True
@@ -1505,7 +1509,7 @@ class Gitlab(object):
         get the notes from the wall of a snippet
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id) + "/notes",
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1517,7 +1521,7 @@ class Gitlab(object):
         get one note from the wall of the snippet
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id) + "/notes/" + str(note_id),
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1530,7 +1534,7 @@ class Gitlab(object):
         """
         data = {"body": content}
         request = requests.post(self.projects_url + "/" + str(project_id) + "/snippets/" + str(snippet_id) + "/notes",
-                                  headers=self.headers, data=data)
+                                verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
             return True
@@ -1542,7 +1546,7 @@ class Gitlab(object):
         get the notes from the wall of a merge request
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/merge_requests/" + str(merge_request_id) + "/notes",
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1554,7 +1558,7 @@ class Gitlab(object):
         get one note from the wall of the merge request
         """
         request = requests.get(self.projects_url + "/" + str(project_id) + "/merge_requests/" + str(merge_request_id) + "/notes/" + str(note_id),
-                                  headers=self.headers)
+                               verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -1567,7 +1571,7 @@ class Gitlab(object):
         """
         data = {"body": content}
         request = requests.post(self.projects_url + "/" + str(project_id) + "/merge_requests/" + str(merge_request_id) + "/notes",
-                                  headers=self.headers, data=data)
+                                verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
             return True
@@ -1587,7 +1591,7 @@ class Gitlab(object):
         data = {"file_path": file_path, "branch_name": branch_name,
                 "content": content, "commit_message": commit_message}
         request = requests.post(self.projects_url + "/" + str(project_id) + "/repository/files",
-                                  headers=self.headers, data=data)
+                                verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
             return True
@@ -1607,7 +1611,7 @@ class Gitlab(object):
         data = {"file_path": file_path, "branch_name": branch_name,
                 "content": content, "commit_message": commit_message}
         request = requests.put(self.projects_url + "/" + str(project_id) + "/repository/files",
-                                  headers=self.headers, data=data)
+                               headers=self.headers, data=data)
 
         if request.status_code == 200:
             return True
@@ -1643,7 +1647,7 @@ class Gitlab(object):
         """
         data = {"token": token, "project_url": project_url}
         request = requests.put(self.projects_url + "/" + str(project_id) + "/services/gitlab-ci",
-                                  headers=self.headers, data=data)
+                               verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 200:
             return True
