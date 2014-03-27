@@ -812,7 +812,7 @@ class Gitlab(object):
             data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
                                str(issue_id), headers=self.headers,
-                               data=data)
+                               data=data, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
