@@ -392,8 +392,8 @@ class Gitlab(object):
         if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
         elif request.status_code == 403:
-            if "Your own projects limit is 0" in request.content:
-                print(request.content)
+            if "Your own projects limit is 0" in request.text:
+                print(request.text)
                 return False
         else:
             
