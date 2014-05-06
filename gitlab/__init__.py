@@ -406,7 +406,7 @@ class Gitlab(object):
         :return: always true
         """
         request = requests.delete(self.projects_url + "/" + str(project_id),
-                                  headers=self.headers)
+                                  headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
 
