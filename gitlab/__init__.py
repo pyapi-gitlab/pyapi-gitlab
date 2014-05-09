@@ -363,7 +363,7 @@ class Gitlab(object):
             
             return False
 
-    def createproject(self, name, description="",
+    def createproject(self, name, namespace_id, description="",
                       issues_enabled=0, wall_enabled=0,
                       merge_requests_enabled=0, wiki_enabled=0,
                       snippets_enabled=0, public=0, sudo=""):
@@ -373,7 +373,7 @@ class Gitlab(object):
         :return: Dict of information on the newly created project if successful,
          False otherwise
         """
-        data = {"name": name, "description": description,
+        data = {"name": name, "namespace_id": namespace_id, "description": description,
                 "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
                 "merge_requests_enabled": merge_requests_enabled,
                 "wiki_enabled": wiki_enabled,
@@ -406,7 +406,7 @@ class Gitlab(object):
         :return: always true
         """
         request = requests.delete(self.projects_url + "/" + str(project_id),
-                                  headers=self.headers)
+                                  headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
 
