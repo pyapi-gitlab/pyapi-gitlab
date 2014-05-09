@@ -145,5 +145,5 @@ class GitlabTest(unittest.TestCase):
     def test_group(self):
         self.assertTrue(self.git.creategroup("test_group", "test"))
         assert isinstance(self.git.getgroups(), list)
-        print self.git.getgroups()
+        print(self.git.getgroups())
         #self.assertTrue(self.git.deletegroup(self.git.getgroups()[:-1]))
