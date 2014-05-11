@@ -57,7 +57,8 @@ class Gitlab(object):
                             "connection": "close"}
             return True
         else:
-            raise exceptions.HttpError(json.loads(request.content)['message'])
+            msg = json.loads(request.content.decode("utf-8"))['message']
+            raise exceptions.HttpError(msg)
 
     def getusers(self, page=1, per_page=20):
         """
@@ -288,8 +289,7 @@ class Gitlab(object):
         """
         request = requests.delete(self.keys_url + "/" + str(id_),
                                   headers=self.headers)
-        if request.content == "null":
-            
+        if request.content == b"null":            
             return False
         else:
             return True
@@ -973,16 +973,16 @@ class Gitlab(object):
         """
         request = requests.get(repo + "/raw/master/README.md?private_token=" +
                                self.token, verify=self.verify_ssl)  # setting the headers doesn't work
-        if "<!DOCTYPE html>" in request.content:  # having HTML means a 404
+        if b"<!DOCTYPE html>" in request.content:  # having HTML means a 404
             if mark:
                 return "<p>There isn't a README.md for that project</p>"
             else:
                 return "There isn't a README.md for that project"
         else:
             if mark:
-                return markdown.markdown(request.content)
+                return markdown.markdown(request.content.decode('utf-8'))
             else:
-                return request.content
+                return request.content.decode('utf-8')
 
     def creategroup(self, name, path):
         """
@@ -996,7 +996,8 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            return exceptions.HttpError(json.loads(request.content)['message'])
+            msg = json.loads(request.content.decode("utf-8"))['message']
+            return exceptions.HttpError(msg)
 
     def getgroups(self, id_=None, page=1, per_page=20, sudo=""):
         """
@@ -1201,7 +1202,7 @@ class Gitlab(object):
                                "/snippets/" + str(snippet_id) + "/raw",
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
-            return request.content
+            return request.content.decode("utf-8")
         else:
             return False
 
@@ -1329,7 +1330,8 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-            raise exceptions.HttpError(json.loads(request.content)['message'])
+            msg = json.loads(request.content.decode("utf-8"))['message']
+            raise exceptions.HttpError(msg)
 
     def getfilearchive(self, project_id, filepath="", sha1=""):
         """
@@ -1347,7 +1349,8 @@ class Gitlab(object):
                 # TODO: change the filepath to a path and keep always the filename?
             return True
         else:
-            raise exceptions.HttpError(json.loads(request.content)['message'])
+            msg = json.loads(request.content.decode("utf-8"))['message']
+            raise exceptions.HttpError(msg)
 
     def deletegroup(self, group_id):
         """
