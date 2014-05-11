@@ -330,6 +330,24 @@ class Gitlab(object):
         else:
             return False
 
+    def getownprojects(self, page=1, per_page=20, sudo=""):
+        """
+        Returns a dictionary of all the projects for the current user
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
+        :return: list with the repo name, description, last activity,
+         web url, ssh url, owner and if its public
+        """
+        data = {'page': page, 'per_page': per_page}
+        if sudo != "":
+            data['sudo'] = sudo
+        request = requests.get(self.projects_url + '/owned', params=data,
+                               headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
     def getproject(self, id_):
         """
         Get info for a project identified by id
