@@ -1285,10 +1285,7 @@ class Gitlab(object):
                                "/repository/commits/" + str(sha1) + "/diff",
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
-            # it returns a list of dicts, which is nonsense as we are requesting
-            # just one diff, so we use the [0] to return only the first and only
-            # element
-            return json.loads(request.content.decode("utf-8"))[0]
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
