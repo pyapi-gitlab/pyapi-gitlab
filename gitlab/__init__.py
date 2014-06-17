@@ -134,7 +134,7 @@ class Gitlab(object):
         good way of differenting them
         """
         request = requests.delete(self.users_url + "/" + str(id_),
-                                  headers=self.headers)
+                                  headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -209,7 +209,8 @@ class Gitlab(object):
         if sudo != "":
             data['sudo'] = sudo
         request = requests.put(self.users_url + "/" + str(id_),
-                               headers=self.headers, data=data)
+                               headers=self.headers, data=data,
+                               verify=self.verify_ssl)
         if request.status_code == 404:
             return True
         # There is a problem here and that is that the api always return 404,
@@ -291,7 +292,7 @@ class Gitlab(object):
         :return: False if it didn't delete it, True if it was deleted
         """
         request = requests.delete(self.keys_url + "/" + str(id_),
-                                  headers=self.headers)
+                                  headers=self.headers, verify=self.verify_ssl)
         if request.content == b"null":            
             return False
         else:
@@ -522,7 +523,8 @@ class Gitlab(object):
         if sudo != "":
             data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/members/"
-                               + str(user_id), headers=self.headers, data=data)
+                               + str(user_id), headers=self.headers, data=data,
+                               verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -538,7 +540,8 @@ class Gitlab(object):
         """
         request = requests.delete(self.projects_url + "/" + str(id_)
                                   + "/members/" + str(user_id),
-                                  headers=self.headers)
+                                  headers=self.headers,
+                                  verify=self.verify_ssl)
         if request.status_code == 200:
             return True  # It always returns true
 
@@ -604,7 +607,7 @@ class Gitlab(object):
             data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/hooks/" +
                                str(hook_id), headers=self.headers,
-                               data=data)
+                               data=data, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -620,7 +623,8 @@ class Gitlab(object):
         """
         request = requests.delete(self.projects_url + "/" + str(id_)
                                   + "/hooks/"
-                                  + str(hook_id), headers=self.headers)
+                                  + str(hook_id), headers=self.headers,
+                                  verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -666,7 +670,8 @@ class Gitlab(object):
         """
         request = requests.put(self.projects_url + "/" + str(id_) +
                                "/repository/branches/" + str(branch) +
-                               "/protect", headers=self.headers)
+                               "/protect", headers=self.headers,
+                               verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -682,7 +687,8 @@ class Gitlab(object):
         """
         request = requests.put(self.projects_url + "/" + str(id_) +
                                "/repository/branches/" + str(branch) +
-                               "/unprotect", headers=self.headers)
+                               "/unprotect", headers=self.headers,
+                               verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -715,7 +721,8 @@ class Gitlab(object):
         :return: true if success
         """
         request = requests.delete(self.projects_url + "/" + str(id_) +
-                                  "/fork", headers=self.headers)
+                                  "/fork", headers=self.headers,
+                                  verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -913,7 +920,7 @@ class Gitlab(object):
         request = requests.put(self.projects_url + "/" + str(id_)
                                + "/milestones/"
                                + str(milestone_id), headers=self.headers,
-                               data=data)
+                               data=data, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -978,7 +985,8 @@ class Gitlab(object):
         :return: true if success, false if not
         """
         request = requests.delete(self.projects_url + "/" + str(id_) + "/keys/"
-                                  + str(key_id), headers=self.headers)
+                                  + str(key_id), headers=self.headers,
+                                  verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -1229,7 +1237,7 @@ class Gitlab(object):
 
     def deletesnippet(self, project_id, snippet_id):
         request = requests.delete(self.projects_url + "/" + str(project_id) +
-                                  "/snippets/" + str(snippet_id), headers=self.headers)
+                                  "/snippets/" + str(snippet_id), headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -1259,7 +1267,7 @@ class Gitlab(object):
     def protectrepositorybranch(self, project_id, branch_name):
         request = requests.put(self.projects_url + "/" + str(project_id) +
                                "/repository/branches/" + str(branch_name) + "/protect",
-                               headers=self.headers)
+                               headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1268,7 +1276,7 @@ class Gitlab(object):
     def unprotectrepositorybranch(self, project_id, branch_name):
         request = requests.put(self.projects_url + "/" + str(project_id) +
                                "/repository/branches/" + str(branch_name) + "/unprotect",
-                               headers=self.headers)
+                               headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -1381,7 +1389,7 @@ class Gitlab(object):
         good way of differentiating them
         """
         request = requests.delete(self.groups_url + "/" + str(group_id),
-                                  headers=self.headers)
+                                  headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
@@ -1447,7 +1455,7 @@ class Gitlab(object):
         """
         request = requests.delete(self.groups_url + "/" + str(group_id)
                                   + "/members/" + str(user_id),
-                                  headers=self.headers)
+                                  headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True  # It always returns true
 
@@ -1632,7 +1640,7 @@ class Gitlab(object):
         data = {"file_path": file_path, "branch_name": branch_name,
                 "content": content, "commit_message": commit_message}
         request = requests.put(self.projects_url + "/" + str(project_id) + "/repository/files",
-                               headers=self.headers, data=data)
+                               headers=self.headers, data=data, verify=self.verify_ssl)
 
         if request.status_code == 200:
             return True
@@ -1651,7 +1659,8 @@ class Gitlab(object):
         data = {"file_path": file_path, "branch_name": branch_name,
                 "commit_message": commit_message}
         request = requests.delete(self.projects_url + "/" + str(project_id) + "/repository/files",
-                                  headers=self.headers, data=data)
+                                  headers=self.headers, data=data,
+                                  verify=self.verify_ssl)
 
         if request.status_code == 200:
             return True
@@ -1681,7 +1690,7 @@ class Gitlab(object):
         :return: true if success, false if not
         """
         request = requests.delete(self.projects_url + "/" + str(project_id) + "/services/gitlab-ci",
-                                  headers=self.headers)
+                                  headers=self.headers, verify=self.verify_ssl)
 
         if request.status_code == 200:
             return True
