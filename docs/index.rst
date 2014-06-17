@@ -148,7 +148,7 @@ Edit user details::
 
 Get all the users::
 
-   print git.getusers()
+   print git.getusers(search=None)
 
 Get the current user::
 

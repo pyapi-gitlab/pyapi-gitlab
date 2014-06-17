@@ -60,14 +60,17 @@ class Gitlab(object):
             msg = json.loads(request.content.decode("utf-8"))['message']
             raise exceptions.HttpError(msg)
 
-    def getusers(self, page=1, per_page=20):
+    def getusers(self, search=None, page=1, per_page=20):
         """
         Return a user list
+        :param search: Optional search query
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
         return: returs a dictionary of the users, false if there is an error
         """
         data = {'page': page, 'per_page': per_page}
+        if search:
+            data['search'] = search
         request = requests.get(self.users_url, params=data,
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
