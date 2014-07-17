@@ -1123,7 +1123,7 @@ class Gitlab(object):
         request = requests.post(url_str, data=data, headers=self.headers, 
                                 verify=self.verify_ssl)
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             
             return False
