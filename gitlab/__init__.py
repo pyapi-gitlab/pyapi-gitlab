@@ -1363,6 +1363,26 @@ class Gitlab(object):
         else:
             return False
 
+    def compare_branches_tags_commits(self, project_id, from_id, to_id):
+        """
+        Compare branches, tags or commits
+        :param project_id: The ID of a project
+        :param from_id: the commit sha or branch name
+        :param to_id: the commit sha or branch name
+        return commit list and diff between two branches tags or commits provided by name
+        hash value
+        """
+        data = {"from":from_id, "to":to_id}
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/compare/",
+                               params=data, verify=self.verify_ssl,
+                               headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
     def searchproject(self, search, page=1, per_page=20):
         """
         projects section
