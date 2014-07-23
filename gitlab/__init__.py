@@ -802,9 +802,8 @@ class Gitlab(object):
         request = requests.post(self.projects_url + "/" + str(id_) + "/issues",
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
-            
             return False
 
     def editissue(self, id_, issue_id, title="", description="",
