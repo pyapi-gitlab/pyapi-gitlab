@@ -126,6 +126,8 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.unprotectrepositorybranch(2, "master"), dict)
         assert isinstance(self.git.listrepositorytags(2), list)
         assert isinstance(self.git.listrepositorycommits(2), list)
+        assert isinstance(self.git.listrepositorycommits(2, page=1), list)
+        assert isinstance(self.git.listrepositorycommits(2, per_page=7), list)
         assert isinstance(self.git.listrepositorycommit(2, self.git.listrepositorycommits(2)[0]['id']), dict)
         assert isinstance(self.git.listrepositorycommitdiff(2, self.git.listrepositorycommits(2)[0]['id']), dict)
         assert isinstance(self.git.listrepositorytree(2), list)
