@@ -383,6 +383,10 @@ Get information about a specific merge request::
 
     git.getmergerequest(projectID, mergeRequestID)
 
+Get comments of a merge request::
+
+    git.getmergerequestcomments(projectID, mergeRequestID, page=1, per_page=20):
+
 Create a new merge request::
 
     git.createmergerequest(projectID, sourceBranch, targetBranch, title, assigneeID=None)
