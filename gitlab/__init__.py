@@ -1102,7 +1102,7 @@ class Gitlab(object):
             
             return False
 
-    def getmergerequestcomments(self, project_id, mergerequest_id):
+    def getmergerequestcomments(self, project_id, mergerequest_id, page=1, per_page=20):
         """
         Get comments of a merge request.
         :type project_id: int
@@ -1112,7 +1112,8 @@ class Gitlab(object):
         url_str = '{0}/{1}/merge_request/{2}/comments'.format(self.projects_url,
                                                      project_id,
                                                      mergerequest_id)
-        request = requests.get(url_str, headers=self.headers, verify=self.verify_ssl)
+        data = {'page': page, 'per_page': per_page}
+        request = requests.get(url_str, params=data, headers=self.headers, verify=self.verify_ssl)
 
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
