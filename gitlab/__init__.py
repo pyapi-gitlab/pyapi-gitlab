@@ -1436,8 +1436,10 @@ class Gitlab(object):
                 access_level = 30
             elif access_level.lower() == "reporter":
                 access_level = 20
-            else:
+            elif access_level.lower() == "guest":
                 access_level = 10
+            else:
+                return False
 
         data = {"id": group_id, "user_id": user_id, "access_level": access_level}
         if sudo != "":
