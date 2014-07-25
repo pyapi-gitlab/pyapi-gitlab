@@ -1427,7 +1427,9 @@ class Gitlab(object):
         :param sudo: do the request with another user
         :return: True if success
         """
-        if access_level.lower() == "master":
+        if access_level.lower() == "owner":
+            access_level = 50
+        elif access_level.lower() == "master":
             access_level = 40
         elif access_level.lower() == "developer":
             access_level = 30
