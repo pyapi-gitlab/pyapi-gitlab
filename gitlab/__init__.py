@@ -1309,10 +1309,12 @@ class Gitlab(object):
         else:
             return False
 
-    def listrepositorycommits(self, project_id):
+    def listrepositorycommits(self, project_id,  page=1, per_page=20):
+        
+        data = {'page': page, 'per_page': per_page}
         request = requests.get(self.projects_url + "/" + str(project_id) +
                                "/repository/commits", verify=self.verify_ssl,
-                               headers=self.headers)
+                               params=data, headers=self.headers)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
