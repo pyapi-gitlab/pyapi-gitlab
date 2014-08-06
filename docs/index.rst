@@ -383,6 +383,10 @@ Get information about a specific merge request::
 
     git.getmergerequest(projectID, mergeRequestID)
 
+Get comments of a merge request::
+
+    git.getmergerequestcomments(projectID, mergeRequestID, page=1, per_page=20):
+
 Create a new merge request::
 
     git.createmergerequest(projectID, sourceBranch, targetBranch, title, assigneeID=None)
@@ -466,6 +470,9 @@ Get the raw blob from a project file::
 
     git.getrawblob(project_id, sha1, path)
 
+Compare branches, tags or commits::
+
+    git.compare_branches_tags_commits(project_id, from_id, to_id)
 
 Notes (from projects, issues, snippets)
 =======================================

@@ -1101,6 +1101,25 @@ class Gitlab(object):
             
             return False
 
+    def getmergerequestcomments(self, project_id, mergerequest_id, page=1, per_page=20):
+        """
+        Get comments of a merge request.
+        :type project_id: int
+        :param project_id: ID of the project
+        :param mergerequest_id: ID of the merge request
+        """
+        url_str = '{0}/{1}/merge_request/{2}/comments'.format(self.projects_url,
+                                                     project_id,
+                                                     mergerequest_id)
+        data = {'page': page, 'per_page': per_page}
+        request = requests.get(url_str, params=data, headers=self.headers, verify=self.verify_ssl)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+
+            return False
+
     def createmergerequest(self, project_id, sourcebranch, targetbranch,
                            title, assignee_id=None, sudo=""):
         """
@@ -1341,6 +1360,26 @@ class Gitlab(object):
                                headers=self.headers)
         if request.status_code == 200:
             return request.content.decode("utf-8")
+        else:
+            return False
+
+    def compare_branches_tags_commits(self, project_id, from_id, to_id):
+        """
+        Compare branches, tags or commits
+        :param project_id: The ID of a project
+        :param from_id: the commit sha or branch name
+        :param to_id: the commit sha or branch name
+        return commit list and diff between two branches tags or commits provided by name
+        hash value
+        """
+        data = {"from":from_id, "to":to_id}
+        request = requests.get(self.projects_url + "/" + str(project_id) +
+                               "/repository/compare/",
+                               params=data, verify=self.verify_ssl,
+                               headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
