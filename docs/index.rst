@@ -121,6 +121,8 @@ The following functions now accept pagination:
 
     getmergerequests()
 
+    listprojectmembers()
+
 
 You can pass 2 parameters: page= and per_page= to them in order to get a especific page or change the results per page::
 
