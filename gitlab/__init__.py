@@ -459,14 +459,21 @@ class Gitlab(object):
             
             return False
 
-    def listprojectmembers(self, id_):
+    def listprojectmembers(self, id_, query=None, page=1, per_page=20):
         """
         lists the members of a given project id
         :param id_: the project id
-        :return: the projects memebers
+        :param query: Optional search query
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
+        :return: the projects memebers, false if there is an error
         """
+        data = {'page': page, 'per_page': per_page}
+        if query:
+            data['query'] = query
         request = requests.get(self.projects_url + "/" + str(id_) + "/members",
-                               headers=self.headers, verify=self.verify_ssl)
+                               params=data, headers=self.headers,
+                               verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
