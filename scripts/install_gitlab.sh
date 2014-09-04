@@ -18,4 +18,5 @@ sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers
 sudo -u git -H git config --global user.name "GitLab"
 sudo -u git -H git config --global user.email "example@example.com"
 sudo -u git -H git config --global core.autocrlf input
-sudo -u git cp config/database.yml.mysql config/database.yml
+sudo -u git cat config/database.yml | sed "s/password: \".*\"/password: "git"/" > config/database.yml
+
