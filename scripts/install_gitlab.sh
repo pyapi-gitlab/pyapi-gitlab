@@ -3,8 +3,7 @@
 cd /home/git
 sudo -u git -H git clone --depth=1 https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-2-stable gitlab
 cd /home/git/gitlab
-# port: 80
-sudo -u git -H sh -c "cat config/gitlab.yml.example | sed 's/port: 80/port 8080/g' > config/gitlab.yml"
+sudo -u git -H sh -c "cat config/gitlab.yml.example | sed 's/port: 80/port: 8080/g' > config/gitlab.yml"
 sudo chown -R git log/
 sudo chown -R git tmp/
 sudo chmod -R u+rwX log/
