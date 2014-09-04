@@ -18,5 +18,11 @@ sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers
 sudo -u git -H git config --global user.name "GitLab"
 sudo -u git -H git config --global user.email "example@example.com"
 sudo -u git -H git config --global core.autocrlf input
-sudo -u git -H cat config/database.yml | sed "s/password: \".*\"/password: "git"/" > config/database.yml
+sudo -u git -H sh -c "cat config/database.yml.mysql | sed 's/password: \".*\"/password: "git"/g' > config/database.yml"
+sudo -u git -H chmod o-rwx config/database.yml
+bundle -v
+sudo -u git -H bundle install --deployment --without development test postgres aws
+# install gitlab shell
+sudo -u git -H bundle exec rake gitlab:shell:install[v1.9.7] REDIS_URL=redis://localhost:6379 RAILS_ENV=production
+
 
