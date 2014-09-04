@@ -40,14 +40,20 @@ class Gitlab(object):
         self.search_url = self.api_url + "/projects/search/"
         self.verify_ssl = verify_ssl
 
-    def login(self, user, password):
+    def login(self, user=None, password=None, email=None):
         """
         Logs the user in and setups the header with the private token
         :param user: gitlab user
         :param password: gitlab password
         :return: True if login successfull
         """
-        data = {"email": user, "password": password}
+        if user != None:
+            data = {"login": user, "password": password}
+        elif email != None:
+            data = {"email": email, "password": password}
+        else:
+            raise Exception('Neither username nor email provided to login')
+
         request = requests.post(self.host + "/api/v3/session", data=data, 
                                 verify=self.verify_ssl,
                                 headers={"connection": "close"})
