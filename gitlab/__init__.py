@@ -316,6 +316,31 @@ class Gitlab(object):
         else:
             return False
 
+    def getallprojectsuser(self, per_request=20, sudo=""):
+        """
+        Returns a list of dictionaries of all the projects visable for that user
+        :param per_request: Number of items to return per api request (default is 20)
+        :return: list with the repo name, description, last activity,
+         web url, ssh url, owner and if its public
+        """
+        data = {'page': 1, 'per_page': per_request}
+        if sudo != "":
+            data['sudo'] = sudo
+        request = requests.get(self.projects_url, params=data,
+                                   headers=self.headers, verify=self.verify_ssl)
+        while True:
+            if request.status_code == 200:
+                list = json.loads(request.content.decode("utf-8"))
+
+                for item in list:
+                    yield item
+            if 'next' in request.links.keys():
+                request = requests.get(request.links['next']['url'],
+                                   headers=self.headers, verify=self.verify_ssl)
+            else:
+                break
+
+
     def getallprojects(self, page=1, per_page=20, sudo=""):
         """
         Returns a dictionary of all the projects for admins only
