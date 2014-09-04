@@ -10,7 +10,7 @@ python:
   - "3.3"
 # install local gitlab
 before_install:
-  - scripts/prepare_test_ev.sh
+  - scripts/prepare_test_env.sh
 # command to install dependencies
 install:
   - pip install -r requirements.txt
