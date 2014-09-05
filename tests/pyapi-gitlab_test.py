@@ -35,7 +35,7 @@ class GitlabTest(unittest.TestCase):
         self.git = gitlab.Gitlab(host=host)
 
         # test the failure first
-        self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.login, user="caca", password="caca")
+        self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.login(user="caca", password="caca"))
 
         # now test login and leave it set up for the rest of the tests
         self.assertTrue(self.git.login(user=user, password=password))
