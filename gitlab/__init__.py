@@ -416,7 +416,7 @@ class Gitlab(object):
             
             return False
 
-    def createproject(self, name, namespace_id, description="",
+    def createproject(self, name, namespace_id=None, description="",
                       issues_enabled=0, wall_enabled=0,
                       merge_requests_enabled=0, wiki_enabled=0,
                       snippets_enabled=0, public=0, sudo=""):
@@ -426,11 +426,13 @@ class Gitlab(object):
         :return: Dict of information on the newly created project if successful,
          False otherwise
         """
-        data = {"name": name, "namespace_id": namespace_id, "description": description,
-                "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
-                "merge_requests_enabled": merge_requests_enabled,
-                "wiki_enabled": wiki_enabled,
-                "snippets_enabled": snippets_enabled}
+        data = {"name": name } #, "description": description,
+                # "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
+                # "merge_requests_enabled": merge_requests_enabled,
+                # "wiki_enabled": wiki_enabled,
+                # "snippets_enabled": snippets_enabled}
+        if namespace_id != None:
+            data['namespace_id'] = namespace_id
         if sudo != "":
             data['sudo'] = sudo
 
@@ -696,7 +698,6 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-            
             return False
 
     def protectbranch(self, id_, branch):
