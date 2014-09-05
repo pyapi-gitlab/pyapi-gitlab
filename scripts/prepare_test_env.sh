@@ -5,7 +5,7 @@ sudo apt-get install -y build-essential zlib1g-dev libyaml-dev libssl-dev libgdb
 sudo apt-get install -y git-core
 git --version
 # install ruby
-sudo apt-get remove -y ruby1.8
+sudo apt-get remove -y ruby1.8 libruby1.8
 mkdir /tmp/ruby && cd /tmp/ruby
 curl -L --progress ftp://ftp.ruby-lang.org/pub/ruby/2.1/ruby-2.1.2.tar.gz | tar xz
 cd ruby-2.1.2
