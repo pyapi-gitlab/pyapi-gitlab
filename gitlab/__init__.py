@@ -40,7 +40,7 @@ class Gitlab(object):
         self.search_url = self.api_url + "/projects/search/"
         self.verify_ssl = verify_ssl
 
-    def login(self, user=None, password=None, email=None):
+    def login(self, email=None, password=None, user=None,):
         """
         Logs the user in and setups the header with the private token
         :param user: gitlab user

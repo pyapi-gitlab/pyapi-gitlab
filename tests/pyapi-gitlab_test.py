@@ -38,7 +38,7 @@ class GitlabTest(unittest.TestCase):
         self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.login, user="caca", password="caca")
 
         # now test login and leave it set up for the rest of the tests
-        self.assertTrue(self.git.login(user, password))
+        self.assertTrue(self.git.login(user=user, password=password))
 
         # create a project to use on the testing
         self.project = self.git.createproject("Pyapi-gitlab")
