@@ -29,6 +29,6 @@ sudo cp lib/support/init.d/gitlab /etc/init.d/gitlab
 sudo update-rc.d gitlab defaults 21
 sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
 sudo -u git -H bundle exec rake assets:precompile RAILS_ENV=production
-sudo service gitlab start
+sudo service gitlab restart
 sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=production
 
