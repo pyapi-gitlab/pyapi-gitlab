@@ -17,8 +17,6 @@ user = os.environ['gitlab_user']
 password = os.environ['gitlab_password']
 host = os.environ['gitlab_host']
 
-print "Using user: " + user + " pw: " + password + " at: " + host
-
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
       "+lqMTzThs9DZWV5ys892UUoKM55xAEpNkan2Xp6Gj" \
