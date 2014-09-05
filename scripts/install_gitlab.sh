@@ -24,7 +24,7 @@ bundle -v
 sudo -u git -H bundle install --deployment --without development test postgres aws
 # install gitlab shell
 sudo -u git -H bundle exec rake gitlab:shell:install[v1.9.7] REDIS_URL=redis://localhost:6379 RAILS_ENV=production
-echo "yes" | sudo -u git -H bundle exec rake gitlab:setup RAILS_ENV=production
+echo "yes" | sudo -u git -H bundle --retry 10 exec rake gitlab:setup RAILS_ENV=production
 sudo cp lib/support/init.d/gitlab /etc/init.d/gitlab
 sudo update-rc.d gitlab defaults 21
 sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=production
