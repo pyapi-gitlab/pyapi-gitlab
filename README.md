@@ -6,7 +6,8 @@ pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabh
 [![PyPI version](https://badge.fury.io/py/pyapi-gitlab.png)](http://badge.fury.io/py/pyapi-gitlab)
 [![Coverage Status](https://coveralls.io/repos/Itxaka/pyapi-gitlab/badge.png?branch=develop)](https://coveralls.io/r/Itxaka/pyapi-gitlab?branch=develop)
 [![PyPi downloads](https://pypip.in/d/pyapi-gitlab/badge.png)](https://crate.io/packages/pyapi-gitlab/)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Itxaka/pyapi-gitlab/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![License](http://img.shields.io/pypi/l/pyapi-gitlab.svg)](http://www.gnu.org/copyleft/gpl.html)
+
 
 
 
