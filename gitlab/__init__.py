@@ -40,14 +40,20 @@ class Gitlab(object):
         self.search_url = self.api_url + "/projects/search/"
         self.verify_ssl = verify_ssl
 
-    def login(self, user, password):
+    def login(self, email=None, password=None, user=None,):
         """
         Logs the user in and setups the header with the private token
         :param user: gitlab user
         :param password: gitlab password
         :return: True if login successfull
         """
-        data = {"email": user, "password": password}
+        if user != None:
+            data = {"login": user, "password": password}
+        elif email != None:
+            data = {"email": email, "password": password}
+        else:
+            raise Exception('Neither username nor email provided to login')
+
         request = requests.post(self.host + "/api/v3/session", data=data, 
                                 verify=self.verify_ssl,
                                 headers={"connection": "close"})
@@ -316,6 +322,31 @@ class Gitlab(object):
         else:
             return False
 
+    def getallprojectsuser(self, per_request=20, sudo=""):
+        """
+        Returns a list of dictionaries of all the projects visable for that user
+        :param per_request: Number of items to return per api request (default is 20)
+        :return: list with the repo name, description, last activity,
+         web url, ssh url, owner and if its public
+        """
+        data = {'page': 1, 'per_page': per_request}
+        if sudo != "":
+            data['sudo'] = sudo
+        request = requests.get(self.projects_url, params=data,
+                                   headers=self.headers, verify=self.verify_ssl)
+        while True:
+            if request.status_code == 200:
+                list = json.loads(request.content.decode("utf-8"))
+
+                for item in list:
+                    yield item
+            if 'next' in request.links.keys():
+                request = requests.get(request.links['next']['url'],
+                                   headers=self.headers, verify=self.verify_ssl)
+            else:
+                break
+
+
     def getallprojects(self, page=1, per_page=20, sudo=""):
         """
         Returns a dictionary of all the projects for admins only
@@ -385,7 +416,7 @@ class Gitlab(object):
             
             return False
 
-    def createproject(self, name, namespace_id, description="",
+    def createproject(self, name, namespace_id=None, description="",
                       issues_enabled=0, wall_enabled=0,
                       merge_requests_enabled=0, wiki_enabled=0,
                       snippets_enabled=0, public=0, sudo=""):
@@ -395,11 +426,13 @@ class Gitlab(object):
         :return: Dict of information on the newly created project if successful,
          False otherwise
         """
-        data = {"name": name, "namespace_id": namespace_id, "description": description,
-                "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
-                "merge_requests_enabled": merge_requests_enabled,
-                "wiki_enabled": wiki_enabled,
-                "snippets_enabled": snippets_enabled}
+        data = {"name": name } #, "description": description,
+                # "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
+                # "merge_requests_enabled": merge_requests_enabled,
+                # "wiki_enabled": wiki_enabled,
+                # "snippets_enabled": snippets_enabled}
+        if namespace_id != None:
+            data['namespace_id'] = namespace_id
         if sudo != "":
             data['sudo'] = sudo
 
@@ -665,7 +698,6 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-            
             return False
 
     def protectbranch(self, id_, branch):
