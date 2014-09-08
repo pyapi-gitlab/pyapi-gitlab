@@ -1102,14 +1102,15 @@ class Gitlab(object):
             
             return False
 
-    def getmergerequests(self, project_id, page=1, per_page=20, sudo=""):
+    def getmergerequests(self, project_id, page=1, per_page=20, state=None sudo=""):
         """
         Get all the merge requests for a project.
         :param project_id: ID of the project to retrieve merge requests for
         :param page: If pagination is set, which page to return
+        :param state: Passes merge request state to filter them by it
         :param per_page: Number of merge requests to return per page
         """
-        data = {'page': page, 'per_page': per_page}
+        data = {'page': page, 'per_page': per_page, 'state': state}
         if sudo != "":
             data['sudo'] = sudo
         url_str = '{0}/{1}/merge_requests'.format(self.projects_url, project_id)
