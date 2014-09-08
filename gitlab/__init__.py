@@ -1102,7 +1102,7 @@ class Gitlab(object):
             
             return False
 
-    def getmergerequests(self, project_id, page=1, per_page=20, state=None sudo=""):
+    def getmergerequests(self, project_id, page=1, per_page=20, state=None, sudo=""):
         """
         Get all the merge requests for a project.
         :param project_id: ID of the project to retrieve merge requests for
