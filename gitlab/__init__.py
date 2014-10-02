@@ -8,7 +8,7 @@ import requests
 import json
 try:
     import markdown
-except Exception, e:
+except Exception as e:
     # unable to import markdown
     pass
 from . import exceptions
@@ -1053,7 +1053,7 @@ class Gitlab(object):
             if mark:
 		try: 
                     return markdown.markdown(request.content.decode('utf-8'))
-		except Exception, e:
+		except Exception as e:
 		    return request.content.decode('utf-8')		  
             else:
                 return request.content.decode('utf-8')
