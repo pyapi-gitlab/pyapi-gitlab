@@ -6,7 +6,11 @@ by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 
 import requests
 import json
-import markdown
+try:
+    import markdown
+except Exception, e:
+    # unable to import markdown
+    pass
 from . import exceptions
 
 
@@ -1047,7 +1051,10 @@ class Gitlab(object):
                 return "There isn't a README.md for that project"
         else:
             if mark:
-                return markdown.markdown(request.content.decode('utf-8'))
+		try: 
+                    return markdown.markdown(request.content.decode('utf-8'))
+		except Exception, e:
+		    return request.content.decode('utf-8')		  
             else:
                 return request.content.decode('utf-8')
 
