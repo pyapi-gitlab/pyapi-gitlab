@@ -1051,10 +1051,10 @@ class Gitlab(object):
                 return "There isn't a README.md for that project"
         else:
             if mark:
-		try: 
+                try: 
                     return markdown.markdown(request.content.decode('utf-8'))
-		except Exception as e:
-		    return request.content.decode('utf-8')		  
+                except Exception as e:
+                    return request.content.decode('utf-8')
             else:
                 return request.content.decode('utf-8')
 
