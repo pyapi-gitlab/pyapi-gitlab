@@ -6,7 +6,11 @@ by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 
 import requests
 import json
-import markdown
+try:
+    import markdown
+except Exception as e:
+    # unable to import markdown
+    pass
 from . import exceptions
 
 
@@ -426,11 +430,11 @@ class Gitlab(object):
         :return: Dict of information on the newly created project if successful,
          False otherwise
         """
-        data = {"name": name } #, "description": description,
-                # "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
-                # "merge_requests_enabled": merge_requests_enabled,
-                # "wiki_enabled": wiki_enabled,
-                # "snippets_enabled": snippets_enabled}
+        data = {"name": name, "description": description,
+                 "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
+                 "merge_requests_enabled": merge_requests_enabled,
+                 "wiki_enabled": wiki_enabled,
+                 "snippets_enabled": snippets_enabled}
         if namespace_id != None:
             data['namespace_id'] = namespace_id
         if sudo != "":
@@ -1047,7 +1051,10 @@ class Gitlab(object):
                 return "There isn't a README.md for that project"
         else:
             if mark:
-                return markdown.markdown(request.content.decode('utf-8'))
+                try: 
+                    return markdown.markdown(request.content.decode('utf-8'))
+                except Exception as e:
+                    return request.content.decode('utf-8')
             else:
                 return request.content.decode('utf-8')
 
