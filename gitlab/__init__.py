@@ -430,11 +430,11 @@ class Gitlab(object):
         :return: Dict of information on the newly created project if successful,
          False otherwise
         """
-        data = {"name": name } #, "description": description,
-                # "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
-                # "merge_requests_enabled": merge_requests_enabled,
-                # "wiki_enabled": wiki_enabled,
-                # "snippets_enabled": snippets_enabled}
+        data = {"name": name, "description": description,
+                 "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
+                 "merge_requests_enabled": merge_requests_enabled,
+                 "wiki_enabled": wiki_enabled,
+                 "snippets_enabled": snippets_enabled}
         if namespace_id != None:
             data['namespace_id'] = namespace_id
         if sudo != "":
