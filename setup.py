@@ -5,7 +5,10 @@ setup(
     name = "pyapi-gitlab",
     version = "6.2.3",
     packages = find_packages(),
-    install_requires = ['requests', 'markdown'],
+    install_requires = ['requests'],
+    extras_require = {
+        'markdown':  ["markdown"],
+    }
     # metadata for upload to PyPI
     author = "Itxaka Serrano Garcia",
     author_email = "itxakaserrano@gmail.com",
