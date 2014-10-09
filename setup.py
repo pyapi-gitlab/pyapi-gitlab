@@ -7,7 +7,7 @@ setup(
     packages = find_packages(),
     install_requires = ['requests'],
     extras_require = {
-        'markdown':  ["markdown"],
+        'markdown':  ["markdown"]
     }
     # metadata for upload to PyPI
     author = "Itxaka Serrano Garcia",
