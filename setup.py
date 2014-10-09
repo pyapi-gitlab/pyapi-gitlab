@@ -8,7 +8,7 @@ setup(
     install_requires = ['requests'],
     extras_require = {
         'markdown':  ["markdown"]
-    }
+    },
     # metadata for upload to PyPI
     author = "Itxaka Serrano Garcia",
     author_email = "itxakaserrano@gmail.com",
