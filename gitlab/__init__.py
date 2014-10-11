@@ -8,8 +8,7 @@ import requests
 import json
 try:
     import markdown
-except Exception as e:
-    # unable to import markdown
+except ImportError:
     pass
 from . import exceptions
 
