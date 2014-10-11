@@ -58,7 +58,7 @@ class Gitlab(object):
         elif email != None:
             data = {"email": email, "password": password}
         else:
-            raise Exception('Neither username nor email provided to login')
+            raise ValueError('Neither username nor email provided to login')
 
         request = requests.post(self.host + "/api/v3/session", data=data, 
                                 verify=self.verify_ssl,
