@@ -424,7 +424,8 @@ class Gitlab(object):
     def createproject(self, name, namespace_id=None, description="",
                       issues_enabled=0, wall_enabled=0,
                       merge_requests_enabled=0, wiki_enabled=0,
-                      snippets_enabled=0, public=0, sudo=""):
+                      snippets_enabled=0, public=0, sudo="",
+                      import_url=""):
         """
         Create a project
         :param name: Obligatory
@@ -435,7 +436,8 @@ class Gitlab(object):
                  "issues_enabled": issues_enabled, "wall_enabled": wall_enabled,
                  "merge_requests_enabled": merge_requests_enabled,
                  "wiki_enabled": wiki_enabled,
-                 "snippets_enabled": snippets_enabled}
+                 "snippets_enabled": snippets_enabled,
+                 "import_url": import_url}
         if namespace_id != None:
             data['namespace_id'] = namespace_id
         if sudo != "":
