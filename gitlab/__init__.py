@@ -27,6 +27,8 @@ class Gitlab(object):
         if token != "":
             self.token = token
             self.headers = {"PRIVATE-TOKEN": self.token}
+        if not host:
+            raise ValueError("host argument may not be empty")
         if host[-1] == '/':
             self.host = host[:-1]
         else:
