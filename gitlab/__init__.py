@@ -449,7 +449,17 @@ class Gitlab(object):
         if type(public) != int:
             raise TypeError
         if type(visibility_level) != int:
-            raise TypeError
+            if type(visibility_level) == str:
+                if visibility_level.lower() == "private":
+                    visibility_level = 0
+                elif visibility_level.lower() == "internal":
+                    visibility_level = 10
+                elif visibility_level.lower() == "public":
+                    visibility_level = 20
+                else:
+                    raise ValueError
+            else:
+                raise TypeError
 
         if visibility_level > 0:
             if public != 0:
