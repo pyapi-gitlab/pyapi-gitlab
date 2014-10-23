@@ -424,8 +424,8 @@ class Gitlab(object):
     def createproject(self, name, namespace_id=None, description="",
                       issues_enabled=0, wall_enabled=0,
                       merge_requests_enabled=0, wiki_enabled=0,
-                      snippets_enabled=0, public=0, sudo="",
-                      import_url=""):
+                      snippets_enabled=0, public=0, visibility_level=-1,
+                      sudo="", import_url=""):
         """
         Create a project
         :param name: Obligatory
@@ -443,12 +443,32 @@ class Gitlab(object):
         if sudo != "":
             data['sudo'] = sudo
 
-        # if gitlab is the new 6th version, there is a public option for the
-        # project creation
+        # to define repository visibilty to other users, in gitlab version 6
+        # there is a public option and in gitlab version 7 there is a
+        # visibility_level option for the project creation.
         if type(public) != int:
             raise TypeError
+        if type(visibility_level) != int:
+            if type(visibility_level) == str:
+                if visibility_level.lower() == "private":
+                    visibility_level = 0
+                elif visibility_level.lower() == "internal":
+                    visibility_level = 10
+                elif visibility_level.lower() == "public":
+                    visibility_level = 20
+                else:
+                    raise ValueError
+            else:
+                raise TypeError
+
+        if visibility_level > 0:
+            if public != 0:
+                raise ValueError('Only one of public and visibility_level arguments may be provided')
+            data['visibility_level'] =  visibility_level
+
         if public != 0:
             data['public'] = public
+
         request = requests.post(self.projects_url, headers=self.headers,
                                 data=data, verify=self.verify_ssl)
         if request.status_code == 201:
