@@ -1248,6 +1248,29 @@ class Gitlab(object):
             
             return False
 
+    def acceptmergerequest(self, project_id, mergerequest_id, merge_commit_message=None, sudo=""):
+        """
+        Update an existing merge request.
+        :param project_id: ID of the project originating the merge request
+        :param mergerequest_id: ID of the merge request to accept
+        :param merge_commit_message: Custom merge commit message
+        """
+        url_str = '{0}/{1}/merge_request/{2}/merge'.format(self.projects_url,
+                                                           project_id,
+                                                           mergerequest_id)
+
+        data = {'merge_commit_message': merge_commit_message}
+        if sudo != "":
+            data['sudo'] = sudo
+
+        request = requests.put(url_str, data=data, headers=self.headers,
+                               verify=self.verify_ssl)
+        if request.status_code == 200:
+            return True
+        else:
+            msg = request.headers['status']
+            raise exceptions.HttpError(msg)
+
     def addcommenttomergerequest(self, project_id, mergerequest_id, note):
         """
         Add a comment to a merge request.

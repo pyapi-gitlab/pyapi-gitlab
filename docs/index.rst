@@ -397,6 +397,10 @@ Update an existing merge request::
 
     git.updatemergerequest(projectID, mergeRequestID, sourceBranch=None, targetBranch=None, title=None, assigneeID=None, closed=None)
 
+Accept existing merge request::
+
+    acceptmergerequest(projectID, mergeRequestID, title=None)
+
 Add a comment to a merge request::
 
     git.addcommenttomergerequest(projectID, mergeRequestID, note)
