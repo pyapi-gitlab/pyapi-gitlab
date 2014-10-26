@@ -15,9 +15,10 @@ sudo apt-get install -y git-core
 #sudo make install
 # install git user
 sudo adduser --disabled-login --gecos 'GitLab' git
-sudo -u git -H curl -sSL https://get.rvm.io | sudo -u git -H bash -s stable --ruby
-sudo -u git -H source /home/git/.rvm/scripts/rvm
-sudo -u git -H gem install bundler
+sudo curl -sSL https://get.rvm.io | sudo bash -s stable --ruby
+sudo useradd -G rvm git
+sudo gem install bundler
+sudo -u git -H gem --version
 # install mysql
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server mysql-client libmysqlclient-dev
 mysql --version
