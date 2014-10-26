@@ -13,9 +13,8 @@ sudo apt-get install -y git-core
 #./configure --disable-install-rdoc
 #make
 #sudo make install
-sudo rvm use 2.1.1
-sudo which gem
-sudo gem install bundler --no-ri --no-rdoc
+rvm use 2.1.1
+gem install bundler --no-ri --no-rdoc
 which bundle
 # install git user
 sudo adduser --disabled-login --gecos 'GitLab' git
