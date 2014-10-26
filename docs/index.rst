@@ -268,6 +268,14 @@ Get a specific branch for a project::
 
    git.listbranch(1, "master")
 
+Create a branch::
+
+   git.createbranch(1, "newbranch", "7b5c3cc8be40ee161ae89a06bba6229da1032a0c")
+
+Delete a branch::
+
+   git.deletebranch(1, "newbranch")
+
 Protect a branch::
 
    git.protectbranch(1, "master")

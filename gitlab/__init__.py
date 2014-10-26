@@ -45,7 +45,7 @@ class Gitlab(object):
         self.search_url = self.api_url + "/projects/search/"
         self.verify_ssl = verify_ssl
 
-    def login(self, email=None, password=None, user=None,):
+    def login(self, email=None, password=None, user=None):
         """
         Logs the user in and setups the header with the private token
         :param user: gitlab user
@@ -727,6 +727,44 @@ class Gitlab(object):
         else:
             return False
 
+    def createbranch(self, id_, branch, ref):
+        """
+        Create branch from commit SHA or existing branch
+        :param id_:  The ID of a project
+        :param branch: The name of the branch
+        :param ref: Create branch from commit SHA or existing branch
+        :return: True if success, False if not
+        """
+        data = {"id": id_, "branch_name": branch, "ref": ref}
+
+        request = requests.post(self.projects_url + "/" + str(id_) +
+                                "/repository/branches", headers=self.headers,
+                                data=data, verify=self.verify_ssl)
+
+        if request.status_code == 201:
+            return True
+        else:
+            print(request.status_code)
+            print(request.content)
+            return False
+
+    def deletebranch(self, id_, branch):
+        """
+        Delete branch by name
+        :param id_:  The ID of a project
+        :param branch: The name of the branch
+        :return: True if success, False if not
+        """
+
+        request = requests.delete(self.projects_url + "/" + str(id_) +
+                                  "/repository/branches/" + str(branch),
+                                  headers=self.headers, verify=self.verify_ssl)
+
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
     def protectbranch(self, id_, branch):
         """
         protect a branch from changes
@@ -741,7 +779,6 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            
             return False
 
     def unprotectbranch(self, id_, branch):

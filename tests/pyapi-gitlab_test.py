@@ -11,6 +11,9 @@ some list cases
 import unittest
 import gitlab
 import os
+import time
+import random
+import string
 
 
 user = os.environ['gitlab_user']
@@ -30,29 +33,23 @@ key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
 
 
 class GitlabTest(unittest.TestCase):
-    def setUp(self):
-        # set up the connection
-        self.git = gitlab.Gitlab(host=host)
+    @classmethod
+    def setUpClass(cls):
+        cls.git = gitlab.Gitlab(host=host)
+        cls.git.login(user=user, password=password)
+        name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        cls.project = cls.git.createproject(name=name, visibility_level="private",
+                                            import_url="https://github.com/Itxaka/pyapi-gitlab.git")
+        # wait a bit for the project to be fully imported
+        time.sleep(25)
+        cls.project_id = cls.project['id']
+        cls.user = cls.git.createuser("caca", "test", "testpass", "test@test.com")
+        cls.user_id = cls.user['id']
 
-        # test the failure first
-#        self.assertRaises(gitlab.exceptions.HttpError, self.git.login(user="caca", password="caca"))
-
-        # now test login and leave it set up for the rest of the tests
-        self.assertTrue(self.git.login(user=user, password=password))
-
-        # create a project to use on the testing
-        self.project = self.git.createproject("Pyapi-gitlab")
-        self.project_id = self.project['id']
-        assert isinstance(self.project, dict)
-        # create a user to use in the testing
-        self.user = self.git.createuser("caca", "test", "testpass", "test@test.com")
-        self.user_id = self.user['id']
-        assert isinstance(self.user, dict)
-
-    def tearDown(self):
-        # remove projects and users
-        self.assertTrue(self.git.deleteuser(self.user_id))
-        self.assertTrue(self.git.deleteproject(self.project_id))
+    @classmethod
+    def tearDownClass(cls):
+        cls.git.deleteuser(cls.user_id)
+        cls.git.deleteproject(cls.project_id)
 
     def test_getusers(self):
         # get all users
@@ -98,13 +95,14 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.deleteprojecthook(self.project_id,
                                                    self.git.getprojecthooks(self.project_id)[0]['id']))
 
-
-    # def test_branch(self):
-    #     self.git.create
-    #     assert isinstance(self.git.listbranches(id_=self.project_id), list)
-    #     assert isinstance(self.git.listbranch(id_=self.project_id, branch="master"), dict)
-    #     self.assertTrue(self.git.protectbranch(id_=self.project_id, branch="master"))
-    #     self.assertTrue(self.git.unprotectbranch(id_=self.project_id, branch="master"))
+    def test_branch(self):
+        sha1 = self.git.listrepositorycommits(project_id=self.project_id)[0]["id"]
+        self.assertTrue(self.git.createbranch(id_=self.project_id, branch="deleteme", ref=sha1))
+        self.assertTrue(self.git.deletebranch(id_=self.project_id, branch="deleteme"))
+        assert isinstance(self.git.listbranches(id_=self.project_id), list)
+        assert isinstance(self.git.listbranch(id_=self.project_id, branch="develop"), dict)
+        self.assertTrue(self.git.protectbranch(id_=self.project_id, branch="develop"))
+        self.assertTrue(self.git.unprotectbranch(id_=self.project_id, branch="develop"))
 
     # def test_deploykeys(self):
     #     self.assertTrue(self.git.adddeploykey(id_=self.project_id, title="Pyapi-gitlab", key=key))
@@ -143,7 +141,7 @@ class GitlabTest(unittest.TestCase):
     #     self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.getfilearchive, 999999)
     #
     def test_group(self):
-        self.assertTrue(self.git.creategroup("test_group", "test"))
+        self.assertTrue(self.git.creategroup("test_group", "test_group"))
         assert isinstance(self.git.getgroups(), list)
         print(self.git.getgroups())
-        #self.assertTrue(self.git.deletegroup(self.git.getgroups()[:-1]))
+        self.assertTrue(self.git.deletegroup(group_id=self.git.getgroups()[0]["id"]))
