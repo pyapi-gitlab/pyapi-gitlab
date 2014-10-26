@@ -21,7 +21,7 @@ sh -c "cat config/database.yml.postgresql | sed 's/password: \".*\"/password: "g
 chmod o-rwx config/database.yml
 bundle install --jobs 6 --retry 0 --deployment --without development test mysql aws
 # install gitlab shell
-bundle exec rake gitlab:shell:install[v1.9.7] REDIS_URL=redis://localhost:6379 RAILS_ENV=production
+bundle exec rake gitlab:shell:install[v1.9.8] REDIS_URL=redis://localhost:6379 RAILS_ENV=production
 echo "yes" |bundle exec rake gitlab:setup RAILS_ENV=production
 sudo cp lib/support/init.d/gitlab /etc/init.d/gitlab
 sudo update-rc.d gitlab defaults 21
