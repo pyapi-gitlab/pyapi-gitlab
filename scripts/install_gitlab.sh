@@ -5,6 +5,7 @@ git clone --depth=1 https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-2-stable gi
 cd /home/travis/gitlab
 sh -c "cat config/gitlab.yml.example | sed 's/port: 80/port: 8080/g' > config/gitlab.yml"
 sh -c "sed -i s_/home/git/_/home/travis/_g config/gitlab.yml"
+sh -c "sed -i s_/    # user: git_    user: travis_g config/gitlab.yml"
 chmod -R u+rwX log/
 chmod -R u+rwX tmp/
 mkdir /home/travis/gitlab-satellites
@@ -25,6 +26,8 @@ bundle exec rake gitlab:shell:install[v1.9.8] REDIS_URL=redis://localhost:6379 R
 echo "yes" |bundle exec rake gitlab:setup RAILS_ENV=production
 sudo cp lib/support/init.d/gitlab /etc/init.d/gitlab
 sudo update-rc.d gitlab defaults 21
+sudo chmod -R ug+rwX,o-rwx /home/travis/repositories/
+sudo chmod -R ug-s /home/travis/repositories/
 bundle exec rake gitlab:env:info RAILS_ENV=production
 bundle exec rake assets:precompile RAILS_ENV=production
 service gitlab restart
