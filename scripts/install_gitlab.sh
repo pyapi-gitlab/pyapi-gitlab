@@ -1,5 +1,6 @@
 #!/bin/bash
 # install gitlab
+cd 
 git clone --depth=1 https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-2-stable gitlab
 cd /home/travis/gitlab
 sh -c "cat config/gitlab.yml.example | sed 's/port: 80/port: 8080/g' > config/gitlab.yml"
