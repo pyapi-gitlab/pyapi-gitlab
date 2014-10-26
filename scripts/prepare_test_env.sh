@@ -13,11 +13,10 @@ sudo apt-get install -y git-core
 #./configure --disable-install-rdoc
 #make
 #sudo make install
-rvm use 2.1.1
-gem install bundler --no-ri --no-rdoc
-which bundle
 # install git user
 sudo adduser --disabled-login --gecos 'GitLab' git
+sudo -u git -H curl -sSL https://get.rvm.io | bash -s stable --ruby
+sudo -u git -H gem install bundler
 # install mysql
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server mysql-client libmysqlclient-dev
 mysql --version
