@@ -13,7 +13,8 @@ sudo apt-get install -y git-core
 #./configure --disable-install-rdoc
 #make
 #sudo make install
-which gem
+sudo rvm use 2.1.1
+sudo which gem
 sudo gem install bundler --no-ri --no-rdoc
 which bundle
 # install git user
