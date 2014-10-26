@@ -19,7 +19,7 @@ git config --global user.email "example@example.com"
 git config --global core.autocrlf input
 sh -c "cat config/database.yml.postgresql | sed 's/password: \".*\"/password: "git"/g' > config/database.yml"
 chmod o-rwx config/database.yml
-bundle install -j6 --retry --deployment --without development test mysql aws
+bundle install --jobs 6 --retry 0 --deployment --without development test mysql aws
 # install gitlab shell
 bundle exec rake gitlab:shell:install[v1.9.7] REDIS_URL=redis://localhost:6379 RAILS_ENV=production
 echo "yes" |bundle exec rake gitlab:setup RAILS_ENV=production
