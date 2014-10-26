@@ -109,27 +109,31 @@ class GitlabTest(unittest.TestCase):
     #     assert isinstance(self.git.listdeploykey(id_=self.project_id, key_id=110), dict)
     #     assert isinstance(self.git.listdeploykeys(id_=self.project_id), list)
     #
-    # def test_snippets(self):
-    #     self.assertTrue(self.git.createsnippet(1, "test", "test", "codeee"))
-    #     assert isinstance(self.git.getsnippets(1), list)
-    #     assert isinstance(self.git.getsnippet(1, self.git.getsnippets(1)[0]['id']), dict)
-    #     self.assertTrue(self.git.deletesnippet(1, self.git.getsnippets(1)[0]['id']))
+    def test_snippets(self):
+        self.assertTrue(self.git.createsnippet(self.project_id, "test", "test", "codeee"))
+        assert isinstance(self.git.getsnippets(self.project_id), list)
+        snippet = self.git.getsnippets(self.project_id)[0]
+        assert isinstance(self.git.getsnippet(self.project_id, snippet["id"]), dict)
+        self.assertTrue(self.git.deletesnippet(self.project_id, snippet["id"]))
 
-    # def test_repositories(self):
-    #     assert isinstance(self.git.getrepositories(2), list)
-    #     assert isinstance(self.git.getrepositorybranch(2, "master"), dict)
-    #     assert isinstance(self.git.protectrepositorybranch(2, "master"), dict)
-    #     assert isinstance(self.git.unprotectrepositorybranch(2, "master"), dict)
-    #     assert isinstance(self.git.listrepositorytags(2), list)
-    #     assert isinstance(self.git.listrepositorycommits(2), list)
-    #     assert isinstance(self.git.listrepositorycommits(2, page=1), list)
-    #     assert isinstance(self.git.listrepositorycommits(2, per_page=7), list)
-    #     assert isinstance(self.git.listrepositorycommit(2, self.git.listrepositorycommits(2)[0]['id']), dict)
-    #     assert isinstance(self.git.listrepositorycommitdiff(2, self.git.listrepositorycommits(2)[0]['id']), dict)
-    #     assert isinstance(self.git.listrepositorytree(2), list)
-    #     assert isinstance(self.git.listrepositorytree(2, path="docs"), list)
-    #     assert isinstance(self.git.listrepositorytree(2, ref_name="master"), list)
-    #     assert isinstance(str(self.git.getrawblob(2, self.git.listrepositorycommits(2)[0]['id'], "setup.py")), str)
+    def test_repositories(self):
+        assert isinstance(self.git.getrepositories(self.project_id), list)
+        assert isinstance(self.git.getrepositorybranch(self.project_id, "develop"), dict)
+        assert isinstance(self.git.protectrepositorybranch(self.project_id, "develop"), dict)
+        assert isinstance(self.git.unprotectrepositorybranch(self.project_id, "develop"), dict)
+        assert isinstance(self.git.listrepositorytags(self.project_id), list)
+        assert isinstance(self.git.listrepositorycommits(self.project_id), list)
+        assert isinstance(self.git.listrepositorycommits(self.project_id, page=1), list)
+        assert isinstance(self.git.listrepositorycommits(self.project_id, per_page=7), list)
+        commit = self.git.listrepositorycommits(self.project_id)[0]
+        assert isinstance(self.git.listrepositorycommit(self.project_id, commit["id"]), dict)
+        assert isinstance(self.git.listrepositorycommitdiff(self.project_id, commit["id"]), list)
+        assert isinstance(self.git.listrepositorytree(self.project_id), list)
+        assert isinstance(self.git.listrepositorytree(self.project_id, path="docs"), list)
+        assert isinstance(self.git.listrepositorytree(self.project_id, ref_name="develop"), list)
+        assert isinstance(str(self.git.getrawblob(self.project_id,
+                                                  self.git.listrepositorycommits(self.project_id)[0]['id'],
+                                                  "setup.py")), str)
     #
     # def test_search(self):
     #     assert isinstance(self.git.searchproject("gitlab"), list)
@@ -143,5 +147,4 @@ class GitlabTest(unittest.TestCase):
     def test_group(self):
         self.assertTrue(self.git.creategroup("test_group", "test_group"))
         assert isinstance(self.git.getgroups(), list)
-        print(self.git.getgroups())
         self.assertTrue(self.git.deletegroup(group_id=self.git.getgroups()[0]["id"]))
