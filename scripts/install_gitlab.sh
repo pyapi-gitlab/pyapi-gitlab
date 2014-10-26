@@ -13,6 +13,9 @@ chmod u+rwx,g=rx,o-rwx /home/travis/gitlab-satellites
 chmod -R u+rwX tmp/pids/
 chmod -R u+rwX tmp/sockets/
 chmod -R u+rwX public/uploads
+mkdir /home/travis/repositories/
+sudo chmod -R ug+rwX,o-rwx /home/travis/repositories/
+sudo chmod -R ug-s /home/travis/repositories/
 cp config/unicorn.rb.example config/unicorn.rb
 cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
 git config --global user.name "GitLab"
@@ -26,8 +29,6 @@ bundle exec rake gitlab:shell:install[v1.9.8] REDIS_URL=redis://localhost:6379 R
 echo "yes" |bundle exec rake gitlab:setup RAILS_ENV=production
 sudo cp lib/support/init.d/gitlab /etc/init.d/gitlab
 sudo update-rc.d gitlab defaults 21
-sudo chmod -R ug+rwX,o-rwx /home/travis/repositories/
-sudo chmod -R ug-s /home/travis/repositories/
 bundle exec rake gitlab:env:info RAILS_ENV=production
 bundle exec rake assets:precompile RAILS_ENV=production
 service gitlab restart
