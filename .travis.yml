@@ -1,5 +1,7 @@
 env:
   - gitlab_user=root gitlab_password=5iveL!fe gitlab_host=http://localhost:8080
+services:
+  - redis-server
 language: python
 python:
   - "2.7"
@@ -10,7 +12,8 @@ rvm:
   - 2.1.0
 # install local gitlab
 before_install:
-  - scripts/install_gitlab_omnibus.sh
+  - scripts/prepare_test_env.sh
+  - scripts/install_gitlab.sh
 # command to install dependencies
 install:
   - pip install -r requirements.txt
