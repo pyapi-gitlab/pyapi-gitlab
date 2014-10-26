@@ -14,6 +14,7 @@ sudo apt-get install -y git-core
 #make
 #sudo make install
 curl -sSL https://get.rvm.io | sudo bash -s stable --ruby
+source /home/travis/.rvm/scripts/rvm
 sudo gem install bundler --no-ri --no-rdoc
 # install git user
 sudo adduser --disabled-login --gecos 'GitLab' git
