@@ -13,7 +13,7 @@ cache: bundler
 # install local gitlab
 before_install:
   - sudo apt-get install -y build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev libreadline-dev libncurses5-dev libffi-dev curl checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev logrotate python-docutils pkg-config cmake git-core
-  - psql -c 'create database git;' -U postgres
+  - psql -c 'CREATE USER git CREATEDB;' -U postgres
   - psql -c 'CREATE DATABASE gitlabhq_production OWNER git;' -U postgres
   - scripts/prepare_test_env.sh
   - scripts/install_gitlab.sh
