@@ -5,7 +5,7 @@ git clone --depth=1 https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-2-stable gi
 cd /home/travis/gitlab
 sh -c "cat config/gitlab.yml.example | sed 's/port: 80/port: 8080/g' > config/gitlab.yml"
 sh -c "sed -i s_/home/git/_/home/travis/_g config/gitlab.yml"
-sh -c "sed -i s_/    # user: git_    user: travis_g config/gitlab.yml"
+sed -i 's|# user: git|user: travis|g' config/gitlab.yml
 chmod -R u+rwX log/
 chmod -R u+rwX tmp/
 mkdir /home/travis/gitlab-satellites
