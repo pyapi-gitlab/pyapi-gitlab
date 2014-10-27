@@ -1228,7 +1228,7 @@ class Gitlab(object):
             return False
 
     def createmergerequest(self, project_id, sourcebranch, targetbranch,
-                           title, assignee_id=None, sudo=""):
+                           title, target_project_id=None, assignee_id=None, sudo=""):
         """
         Create a new merge request.
         :param project_id: ID of the project originating the merge request
@@ -1241,7 +1241,8 @@ class Gitlab(object):
         data = {'source_branch': sourcebranch,
                 'target_branch': targetbranch,
                 'title': title,
-                'assignee_id': assignee_id}
+                'assignee_id': assignee_id,
+                'target_project_id': target_project_id}
         if sudo != "":
             data['sudo'] = sudo
 
