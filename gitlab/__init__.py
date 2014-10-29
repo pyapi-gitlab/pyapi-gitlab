@@ -102,18 +102,7 @@ class Gitlab(object):
         else:
             return False
 
-    def createuser(self, name,
-                   username,
-                   password,
-                   email,
-                   skype="",
-                   linkedin="",
-                   twitter="",
-                   projects_limit="",
-                   extern_uid="",
-                   provider="",
-                   bio="",
-                   sudo=""):
+    def createuser(self, name, username, password, email, **kwargs):
         """
         Create a user
         :param name: Obligatory
@@ -122,13 +111,11 @@ class Gitlab(object):
         :param email: Obligatory
         :return: TRue if the user was created,false if it wasn't(already exists)
         """
-        data = {"name": name, "username": username, "password": password,
-                "email": email, "skype": skype,
-                "twitter": twitter, "linkedin": linkedin,
-                "projects_limit": projects_limit, "extern_uid": extern_uid,
-                "provider": provider, "bio": bio}
-        if sudo != "":
-            data['sudo'] = sudo
+        data = {"name": name, "username": username, "password": password, "email": email}
+
+        if kwargs:
+            data.update(kwargs)
+
         request = requests.post(self.users_url, headers=self.headers, data=data, 
                                 verify=self.verify_ssl)
         if request.status_code == 201:
@@ -744,8 +731,6 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            print(request.status_code)
-            print(request.content)
             return False
 
     def deletebranch(self, id_, branch):
