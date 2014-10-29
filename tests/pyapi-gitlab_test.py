@@ -16,9 +16,9 @@ import random
 import string
 
 
-user = os.environ['gitlab_user']
-password = os.environ['gitlab_password']
-host = os.environ['gitlab_host']
+user = os.environ.get('gitlab_user', 'root')
+password = os.environ.get('gitlab_password', '5iveL!fe')
+host = os.environ.get('gitlab_host', 'http://localhost:8080')
 
 key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
       "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
@@ -41,30 +41,29 @@ class GitlabTest(unittest.TestCase):
         cls.project = cls.git.createproject(name=name, visibility_level="private",
                                             import_url="https://github.com/Itxaka/pyapi-gitlab.git")
         # wait a bit for the project to be fully imported
-        time.sleep(25)
+        time.sleep(30)
         cls.project_id = cls.project['id']
-        cls.user = cls.git.createuser("caca", "test", "testpass", "test@test.com")
-        cls.user_id = cls.user['id']
+        cls.user_id = cls.git.currentuser()['id']
 
     @classmethod
     def tearDownClass(cls):
-        cls.git.deleteuser(cls.user_id)
         cls.git.deleteproject(cls.project_id)
 
-    def test_getusers(self):
+    def test_user(self):
+        assert isinstance(self.git.createuser(name="test", username="test",
+                                              password="test1234", email="test@test.com",
+                                              skype="this", linkedin="that"), dict)
         # get all users
         assert isinstance(self.git.getusers(), list)  # compatible with 2.6
-        self.assertTrue(self.git.getusers())
-
+        assert isinstance(self.git.currentuser(), dict)
+        user = self.git.getusers(search="test")[0]
+        self.assertTrue(self.git.deleteuser(user["id"]))
         # get X pages
         assert isinstance(self.git.getusers(page=2), list)  # compatible with 2.6
         assert isinstance(self.git.getusers(per_page=4), list)  # compatible with 2.6
         self.assertEqual(self.git.getusers(page=800), list(""))  # check against empty list
         self.assertTrue(self.git.getusers(per_page=43))  # check against false
 
-    def test_currentuser(self):
-        assert isinstance(self.git.currentuser(), dict)  # compatible with 2.6
-        self.assertTrue(self.git.currentuser())
 
     def test_project(self):
         # test project
@@ -131,9 +130,7 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.listrepositorytree(self.project_id), list)
         assert isinstance(self.git.listrepositorytree(self.project_id, path="docs"), list)
         assert isinstance(self.git.listrepositorytree(self.project_id, ref_name="develop"), list)
-        assert isinstance(str(self.git.getrawblob(self.project_id,
-                                                  self.git.listrepositorycommits(self.project_id)[0]['id'],
-                                                  "setup.py")), str)
+        assert isinstance(str(self.git.getrawblob(self.project_id, commit['id'], "setup.py")), str)
     #
     # def test_search(self):
     #     assert isinstance(self.git.searchproject("gitlab"), list)
