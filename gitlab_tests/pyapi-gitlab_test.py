@@ -1,11 +1,5 @@
 """
 pyapi-gitlab tests
-Covered:
-Ssh keys
-login
-user
-deploy keys
-some list cases
 """
 
 import unittest
@@ -58,12 +52,20 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.currentuser(), dict)
         user = self.git.getusers(search="test")[0]
         self.assertTrue(self.git.deleteuser(user["id"]))
+        # check can_create_user
+        user = self.git.createuser("random", "random", "random1234", "random@random.org",
+                                   can_create_group="false")
+        self.assertFalse(self.git.getuser(user['id'])['can_create_group'])
+        self.git.deleteuser(user['id'])
+        user = self.git.createuser("random", "random", "random1234", "random@random.org",
+                                   can_create_group="true")
+        self.assertTrue(self.git.getuser(user['id'])['can_create_group'])
+        self.git.deleteuser(user['id'])
         # get X pages
         assert isinstance(self.git.getusers(page=2), list)  # compatible with 2.6
         assert isinstance(self.git.getusers(per_page=4), list)  # compatible with 2.6
         self.assertEqual(self.git.getusers(page=800), list(""))  # check against empty list
         self.assertTrue(self.git.getusers(per_page=43))  # check against false
-
 
     def test_project(self):
         # test project
