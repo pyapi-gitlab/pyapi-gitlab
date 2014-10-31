@@ -16,5 +16,5 @@ setup(
     license = "GPL3",
     keywords = "gitlab git wrapper",
     url = "http://github.com/itxaka/pyapi-gitlab/",
-    test_suite="tests",
+    test_suite="gitlab_tests",
 )
