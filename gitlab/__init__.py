@@ -824,24 +824,16 @@ class Gitlab(object):
             
             return False
 
-    def createissue(self, id_, title, description="", assignee_id="",
-                    milestone_id="", labels="", sudo=""):
+    def createissue(self, id_, title, **kwargs):
         """
         create a new issue
         :param id_: project id
         :param title: title of the issue
-        :param description: description
-        :param assignee_id: assignee for the issue
-        :param milestone_id: milestone
-        :param labels: label
-        :param sudo: do the request as another user
-        :return: true if success
+        :return: dict with the issue created
         """
-        data = {"id": id, "title": title, "description": description,
-                "assignee_id": assignee_id,
-                "milestone_id": milestone_id, "labels": labels}
-        if sudo != "":
-            data['sudo'] = sudo
+        data = {"id": id, "title": title}
+        if kwargs:
+            data.update(kwargs)
         request = requests.post(self.projects_url + "/" + str(id_) + "/issues",
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
@@ -849,42 +841,21 @@ class Gitlab(object):
         else:
             return False
 
-    def editissue(self, id_, issue_id, title="", description="",
-                  assignee_id="", milestone_id="", labels="",
-                  state_event="", sudo=""):
+    def editissue(self, id_, issue_id, **kwargs):
         """
         edit an existing issue data
         :param id_: project id
         :param issue_id: issue id
-        :param title: title
-        :param description: description
-        :param assignee_id: asignee
-        :param milestone_id: milestone
-        :param labels: label
-        :param state_event: state
-        :param sudo: do the request as another user
         :return: true if success
         """
         data = {"id": id_, "issue_id": issue_id}
-        if title != "":
-            data['title'] = title
-        if description != "":
-            data['description'] = description
-        if assignee_id != "":
-            data['assignee_id'] = assignee_id
-        if milestone_id != "":
-            data['milestone_id'] = milestone_id
-        if labels != "":
-            data['labels'] = labels
-        if state_event != "":
-            data['state_event'] = state_event
-        if sudo != "":
-            data['sudo'] = sudo
+        if kwargs:
+            data.update(kwargs)
         request = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
                                str(issue_id), headers=self.headers,
                                data=data, verify=self.verify_ssl)
         if request.status_code == 200:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
