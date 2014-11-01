@@ -1281,7 +1281,7 @@ class Gitlab(object):
         request = requests.post(self.projects_url + "/" + str(project_id) + "/snippets",
                                 data=data, verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 201:
-            return True
+            return request.content.decode("utf-8")
         else:
             return False
 
