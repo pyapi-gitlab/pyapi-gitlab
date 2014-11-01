@@ -60,6 +60,9 @@ class GitlabTest(unittest.TestCase):
         user = self.git.createuser("random", "random", "random1234", "random@random.org",
                                    can_create_group="true")
         self.assertTrue(self.git.getuser(user['id'])['can_create_group'])
+        assert isinstance(self.git.edituser(user['id'], can_create_group="false"), dict)
+        # Check that indeed the user details were changed
+        self.assertFalse(self.git.getuser(user['id'])['can_create_group'])
         self.git.deleteuser(user['id'])
         # get X pages
         assert isinstance(self.git.getusers(page=2), list)  # compatible with 2.6
