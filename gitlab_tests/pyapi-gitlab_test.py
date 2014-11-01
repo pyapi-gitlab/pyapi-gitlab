@@ -140,10 +140,11 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.listrepositorytree(self.project_id, path="docs"), list)
         assert isinstance(self.git.listrepositorytree(self.project_id, ref_name="develop"), list)
         assert isinstance(str(self.git.getrawblob(self.project_id, commit['id'], "setup.py")), str)
-    #
-    # def test_search(self):
-    #     assert isinstance(self.git.searchproject("gitlab"), list)
-    #
+
+    def test_search(self):
+        self.assertGreater(len(self.git.searchproject(self.project['name'])), 0)
+        assert isinstance(self.git.searchproject(self.project['name']), list)
+
     # def test_filearchive(self):
     #     # test it works
     #     self.assertTrue(self.git.getfilearchive(2))
