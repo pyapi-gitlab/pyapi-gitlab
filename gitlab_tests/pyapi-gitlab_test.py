@@ -155,3 +155,15 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.creategroup("test_group", "test_group"))
         assert isinstance(self.git.getgroups(), list)
         self.assertTrue(self.git.deletegroup(group_id=self.git.getgroups()[0]["id"]))
+
+    def test_issues(self):
+        issue = self.git.createissue(self.project_id, title="Test_issue", description="blaaaaa")
+        assert isinstance(issue, dict)
+        self.assertEqual(issue["title"], "Test_issue")
+        issue = self.git.editissue(self.project_id, issue["id"], title="Changed")
+        assert isinstance(issue, dict)
+        self.assertEqual(issue["title"], "Changed")
+        issue = self.git.editissue(self.project_id, issue["id"], state_event="close")
+        self.assertEqual(issue["state"], "closed")
+        self.assertGreater(len(self.git.getprojectissues(self.project_id)), 0)
+        self.assertGreater(len(self.git.getissues()), 0)
