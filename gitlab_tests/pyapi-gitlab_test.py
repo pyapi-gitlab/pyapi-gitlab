@@ -118,7 +118,7 @@ class GitlabTest(unittest.TestCase):
             self.git.deletesshkey(key["id"])"""
 
     def test_snippets(self):
-        self.assertTrue(self.git.createsnippet(self.project_id, "test", "test", "codeee"))
+        assert isinstance(self.git.createsnippet(self.project_id, "test", "test", "codeee"), dict)
         assert isinstance(self.git.getsnippets(self.project_id), list)
         snippet = self.git.getsnippets(self.project_id)[0]
         assert isinstance(self.git.getsnippet(self.project_id, snippet["id"]), dict)
