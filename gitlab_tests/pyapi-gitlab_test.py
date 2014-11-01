@@ -94,7 +94,7 @@ class GitlabTest(unittest.TestCase):
 
     def test_branch(self):
         sha1 = self.git.listrepositorycommits(project_id=self.project_id)[0]["id"]
-        self.assertTrue(self.git.createbranch(id_=self.project_id, branch="deleteme", ref=sha1))
+        assert isinstance(self.git.createbranch(id_=self.project_id, branch="deleteme", ref=sha1), dict)
         self.assertTrue(self.git.deletebranch(id_=self.project_id, branch="deleteme"))
         assert isinstance(self.git.listbranches(id_=self.project_id), list)
         assert isinstance(self.git.listbranch(id_=self.project_id, branch="develop"), dict)
