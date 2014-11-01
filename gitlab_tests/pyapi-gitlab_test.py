@@ -8,22 +8,15 @@ import os
 import time
 import random
 import string
-
+try:
+    from Crypto.PublicKey import RSA
+    ssh_test = True
+except ImportError:
+    ssh_test = False
 
 user = os.environ.get('gitlab_user', 'root')
 password = os.environ.get('gitlab_password', '5iveL!fe')
 host = os.environ.get('gitlab_host', 'http://localhost:8080')
-
-key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/" \
-      "CdSKHzpkHWp6Bro20GtqTi7h+6+RRTwMatfPqKfuD" \
-      "+lqMTzThs9DZWV5ys892UUoKM55xAEpNkan2Xp6Gj" \
-      "+p+1vqdFkRGfItJUAlxOeW+3kPD83AIJ/F+uxyAZ5E" \
-      "Rd9cdyBFr2efMDbgxOJKj4VmyXpO2UOsvil1wP4+CE" \
-      "PxS95LgMqBAUOi7ypukQb3vr7R+MJ7G+vOpwZev8Wb" \
-      "Q6aB9Hywu8GbUQk91pdkbvWOcJS783nI9TpZZm7m4O" \
-      "NeLwd2XVpY7yBD7v1tL96i1CQRYaN/RosjxZU2ncHA" \
-      "8DBC91BNsl9Gcztg6UGteuIClqfzvetwlB66KlL71Z" \
-      "HZPmmV pyapi-gitlab@local.host"
 
 
 class GitlabTest(unittest.TestCase):
@@ -108,11 +101,22 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.protectbranch(id_=self.project_id, branch="develop"))
         self.assertTrue(self.git.unprotectbranch(id_=self.project_id, branch="develop"))
 
-    # def test_deploykeys(self):
-    #     self.assertTrue(self.git.adddeploykey(id_=self.project_id, title="Pyapi-gitlab", key=key))
-    #     assert isinstance(self.git.listdeploykey(id_=self.project_id, key_id=110), dict)
-    #     assert isinstance(self.git.listdeploykeys(id_=self.project_id), list)
-    #
+    def test_sshkeys(self):
+        assert isinstance(self.git.getsshkeys(), list)
+        self.assertEquals(len(self.git.getsshkeys()), 0)
+        # not working due a bug? in pycrypto: https://github.com/dlitz/pycrypto/issues/99
+        """
+        if ssh_test:
+            name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+            rsa_key = RSA.generate(1024)
+            print(str(rsa_key.publickey().exportKey()))
+            print(str(rsa_key.publickey().exportKey(format="OpenSSH")))
+            self.assertTrue(self.git.addsshkey(title=name, key=str(rsa_key.publickey().exportKey())))
+            self.assertGreater(self.git.getsshkeys(), 0)
+            print(self.git.getsshkeys())
+            key = self.git.getsshkeys()[0]
+            self.git.deletesshkey(key["id"])"""
+
     def test_snippets(self):
         self.assertTrue(self.git.createsnippet(self.project_id, "test", "test", "codeee"))
         assert isinstance(self.git.getsnippets(self.project_id), list)
