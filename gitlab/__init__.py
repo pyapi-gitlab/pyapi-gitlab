@@ -109,7 +109,8 @@ class Gitlab(object):
         :param username: Obligatory
         :param password: Obligatory
         :param email: Obligatory
-        :return: TRue if the user was created,false if it wasn't(already exists)
+        :param kwargs: Any param the the Gitlab API supports
+        :return: True if the user was created,false if it wasn't(already exists)
         """
         data = {"name": name, "username": username, "password": password, "email": email}
 
@@ -149,71 +150,25 @@ class Gitlab(object):
                                headers=self.headers, verify=self.verify_ssl)
         return json.loads(request.content.decode("utf-8"))
 
-    def edituser(self, id_,
-                 name="",
-                 username="",
-                 password="",
-                 email="",
-                 skype="",
-                 linkedin="",
-                 twitter="",
-                 projects_limit="",
-                 extern_uid="",
-                 provider="",
-                 bio="",
-                 sudo=""):
+    def edituser(self, id_, **kwargs):
         """
         Edits an user data. Unfortunately we have to check ALL the params,
         as they can't be empty or the user will get all their data empty,
         so we only send the filled params
         :param id_: id of the user to change
-        :param name: name
-        :param username: username
-        :param password: pass
-        :param email: email
-        :param skype: skype
-        :param linkedin: linkedin
-        :param twitter: twitter
-        :param projects_limit: the limits project, default is 10
-        :param extern_uid: no idea
-        :param provider: google login for example
-        :param bio: bio
-        :param sudo: do the task as the user provided
-        :return: alway true as gitlab answers with a 404
+        :param kwargs: Any param the the Gitlab API supports
+        :return: Dict of the user
         """
         data = {}
-        if name != "":
-            data["name"] = name
-        if username != "":
-            data["username"] = username
-        if password != "":
-            data["password"] = password
-        if email != "":
-            data["email"] = email
-        if skype != "":
-            data["skype"] = skype
-        if linkedin != "":
-            data["linkedin"] = linkedin
-        if twitter != "":
-            data["twitter"] = twitter
-        if projects_limit != "":
-            data["projects_limit"] = projects_limit
-        if extern_uid != "":
-            data["extern_uid"] = extern_uid
-        if provider != "":
-            data["provider"] = provider
-        if bio != "":
-            data["bio"] = bio
-        if sudo != "":
-            data['sudo'] = sudo
+
+        if kwargs:
+            data.update(kwargs)
+
         request = requests.put(self.users_url + "/" + str(id_),
                                headers=self.headers, data=data,
                                verify=self.verify_ssl)
-        if request.status_code == 404:
-            return True
-        # There is a problem here and that is that the api always return 404,
-        #  doesn't matter what heappened with the request,
-        # so now way of knowing what happened
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
