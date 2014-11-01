@@ -140,6 +140,11 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.listrepositorytree(self.project_id, path="docs"), list)
         assert isinstance(self.git.listrepositorytree(self.project_id, ref_name="develop"), list)
         assert isinstance(str(self.git.getrawblob(self.project_id, commit['id'], "setup.py")), str)
+        commit = self.git.listrepositorycommits(self.project_id)
+        assert isinstance(self.git.compare_branches_tags_commits(self.project_id,
+                                                                 from_id=commit[1]["id"],
+                                                                 to_id=commit[0]["id"]), dict)
+
 
     def test_search(self):
         self.assertGreater(len(self.git.searchproject(self.project['name'])), 0)
