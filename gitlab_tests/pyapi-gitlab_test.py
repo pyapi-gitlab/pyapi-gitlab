@@ -145,12 +145,12 @@ class GitlabTest(unittest.TestCase):
         self.assertGreater(len(self.git.searchproject(self.project['name'])), 0)
         assert isinstance(self.git.searchproject(self.project['name']), list)
 
-    # def test_filearchive(self):
-    #     # test it works
-    #     self.assertTrue(self.git.getfilearchive(2))
-    #     # test for failure
-    #     self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.getfilearchive, 999999)
-    #
+    def test_filearchive(self):
+        # test it works
+        self.assertTrue(self.git.getfilearchive(self.project_id, self.project["name"] + ".tar.gz"))
+        # test for failure
+        self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.getfilearchive, 999999)
+
     def test_group(self):
         self.assertTrue(self.git.creategroup("test_group", "test_group"))
         assert isinstance(self.git.getgroups(), list)
