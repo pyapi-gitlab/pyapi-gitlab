@@ -144,7 +144,13 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.compare_branches_tags_commits(self.project_id,
                                                                  from_id=commit[1]["id"],
                                                                  to_id=commit[0]["id"]), dict)
-
+        self.assertTrue(self.git.createfile(self.project_id, "test.file", "develop", "00000000", "testfile0"))
+        firstfile = self.git.getfile(self.project_id, "test.file", "develop")
+        self.assertTrue(self.git.updatefile(self.project_id, "test.file", "develop", "11111111", "testfile1"))
+        secondfile = self.git.getfile(self.project_id, "test.file", "develop")
+        self.assertNotEqual(firstfile["commit_id"], secondfile["commit_id"])
+        self.assertNotEqual(firstfile["content"], secondfile["content"])
+        self.git.deletefile(self.project_id, "test.file", "develop", "remove_testfile")
 
     def test_search(self):
         self.assertGreater(len(self.git.searchproject(self.project['name'])), 0)

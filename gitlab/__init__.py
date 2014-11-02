@@ -1764,7 +1764,6 @@ class Gitlab(object):
         request = requests.delete(self.projects_url + "/" + str(project_id) + "/repository/files",
                                   headers=self.headers, data=data,
                                   verify=self.verify_ssl)
-
         if request.status_code == 200:
             return True
         else:
