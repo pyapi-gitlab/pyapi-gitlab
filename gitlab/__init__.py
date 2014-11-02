@@ -954,7 +954,7 @@ class Gitlab(object):
                                 "/milestones", headers=self.headers, data=data, 
                                 verify=self.verify_ssl)
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             
             return False
@@ -982,7 +982,7 @@ class Gitlab(object):
                                + str(milestone_id), headers=self.headers,
                                data=data, verify=self.verify_ssl)
         if request.status_code == 200:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             
             return False
