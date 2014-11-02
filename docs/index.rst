@@ -332,7 +332,7 @@ Create a new milestone::
 
    git.createmilestone(1,"New milestone")
 
-Edit a milestone, you can pass state_event="closed" to close it::
+Edit a milestone, you can pass state_event="close" to close it::
 
    git.editmilestone(1,1,title="Change milestone title")
 
