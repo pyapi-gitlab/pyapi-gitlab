@@ -1708,7 +1708,6 @@ class Gitlab(object):
                 "content": content, "commit_message": commit_message}
         request = requests.post(self.projects_url + "/" + str(project_id) + "/repository/files",
                                 verify=self.verify_ssl, headers=self.headers, data=data)
-        print(request.status_code, request.content)
         if request.status_code == 201:
             return True
         else:
