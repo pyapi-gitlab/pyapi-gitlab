@@ -150,7 +150,7 @@ class GitlabTest(unittest.TestCase):
         secondfile = self.git.getfile(self.project_id, "test.file", "develop")
         self.assertNotEqual(firstfile["commit_id"], secondfile["commit_id"])
         self.assertNotEqual(firstfile["content"], secondfile["content"])
-        self.git.deletefile(self.project_id, "test.file", "develop", "remove_testfile")
+        self.assertTrue(self.git.deletefile(self.project_id, "test.file", "develop", "remove_testfile"))
 
     def test_search(self):
         self.assertGreater(len(self.git.searchproject(self.project['name'])), 0)
