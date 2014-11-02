@@ -669,7 +669,6 @@ class Gitlab(object):
         data = {"id": hook_id}
         request = requests.get(self.hook_url, data=data,
                                headers=self.headers, verify=self.verify_ssl)
-        print(request.status_code, request.content)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
@@ -682,7 +681,7 @@ class Gitlab(object):
         :return: True if success
         """
         data = {"id": hook_id}
-        request = requests.delete(self.hook_url, data=data,
+        request = requests.delete(self.hook_url + "/{}".format(hook_id), data=data,
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True

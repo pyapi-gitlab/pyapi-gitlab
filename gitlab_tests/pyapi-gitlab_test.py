@@ -28,7 +28,7 @@ class GitlabTest(unittest.TestCase):
         cls.project = cls.git.createproject(name=name, visibility_level="private",
                                             import_url="https://github.com/Itxaka/pyapi-gitlab.git")
         # wait a bit for the project to be fully imported
-        time.sleep(30)
+        time.sleep(5)
         cls.project_id = cls.project['id']
         cls.user_id = cls.git.currentuser()['id']
 
@@ -180,6 +180,9 @@ class GitlabTest(unittest.TestCase):
         self.assertGreater(len(self.git.getissues()), 0)
 
     def test_system_hooks(self):
+        # clean up before
+        for hook in self.git.getsystemhooks():
+            self.git.deletesystemhook(hook["id"])
         self.assertTrue(self.git.addsystemhook("http://github.com"))
         self.assertEqual(len(self.git.getsystemhooks()), 1)
         hook = self.git.getsystemhooks()[0]
