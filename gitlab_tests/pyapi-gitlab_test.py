@@ -189,3 +189,12 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.testsystemhook(hook["id"]), list)
         self.assertTrue(self.git.deletesystemhook(hook["id"]))
         self.assertEqual(len(self.git.getsystemhooks()), 0)
+
+    def test_milestones(self):
+        milestone = self.git.createmilestone(self.project_id, title="test")
+        assert isinstance(milestone, dict)
+        self.assertGreater(len(self.git.getmilestones(self.project_id)), 0)
+        assert isinstance(self.git.getmilestone(self.project_id, milestone["id"]), dict)
+        self.assertEqual(milestone["title"], "test")
+        milestone = self.git.editmilestone(self.project_id, milestone["id"], title="test2")
+        self.assertEqual(milestone["title"], "test2")
