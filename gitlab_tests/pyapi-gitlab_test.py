@@ -178,3 +178,11 @@ class GitlabTest(unittest.TestCase):
         self.assertEqual(issue["state"], "closed")
         self.assertGreater(len(self.git.getprojectissues(self.project_id)), 0)
         self.assertGreater(len(self.git.getissues()), 0)
+
+    def test_system_hooks(self):
+        self.assertTrue(self.git.addsystemhook("http://github.com"))
+        self.assertEqual(len(self.git.getsystemhooks()), 1)
+        hook = self.git.getsystemhooks()[0]
+        assert isinstance(self.git.testsystemhook(hook["id"]), list)
+        self.assertTrue(self.git.deletesystemhook(hook["id"]))
+        self.assertEqual(len(self.git.getsystemhooks()), 0)

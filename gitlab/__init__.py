@@ -43,6 +43,7 @@ class Gitlab(object):
         self.keys_url = self.api_url + "/user/keys"
         self.groups_url = self.api_url + "/groups"
         self.search_url = self.api_url + "/projects/search/"
+        self.hook_url = self.api_url + "/hooks"
         self.verify_ssl = verify_ssl
 
     def login(self, email=None, password=None, user=None):
@@ -293,7 +294,6 @@ class Gitlab(object):
             else:
                 break
 
-
     def getallprojects(self, page=1, per_page=20, sudo=""):
         """
         Returns a dictionary of all the projects for admins only
@@ -434,7 +434,6 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
 
-
     def createprojectuser(self, id_, name, description="", default_branch="",
                           issues_enabled=0, wall_enabled=0,
                           merge_requests_enabled=0, wiki_enabled=0,
@@ -568,7 +567,6 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-            
             return False
 
     def getprojecthook(self, id_, hook_id):
@@ -599,7 +597,6 @@ class Gitlab(object):
         if request.status_code == 201:
             return True
         else:
-            
             return False
 
     def editprojecthook(self, id_, hook_id, url, sudo=""):
@@ -620,7 +617,6 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            
             return False
 
     def deleteprojecthook(self, id_, hook_id):
@@ -637,7 +633,60 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
         else:
-            
+            return False
+
+    def getsystemhooks(self):
+        """
+        Get all system hooks
+        :return: list of hooks
+        """
+        request = requests.get(self.hook_url, headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def addsystemhook(self, url):
+        """
+        add a hook to a project
+        :param url: url of the hook
+        :return: True if success
+        """
+        data = {"url": url}
+        request = requests.post(self.hook_url, headers=self.headers,
+                                data=data, verify=self.verify_ssl)
+        if request.status_code == 201:
+            return True
+        else:
+            return False
+
+    def testsystemhook(self, hook_id):
+        """
+        Test a system hook
+        :param hook_id: hook id
+        :return: list of hooks
+        """
+        data = {"id": hook_id}
+        request = requests.get(self.hook_url, data=data,
+                               headers=self.headers, verify=self.verify_ssl)
+        print(request.status_code, request.content)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def deletesystemhook(self, hook_id):
+        """
+        delete a project hook
+        :param hook_id: hook id
+        :return: True if success
+        """
+        data = {"id": hook_id}
+        request = requests.delete(self.hook_url, data=data,
+                                  headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return True
+        else:
             return False
 
     def listbranches(self, id_):
