@@ -542,12 +542,14 @@ Creat a note in the wall of a merge request::
 Files
 =====
 
-Version 6.2 added support for files.
-
 Create a new file in the repository::
 
     git.createfile(project_id, file_path, branch_name, content, commit_message)
-    
+
+Get a file::
+
+    git.getfile(self, project_id, file_path, ref):
+
 Update an existing file::
 
     git.updatefile(project_id, file_path, branch_name, content, commit_message)
