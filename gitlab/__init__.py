@@ -1627,7 +1627,7 @@ class Gitlab(object):
                                 verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
@@ -1664,7 +1664,7 @@ class Gitlab(object):
                                 verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
@@ -1701,7 +1701,7 @@ class Gitlab(object):
                                 verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
@@ -1738,7 +1738,7 @@ class Gitlab(object):
                                 verify=self.verify_ssl, headers=self.headers, data=data)
 
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
