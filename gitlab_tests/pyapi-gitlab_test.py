@@ -163,9 +163,19 @@ class GitlabTest(unittest.TestCase):
         self.failUnlessRaises(gitlab.exceptions.HttpError, self.git.getfilearchive, 999999)
 
     def test_group(self):
+        for group in self.git.getgroups():
+            self.git.deletegroup(group["id"])
         self.assertTrue(self.git.creategroup("test_group", "test_group"))
         assert isinstance(self.git.getgroups(), list)
-        self.assertTrue(self.git.deletegroup(group_id=self.git.getgroups()[0]["id"]))
+        group = self.git.getgroups()[0]
+        assert isinstance(self.git.listgroupmembers(group["id"]), list)
+        self.assertEqual(len(self.git.listgroupmembers(group["id"])), 0)
+        self.assertTrue(self.git.addgroupmember(group["id"], self.user_id, "master"))
+        assert isinstance(self.git.listgroupmembers(group["id"]), list)
+        self.assertGreater(len(self.git.listgroupmembers(group["id"])), 0)
+        self.assertTrue(self.git.deletegroupmember(group["id"], self.user_id))
+        self.assertFalse(self.git.addgroupmember(group["id"], self.user_id, "nonexistant"))
+        self.assertTrue(self.git.deletegroup(group_id=group["id"]))
 
     def test_issues(self):
         issue = self.git.createissue(self.project_id, title="Test_issue", description="blaaaaa")
