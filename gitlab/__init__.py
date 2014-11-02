@@ -1708,7 +1708,7 @@ class Gitlab(object):
                 "content": content, "commit_message": commit_message}
         request = requests.post(self.projects_url + "/" + str(project_id) + "/repository/files",
                                 verify=self.verify_ssl, headers=self.headers, data=data)
-
+        print(request.status_code, request.content)
         if request.status_code == 201:
             return True
         else:
@@ -1731,6 +1731,23 @@ class Gitlab(object):
 
         if request.status_code == 200:
             return True
+        else:
+            return False
+
+    def getfile(self, project_id, file_path, ref):
+        """
+        Allows you to receive information about file in repository like name, size, content.
+        Note that file content is Base64 encoded.
+        :param project_id: project_id
+        :param file_path: Full path to file. Ex. lib/class.rb
+        :param ref: The name of branch, tag or commit
+        :return:
+        """
+        data = {"file_path": file_path, "ref": ref}
+        request = requests.get(self.projects_url + "/" + str(project_id) + "/repository/files",
+                               headers=self.headers, data=data, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
