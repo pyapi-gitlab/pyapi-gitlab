@@ -15,7 +15,7 @@ except ImportError:
     ssh_test = False
 
 user = os.environ.get('gitlab_user', 'root')
-password = os.environ.get('gitlab_password', '5iveL!fe')
+password = os.environ.get('gitlab_password', 'roottoor')
 host = os.environ.get('gitlab_host', 'http://localhost:8080')
 
 
@@ -208,3 +208,48 @@ class GitlabTest(unittest.TestCase):
         self.assertEqual(milestone["title"], "test")
         milestone = self.git.editmilestone(self.project_id, milestone["id"], title="test2")
         self.assertEqual(milestone["title"], "test2")
+
+    def test_merge(self):
+        # TODO: check this and make this when I have internet so I can clone the test repo
+        pass
+        """
+        # prepare for the merge
+        print(self.git.listbranches(self.project_id))
+        commit = self.git.listrepositorycommits(self.project_id)[5]
+        branch = self.git.createbranch(self.project_id, "mergebranch", commit["id"])
+        merge = self.git.createmergerequest(self.project_id, "master", "mergebranch", "testmerge")
+        print(self.git.getmergerequests(self.project_id))
+        print(self.git.getmergerequest(self.project_id, merge["id"]))
+        print(self.git.getmergerequestcomments(self.project_id, merge["id"]))
+        self.git.addcommenttomergerequest(self.project_id, merge["id"], "Hello")
+        print(self.git.getmergerequestcomments(self.project_id, merge["id"]))
+        self.git.updatemergerequest(self.project_id, merge["id"], title="testmerge2")
+        print(self.git.getmergerequest(self.project_id, merge["id"]))
+        self.git.acceptmergerequest(self.project_id, merge["id"], "closed!")
+        print(self.git.getmergerequest(self.project_id, merge["id"]))
+        """
+
+    def test_notes(self):
+        issue = self.git.createissue(self.project_id, title="test_issue")
+        note = self.git.createissuewallnote(self.project_id, issue["id"], content="Test_note")
+        assert isinstance(issue, dict)
+        assert isinstance(note, dict)
+        self.assertEqual(note["body"], "Test_note")
+        assert isinstance(self.git.getissuewallnotes(self.project_id, issue["id"]), list)
+        note2 = self.git.getissuewallnote(self.project_id, issue["id"], note["id"])
+        assert isinstance(note2, dict)
+        self.assertEqual(note, note2)
+
+        snippet = self.git.createsnippet(self.project_id, "test_snippet", "test.py", "import this")
+        note = self.git.createsnippetewallnote(self.project_id, snippet["id"], "test_snippet_content")
+        assert isinstance(self.git.getsnippetwallnotes(self.project_id, snippet["id"]), list)
+        note2 = self.git.getsnippetwallnote(self.project_id, snippet["id"], note["id"])
+        assert isinstance(note2, dict)
+        self.assertEqual(note, note2)
+
+        # TODO: do first merge request so I can finish this one
+        """
+        self.git.getmergerequestwallnotes(self.project_id)
+        self.git.getmergerequestwallnote(self.project_id)
+        self.git.createmergerequestewallnote(self.project_id)
+        """
