@@ -518,14 +518,18 @@ class Gitlab(object):
 
             return False
 
-    def addprojecthook(self, project_id, url):
-        """Add a hook to a project
-
-        :param project_id: project id
+    def addprojecthook(self, project_id, url, push=False, issues=False, merge_requests=False, tag_push=False):
+        """
+        add a hook to a project
+        :param id_: project id
         :param url: url of the hook
         :return: True if success
         """
         data = {"id": project_id, "url": url}
+        data['push_events'] = int(bool(push))
+        data['issues_events'] = int(bool(issues))
+        data['merge_requests_events'] = int(bool(merge_requests))
+        data['tag_push_events'] = int(bool(tag_push))
         request = requests.post("{0}/{1}/hooks".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
@@ -533,17 +537,23 @@ class Gitlab(object):
         else:
             return False
 
-    def editprojecthook(self, project_id, hook_id, url):
-        """Edit an existing hook from a project
-
-        :param project_id: project id
+    def editprojecthook(self, project_id, hook_id, url, push=False,
+            issues=False, merge_requests=False, tag_push=False, sudo=""):
+        """
+        edit an existing hook from a project
+        :param id_: project id
         :param hook_id: hook id
         :param url: the new url
         :param sudo: do the request as another user
         :return: True if success
         """
         data = {"id": project_id, "hook_id": hook_id, "url": url}
-
+        data['push_events'] = int(bool(push))
+        data['issues_events'] = int(bool(issues))
+        data['merge_requests_events'] = int(bool(merge_requests))
+        data['tag_push_events'] = int(bool(tag_push))
+        if sudo != "":
+            data['sudo'] = sudo
         request = requests.put("{0}/{1}/hooks/{2}".format(self.projects_url, project_id, hook_id),
                                headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 200:
