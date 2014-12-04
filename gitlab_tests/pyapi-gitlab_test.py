@@ -241,18 +241,24 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getissuewallnotes(self.project_id, issue["id"]), list)
         note2 = self.git.getissuewallnote(self.project_id, issue["id"], note["id"])
         assert isinstance(note2, dict)
-        self.assertEqual(note, note2)
+        self.assertEqual(note["body"], note2["body"])
 
         snippet = self.git.createsnippet(self.project_id, "test_snippet", "test.py", "import this")
         note = self.git.createsnippetewallnote(self.project_id, snippet["id"], "test_snippet_content")
         assert isinstance(self.git.getsnippetwallnotes(self.project_id, snippet["id"]), list)
         note2 = self.git.getsnippetwallnote(self.project_id, snippet["id"], note["id"])
         assert isinstance(note2, dict)
-        self.assertEqual(note, note2)
+        self.assertEqual(note["body"], note2["body"])
 
         # TODO: do first merge request so I can finish this one
-        """
-        self.git.getmergerequestwallnotes(self.project_id)
-        self.git.getmergerequestwallnote(self.project_id)
-        self.git.createmergerequestewallnote(self.project_id)
-        """
+
+        commit = self.git.listrepositorycommits(self.project_id)[5]
+        branch = self.git.createbranch(self.project_id, "notesbranch", commit["id"])
+        merge = self.git.createmergerequest(self.project_id, "develop", "notesbranch", "testnotes")
+        self.assertEqual(len(self.git.getmergerequestwallnotes(self.project_id, merge["id"])), 0)
+        note = self.git.createmergerequestewallnote(self.project_id, merge["id"], "test_content")
+        assert isinstance(note, dict)
+        note2 = self.git.getmergerequestwallnote(self.project_id, merge["id"], note["id"])
+        assert isinstance(note2, dict)
+        self.assertEqual(note["body"], note2["body"])
+        self.assertEqual(len(self.git.getmergerequestwallnotes(self.project_id, merge["id"])), 1)
