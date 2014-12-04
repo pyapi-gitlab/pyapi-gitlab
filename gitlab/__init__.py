@@ -1284,6 +1284,12 @@ class Gitlab(object):
             return False
 
     def getsnippetcontent(self, project_id, snippet_id):
+        """
+        Get raw content of a given snippet
+        :param project_id: project_id for the snippet
+        :param snippet_id: snippet id
+        :return: the content of the snippet
+        """
         request = requests.get("{}/{}/snippets/{}/raw".format(self.projects_url, project_id, snippet_id),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
@@ -1292,6 +1298,12 @@ class Gitlab(object):
             return False
 
     def deletesnippet(self, project_id, snippet_id):
+        """
+        Deletes a given snippet
+        :param project_id:
+        :param snippet_id:
+        :return:
+        """
         request = requests.delete("{}/{}/snippets/{}".format(self.projects_url, project_id, snippet_id),
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
@@ -1300,6 +1312,11 @@ class Gitlab(object):
             return False
 
     def getrepositories(self, project_id):
+        """
+        Gets all repositories for a project id
+        :param project_id:
+        :return:
+        """
         request = requests.get("{}/{}/repository/branches".format(self.projects_url, project_id),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
@@ -1308,6 +1325,12 @@ class Gitlab(object):
             return False
 
     def getrepositorybranch(self, project_id, branch):
+        """
+        Get a single project repository branch.
+        :param project_id:
+        :param branch:
+        :return:
+        """
         request = requests.get("{}/{}/repository/branches/{}".format(self.projects_url, project_id, branch),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
@@ -1320,6 +1343,13 @@ class Gitlab(object):
             return False
 
     def protectrepositorybranch(self, project_id, branch):
+        """
+        Protects a single project repository branch. This is an idempotent function,
+        protecting an already protected repository branch still returns a 200 OK status code.
+        :param project_id:
+        :param branch:
+        :return:
+        """
         request = requests.put("{}/{}/repository/branches/{}/protect".format(self.projects_url, project_id, branch),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
@@ -1328,6 +1358,13 @@ class Gitlab(object):
             return False
 
     def unprotectrepositorybranch(self, project_id, branch):
+        """
+        Unprotects a single project repository branch. This is an idempotent function,
+        unprotecting an already unprotected repository branch still returns a 200 OK status code.
+        :param project_id:
+        :param branch:
+        :return:
+        """
         request = requests.put("{}/{}/repository/branches/{}/unprotect".format(self.projects_url, project_id, branch),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
@@ -1336,6 +1373,11 @@ class Gitlab(object):
             return
 
     def listrepositorytags(self, project_id):
+        """
+        Get a list of repository tags from a project, sorted by name in reverse alphabetical order.
+        :param project_id:
+        :return:
+        """
         request = requests.get("{}/{}/repository/tags".format(self.projects_url, project_id),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
@@ -1343,9 +1385,35 @@ class Gitlab(object):
         else:
             return False
 
-    def listrepositorycommits(self, project_id,  page=1, per_page=20):
+    def createrepositorytag(self, project_id, tag_name, ref, message=None):
+        """
+        Creates new tag in the repository that points to the supplied ref.
+        :param project_id:
+        :param tag_name:
+        :param ref:
+        :param message:
+        :return:
+        """
 
+        data = {"id": project_id, "tag_name": tag_name, "ref": ref, "message": message}
+        request = requests.post("{}/{}/repository/tags".format(self.projects_url, project_id), data=data,
+                                verify=self.verify_ssl, headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def listrepositorycommits(self, project_id, ref_name=None, page=1, per_page=20):
+        """
+        Get a list of repository commits in a project.
+        :param project_id: The ID of a project
+        :param ref_name: The name of a repository branch or tag or if not given the default branch
+        :return:
+        """
         data = {'page': page, 'per_page': per_page}
+        if ref_name is not None:
+            data.update({"ref_name": ref_name})
         request = requests.get("{}/{}/repository/commits".format(self.projects_url, project_id),
                                verify=self.verify_ssl, params=data, headers=self.headers)
         if request.status_code == 200:
@@ -1354,6 +1422,12 @@ class Gitlab(object):
             return False
 
     def listrepositorycommit(self, project_id, sha1):
+        """
+        Get a specific commit identified by the commit hash or name of a branch or tag.
+        :param project_id: The ID of a project
+        :param sha1: The commit hash or name of a repository branch or tag
+        :return:
+        """
         request = requests.get("{}/{}/repository/commits/{}".format(self.projects_url, project_id, sha1),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
@@ -1362,6 +1436,12 @@ class Gitlab(object):
             return False
 
     def listrepositorycommitdiff(self, project_id, sha1):
+        """
+        Get the diff of a commit in a project.
+        :param project_id: The ID of a project
+        :param sha1: The name of a repository branch or tag or if not given the default branch
+        :return:
+        """
         request = requests.get("{}/{}/repository/commits/{}/diff".format(self.projects_url, project_id, sha1),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
@@ -1369,12 +1449,17 @@ class Gitlab(object):
         else:
             return False
 
-    def listrepositorytree(self, project_id, path="", ref_name=""):
+    def listrepositorytree(self, project_id, **kwargs):
+        """
+        Get a list of repository files and directories in a project.
+        :param project_id: The ID of a project
+        :param path: The path inside repository. Used to get contend of subdirectories
+        :param ref_name: The name of a repository branch or tag or if not given the default branch
+        :return:
+        """
         data = {}
-        if path != "":
-            data['path'] = path
-        if ref_name != "":
-            data['ref_name'] = ref_name
+        if kwargs:
+            data.update(kwargs)
 
         request = requests.get("{}/{}/repository/tree".format(self.projects_url, project_id), params=data,
                                verify=self.verify_ssl, headers=self.headers)
@@ -1383,14 +1468,47 @@ class Gitlab(object):
         else:
             return False
 
-    def getrawblob(self, project_id, sha1, path):
-        data = {"filepath": path}
-
+    def getrawfile(self, project_id, sha1, filepath):
+        """
+        Get the raw file contents for a file by commit SHA and path.
+        :param project_id: The ID of a project
+        :param sha1: The commit or branch name
+        :param filepath: The path the file
+        :return:
+        """
+        data = {"filepath": filepath}
         request = requests.get("{}/{}/repository/blobs/{}".format(self.projects_url, project_id, sha1),
                                params=data, verify=self.verify_ssl,
                                headers=self.headers)
         if request.status_code == 200:
             return request.content.decode("utf-8")
+        else:
+            return False
+
+    def getrawblob(self, project_id, sha1):
+        """
+        Get the raw file contents for a blob by blob SHA.
+        :param project_id: The ID of a project
+        :param sha1:
+        :return:
+        """
+        request = requests.get("{}/{}/repository/raw_blobs/{}".format(self.projects_url, project_id, sha1),
+                               verify=self.verify_ssl, headers=self.headers)
+        if request.status_code == 200:
+            return request.content.decode("utf-8")
+        else:
+            return False
+
+    def getcontributors(self, project_id):
+        """
+        Get repository contributors list
+        :param project_id: The ID of a project
+        :return:
+        """
+        request = requests.get("{}/{}/repository/contributors".format(self.projects_url, project_id),
+                               verify=self.verify_ssl, headers=self.headers)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
@@ -1415,7 +1533,7 @@ class Gitlab(object):
 
     def searchproject(self, search, page=1, per_page=20):
         """
-        projects section
+        Search for projects by name which are accessible to the authenticated user.
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}".format(self.search_url, search), params=data,
@@ -1424,12 +1542,11 @@ class Gitlab(object):
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-            msg = json.loads(request.content.decode("utf-8"))['message']
-            raise exceptions.HttpError(msg)
+            return False
 
     def getfilearchive(self, project_id, filepath=""):
         """
-        repository section
+        Get an archive of the repository
         """
         request = requests.get("{}/{}/repository/archive".format(self.projects_url, project_id),
                                verify=self.verify_ssl, headers=self.headers)
