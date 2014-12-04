@@ -14,13 +14,27 @@ pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabh
 ## Requirements
 
 - requests
-- markdown
+
+
+## Naming convention
+
+pyapi-gitlab has its own versioning in which the 2 first numbers indicates the Gitlab version that its supported for that library. a 7.5 version means that its compatible with the Gitlab 7.5 and lower API versions.
 
 ## Installation
 
 pyapi-gitlab is now on Pypi!
 
 Depending on the gitlab version you are using (check it on your help section on gitlab) you will need a different version.
+
+Latest version
+
+Gitlab 7.5.0:
+```bash
+pip install pyapi-gitlab=="7.5.0"
+```
+
+
+Old versions not maintained:
 
 Gitlab 5.4:
 ```bash
@@ -37,7 +51,17 @@ Gitlab 6.2:
 pip install pyapi-gitlab==6.2.3
 ```
 
-pyapi-gitlab supports python version 2.6, 2.7 and 3.3
+pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
+
+
+## Changes in the latest version
+
+ - Support for the full Gitlab 7.5 API
+ - Some methods were returning True or False instead of the object created. Now all the methods in which there is something returning from the server is returned as a dictionary/list of dictionaries to the user
+ - All methods have documentation (Inside the library only, the docs are lagging a bit behind).
+ - Some methods now use kwargs for the optional parameters so the code is more easy. For example, createissue now will take as much optinal named params as you want without makind the code unreadable.
+ - In the short future all methods will use kwargs for the optional parameters.
+ 
 
 ## Examples/Documentation
 
