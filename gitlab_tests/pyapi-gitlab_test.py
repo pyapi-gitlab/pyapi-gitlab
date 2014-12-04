@@ -71,6 +71,21 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getproject(self.project_id), dict)
         self.assertFalse(self.git.getproject("wrong"))
 
+        # test getallprojectsuser
+        assert isinstance(self.git.getallprojectsuser(), list)
+        assert isinstance(self.git.getallprojectsuser(page=5), list)
+        assert isinstance(self.git.getallprojectsuser(per_page=7), list)
+
+        # test getallprojects
+        assert isinstance(self.git.getallprojects(), list)
+        assert isinstance(self.git.getallprojects(page=5), list)
+        assert isinstance(self.git.getallprojects(per_page=7), list)
+
+        # test getownprojects
+        assert isinstance(self.git.getownprojects(), list)
+        assert isinstance(self.git.getownprojects(page=5), list)
+        assert isinstance(self.git.getownprojects(per_page=7), list)
+
         # test events
         assert isinstance(self.git.getprojectevents(self.project_id), list)
         assert isinstance(self.git.getprojectevents(self.project_id, page=3), list)
@@ -151,7 +166,8 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.listrepositorytree(self.project_id), list)
         assert isinstance(self.git.listrepositorytree(self.project_id, path="docs"), list)
         assert isinstance(self.git.listrepositorytree(self.project_id, ref_name="develop"), list)
-        assert isinstance(str(self.git.getrawblob(self.project_id, commit['id'], "setup.py")), str)
+        assert isinstance(str(self.git.getrawblob(self.project_id, commit['id'])), str)
+        assert isinstance(str(self.git.getrawfile(self.project_id, commit['id'], "setup.py")), str)
         commit = self.git.listrepositorycommits(self.project_id)
         assert isinstance(self.git.compare_branches_tags_commits(self.project_id,
                                                                  from_id=commit[1]["id"],
@@ -163,6 +179,7 @@ class GitlabTest(unittest.TestCase):
         self.assertNotEqual(firstfile["commit_id"], secondfile["commit_id"])
         self.assertNotEqual(firstfile["content"], secondfile["content"])
         self.assertTrue(self.git.deletefile(self.project_id, "test.file", "develop", "remove_testfile"))
+        assert isinstance(self.git.getcontributors(self.project_id), list)
 
     def test_search(self):
         self.assertGreater(len(self.git.searchproject(self.project['name'])), 0)
@@ -199,6 +216,7 @@ class GitlabTest(unittest.TestCase):
         issue = self.git.editissue(self.project_id, issue["id"], state_event="close")
         self.assertEqual(issue["state"], "closed")
         self.assertGreater(len(self.git.getprojectissues(self.project_id)), 0)
+        assert isinstance(self.git.getprojectissue(self.project_id, issue["id"]), dict)
         self.assertGreater(len(self.git.getissues()), 0)
 
     def test_system_hooks(self):
