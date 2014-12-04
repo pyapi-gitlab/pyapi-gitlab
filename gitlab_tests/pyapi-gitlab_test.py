@@ -15,7 +15,7 @@ except ImportError:
     ssh_test = False
 
 user = os.environ.get('gitlab_user', 'root')
-password = os.environ.get('gitlab_password', 'roottoor')
+password = os.environ.get('gitlab_password', '5iveL!fe')
 host = os.environ.get('gitlab_host', 'http://localhost:8080')
 
 
@@ -28,7 +28,7 @@ class GitlabTest(unittest.TestCase):
         cls.project = cls.git.createproject(name=name, visibility_level="private",
                                             import_url="https://github.com/Itxaka/pyapi-gitlab.git")
         # wait a bit for the project to be fully imported
-        time.sleep(5)
+        time.sleep(20)
         cls.project_id = cls.project['id']
         cls.user_id = cls.git.currentuser()['id']
 
@@ -210,24 +210,27 @@ class GitlabTest(unittest.TestCase):
         self.assertEqual(milestone["title"], "test2")
 
     def test_merge(self):
-        # TODO: check this and make this when I have internet so I can clone the test repo
-        pass
-        """
         # prepare for the merge
-        print(self.git.listbranches(self.project_id))
         commit = self.git.listrepositorycommits(self.project_id)[5]
         branch = self.git.createbranch(self.project_id, "mergebranch", commit["id"])
-        merge = self.git.createmergerequest(self.project_id, "master", "mergebranch", "testmerge")
-        print(self.git.getmergerequests(self.project_id))
-        print(self.git.getmergerequest(self.project_id, merge["id"]))
-        print(self.git.getmergerequestcomments(self.project_id, merge["id"]))
-        self.git.addcommenttomergerequest(self.project_id, merge["id"], "Hello")
-        print(self.git.getmergerequestcomments(self.project_id, merge["id"]))
-        self.git.updatemergerequest(self.project_id, merge["id"], title="testmerge2")
-        print(self.git.getmergerequest(self.project_id, merge["id"]))
-        self.git.acceptmergerequest(self.project_id, merge["id"], "closed!")
-        print(self.git.getmergerequest(self.project_id, merge["id"]))
-        """
+        merge = self.git.createmergerequest(self.project_id, "develop", "mergebranch", "testmerge")
+
+        assert isinstance(self.git.getmergerequests(self.project_id), list)
+        merge_request = self.git.getmergerequest(self.project_id, merge["id"])
+        assert isinstance(merge_request, dict)
+        self.assertEqual(merge_request["title"], "testmerge")
+
+        self.assertEqual(len(self.git.getmergerequestcomments(self.project_id, merge["id"])), 0)
+        self.assertTrue(self.git.addcommenttomergerequest(self.project_id, merge["id"], "Hello"))
+        comments = self.git.getmergerequestcomments(self.project_id, merge["id"])
+        self.assertEqual(comments[0]["note"], "Hello")
+
+        self.assertTrue(self.git.updatemergerequest(self.project_id, merge["id"], title="testmerge2"))
+        merge_request = self.git.getmergerequest(self.project_id, merge["id"])
+        self.assertEqual(merge_request["title"], "testmerge2")
+        self.assertEqual(self.git.getmergerequest(self.project_id, merge["id"])["state"], "opened")
+        self.assertTrue(self.git.acceptmergerequest(self.project_id, merge["id"], "closed!"))
+        self.assertEqual(self.git.getmergerequest(self.project_id, merge["id"])["state"], "merged")
 
     def test_notes(self):
         issue = self.git.createissue(self.project_id, title="test_issue")
