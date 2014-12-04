@@ -1236,9 +1236,8 @@ class Gitlab(object):
         if sudo != "":
             data['sudo'] = sudo
 
-        request = requests.post(url_str, data=data, headers=self.headers, 
-                                verify=self.verify_ssl)
-        if request.status_code == 201:
+        request = requests.put(url_str, data=data, headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
             return True
         else:
             
