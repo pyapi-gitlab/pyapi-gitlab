@@ -77,10 +77,10 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getprojectevents(self.project_id, per_page=4), list)
 
         # add-remove project members
-        self.assertTrue(self.git.addprojectmember(id_=self.project_id, user_id=self.user_id, access_level="reporter", sudo=1))
-        assert isinstance(self.git.listprojectmembers(id_=self.project_id), list)
-        self.assertTrue(self.git.editprojectmember(id_=self.project_id, user_id=self.user_id, access_level="master", sudo=1))
-        self.assertTrue(self.git.deleteprojectmember(id_=self.project_id, user_id=1))
+        self.assertTrue(self.git.addprojectmember(self.project_id, user_id=self.user_id, access_level="reporter", sudo=1))
+        assert isinstance(self.git.listprojectmembers(self.project_id), list)
+        self.assertTrue(self.git.editprojectmember(self.project_id, user_id=self.user_id, access_level="master", sudo=1))
+        self.assertTrue(self.git.deleteprojectmember(self.project_id, user_id=1))
 
         # Hooks testing
         self.assertTrue(self.git.addprojecthook(self.project_id, "http://web.com"))
@@ -94,12 +94,12 @@ class GitlabTest(unittest.TestCase):
 
     def test_branch(self):
         sha1 = self.git.listrepositorycommits(project_id=self.project_id)[0]["id"]
-        assert isinstance(self.git.createbranch(id_=self.project_id, branch="deleteme", ref=sha1), dict)
-        self.assertTrue(self.git.deletebranch(id_=self.project_id, branch="deleteme"))
-        assert isinstance(self.git.listbranches(id_=self.project_id), list)
-        assert isinstance(self.git.listbranch(id_=self.project_id, branch="develop"), dict)
-        self.assertTrue(self.git.protectbranch(id_=self.project_id, branch="develop"))
-        self.assertTrue(self.git.unprotectbranch(id_=self.project_id, branch="develop"))
+        assert isinstance(self.git.createbranch(self.project_id, branch="deleteme", ref=sha1), dict)
+        self.assertTrue(self.git.deletebranch(self.project_id, branch="deleteme"))
+        assert isinstance(self.git.listbranches(self.project_id), list)
+        assert isinstance(self.git.listbranch(self.project_id, branch="develop"), dict)
+        self.assertTrue(self.git.protectbranch(self.project_id, branch="develop"))
+        self.assertTrue(self.git.unprotectbranch(self.project_id, branch="develop"))
 
     def test_sshkeys(self):
         assert isinstance(self.git.getsshkeys(), list)
