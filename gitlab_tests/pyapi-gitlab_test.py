@@ -105,17 +105,29 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getsshkeys(), list)
         self.assertEquals(len(self.git.getsshkeys()), 0)
         # not working due a bug? in pycrypto: https://github.com/dlitz/pycrypto/issues/99
-        """
+
         if ssh_test:
             name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             rsa_key = RSA.generate(1024)
-            print(str(rsa_key.publickey().exportKey()))
-            print(str(rsa_key.publickey().exportKey(format="OpenSSH")))
-            self.assertTrue(self.git.addsshkey(title=name, key=str(rsa_key.publickey().exportKey())))
+            self.assertTrue(self.git.addsshkey(title=name, key=str(rsa_key.publickey().exportKey(format="OpenSSH"))))
             self.assertGreater(self.git.getsshkeys(), 0)
-            print(self.git.getsshkeys())
+            keys = self.git.getsshkeys()
+            assert isinstance(keys, list)
             key = self.git.getsshkeys()[0]
-            self.git.deletesshkey(key["id"])"""
+            assert isinstance(key, dict)
+            self.assertTrue(self.git.deletesshkey(key["id"]))
+
+            name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+            rsa_key = RSA.generate(1024)
+            self.assertTrue(self.git.addsshkeyuser(self.user_id, title=name,
+                                                   key=str(rsa_key.publickey().exportKey(format="OpenSSH"))))
+            self.assertGreater(self.git.getsshkeys(), 0)
+            keys = self.git.getsshkeys()
+            assert isinstance(keys, list)
+            key = self.git.getsshkeys()[0]
+            assert isinstance(key, dict)
+            self.assertTrue(self.git.deletesshkey(key["id"]))
+
 
     def test_snippets(self):
         assert isinstance(self.git.createsnippet(self.project_id, "test", "test", "codeee"), dict)
