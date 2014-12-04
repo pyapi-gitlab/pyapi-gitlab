@@ -90,13 +90,13 @@ class Gitlab(object):
         else:
             return False
 
-    def getuser(self, id_):
+    def getuser(self, user_id):
         """
         Get info for a user identified by id
-        :param id_: id of the user
+        :param user_id: id of the user
         :return: False if not found, a dictionary if found
         """
-        request = requests.get("{}/{}".format(self.users_url, str(id_)),
+        request = requests.get("{}/{}".format(self.users_url, user_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -125,15 +125,15 @@ class Gitlab(object):
         elif request.status_code == 404:
             return False
 
-    def deleteuser(self, id_):
+    def deleteuser(self, user_id):
         """
         Deletes an user by ID
-        :param id_: id of the user to delete
+        :param user_id: id of the user to delete
         :return: True if it deleted, False if it couldn't. False could happen
         for several reasons, but there isn't a
         good way of differenting them
         """
-        request = requests.delete("{}/{}".format(self.users_url, str(id_)),
+        request = requests.delete("{}/{}".format(self.users_url, user_id),
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
@@ -151,12 +151,12 @@ class Gitlab(object):
                                headers=self.headers, verify=self.verify_ssl)
         return json.loads(request.content.decode("utf-8"))
 
-    def edituser(self, id_, **kwargs):
+    def edituser(self, user_id, **kwargs):
         """
         Edits an user data. Unfortunately we have to check ALL the params,
         as they can't be empty or the user will get all their data empty,
         so we only send the filled params
-        :param id_: id of the user to change
+        :param user_id: id of the user to change
         :param kwargs: Any param the the Gitlab API supports
         :return: Dict of the user
         """
@@ -165,7 +165,7 @@ class Gitlab(object):
         if kwargs:
             data.update(kwargs)
 
-        request = requests.put("{}/{}".format(self.users_url, str(id_)),
+        request = requests.put("{}/{}".format(self.users_url, user_id),
                                headers=self.headers, data=data,
                                verify=self.verify_ssl)
         if request.status_code == 200:
@@ -186,13 +186,13 @@ class Gitlab(object):
 
             return False
 
-    def getsshkey(self, id_):
+    def getsshkey(self, key_id):
         """
-        Get a single ssh key identified by id_
-        :param id_: the id of the key
+        Get a single ssh key identified by key_id
+        :param key_id: the id of the key
         :return: the key itself
         """
-        request = requests.get("{}/{}".format(self.keys_url, str(id_)),
+        request = requests.get("{}/{}".format(self.keys_url, key_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -219,10 +219,10 @@ class Gitlab(object):
 
             return False
 
-    def addsshkeyuser(self, id_, title, key, sudo=""):
+    def addsshkeyuser(self, user_id, title, key, sudo=""):
         """
         Add a new ssh key for the user identified by id
-        :param id_: id of the user to add the key to
+        :param user_id: id of the user to add the key to
         :param title: title of the new key
         :param key: the key itself
         :return: true if added, false if it didn't add it
@@ -231,7 +231,7 @@ class Gitlab(object):
         data = {"title": title, "key": key}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.post("{}/{}/keys".format(self.users_url, str(id_)),
+        request = requests.post("{}/{}/keys".format(self.users_url, user_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return True
@@ -239,13 +239,13 @@ class Gitlab(object):
 
             return False
 
-    def deletesshkey(self, id_):
+    def deletesshkey(self, key_id):
         """
         Deletes an sshkey for the current user identified by id
-        :param id_: the id of the key
+        :param key_id: the id of the key
         :return: False if it didn't delete it, True if it was deleted
         """
-        request = requests.delete("{}/{}".format(self.keys_url, str(id_)),
+        request = requests.delete("{}/{}".format(self.keys_url, key_id),
                                   headers=self.headers, verify=self.verify_ssl)
         if request.content == b"null":
             return False
@@ -324,13 +324,13 @@ class Gitlab(object):
         else:
             return False
 
-    def getproject(self, id_):
+    def getproject(self, project_id):
         """
         Get info for a project identified by id
-        :param id_: id of the project
+        :param project_id: id of the project
         :return: False if not found, a dictionary if found
         """
-        request = requests.get("{}/{}".format(self.projects_url, str(id_)),
+        request = requests.get("{}/{}".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -338,17 +338,17 @@ class Gitlab(object):
 
             return False
 
-    def getprojectevents(self, id_, page=1, per_page=20):
+    def getprojectevents(self, project_id, page=1, per_page=20):
         """
         Get the project identified by id, events(commits)
-        :param id_: id of the project
+        :param project_id: id of the project
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
         :return: False if no project with that id, a dictionary
          with the events if found
         """
         data = {'page': page, 'per_page': per_page}
-        request = requests.get("{}/{}/events".format(self.projects_url, str(id_)), params=data, headers=self.headers,
+        request = requests.get("{}/{}/events".format(self.projects_url, project_id), params=data, headers=self.headers,
                                verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -399,7 +399,7 @@ class Gitlab(object):
         if visibility_level > 0:
             if public != 0:
                 raise ValueError('Only one of public and visibility_level arguments may be provided')
-            data['visibility_level'] =  visibility_level
+            data['visibility_level'] = visibility_level
 
         if public != 0:
             data['public'] = public
@@ -419,7 +419,7 @@ class Gitlab(object):
     def deleteproject(self, project_id):
         """
         Delete a project
-        :param id_: project id
+        :param project_id: project id
         :return: always true
         """
         request = requests.delete("{}/{}".format(self.projects_url, project_id),
@@ -427,13 +427,13 @@ class Gitlab(object):
         if request.status_code == 200:
             return True
 
-    def createprojectuser(self, id_, name, description="", default_branch="",
+    def createprojectuser(self, user_id, name, description="", default_branch="",
                           issues_enabled=0, wall_enabled=0,
                           merge_requests_enabled=0, wiki_enabled=0,
                           snippets_enabled=0, sudo=""):
         """
         Create a project for the given user identified by id
-        :param id_: id of the user to crete the project for
+        :param user_id: id of the user to crete the project for
         :param name: Obligatory
         :return: True if it created the project, False otherwise
         """
@@ -445,7 +445,7 @@ class Gitlab(object):
                 "snippets_enabled": snippets_enabled}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.post("{}/user/{}".format(self.projects_url, id_),
+        request = requests.post("{}/user/{}".format(self.projects_url, user_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return True
@@ -453,10 +453,10 @@ class Gitlab(object):
 
             return False
 
-    def listprojectmembers(self, id_, query=None, page=1, per_page=20):
+    def listprojectmembers(self, project_id, query=None, page=1, per_page=20):
         """
         lists the members of a given project id
-        :param id_: the project id
+        :param project_id: the project id
         :param query: Optional search query
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
@@ -465,7 +465,7 @@ class Gitlab(object):
         data = {'page': page, 'per_page': per_page}
         if query:
             data['query'] = query
-        request = requests.get("{}/{}/members".format(self.projects_url, id_),
+        request = requests.get("{}/{}/members".format(self.projects_url, project_id),
                                params=data, headers=self.headers,
                                verify=self.verify_ssl)
         if request.status_code == 200:
@@ -474,11 +474,11 @@ class Gitlab(object):
 
             return False
 
-    def addprojectmember(self, id_, user_id, access_level, sudo=""):
+    def addprojectmember(self, project_id, user_id, access_level, sudo=""):
         # check the access level and put into a number
         """
         adds a project member to a project
-        :param id_: project id
+        :param project_id: project id
         :param user_id: user id
         :param access_level: access level, see gitlab help to know more
         :param sudo: do the request with another user
@@ -492,20 +492,20 @@ class Gitlab(object):
             access_level = 20
         else:
             access_level = 10
-        data = {"id": id_, "user_id": user_id, "access_level": access_level}
+        data = {"id": project_id, "user_id": user_id, "access_level": access_level}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.post("{}/{}/members".format(self.projects_url, id_),
+        request = requests.post("{}/{}/members".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return True
         else:
             return False
 
-    def editprojectmember(self, id_, user_id, access_level, sudo=""):
+    def editprojectmember(self, project_id, user_id, access_level, sudo=""):
         """
         edit a project member
-        :param id_: project id
+        :param project_id: project id
         :param user_id: user id
         :param access_level: access level
         :param sudo: do the request as another user
@@ -519,11 +519,11 @@ class Gitlab(object):
             access_level = 20
         else:
             access_level = 10
-        data = {"id": id_, "user_id": user_id,
+        data = {"id": project_id, "user_id": user_id,
                 "access_level": access_level}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.put("{}/{}/members/{}".format(self.projects_url, id_, user_id),
+        request = requests.put("{}/{}/members/{}".format(self.projects_url, project_id, user_id),
                                headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
@@ -531,39 +531,39 @@ class Gitlab(object):
 
             return False
 
-    def deleteprojectmember(self, id_, user_id):
+    def deleteprojectmember(self, project_id, user_id):
         """
         Delete a project member
-        :param id_: project id
+        :param project_id: project id
         :param user_id: user id
         :return: always true
         """
-        request = requests.delete("{}/{}/members/{}".format(self.projects_url, id_, user_id),
+        request = requests.delete("{}/{}/members/{}".format(self.projects_url, project_id, user_id),
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True  # It always returns true
 
-    def getprojecthooks(self, id_):
+    def getprojecthooks(self, project_id):
         """
         get all the hooks from a project
-        :param id_: project id
+        :param project_id: project id
         :return: the hooks
         """
-        request = requests.get("{}/{}/hooks".format(self.projects_url, id_),
+        request = requests.get("{}/{}/hooks".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
-    def getprojecthook(self, id_, hook_id):
+    def getprojecthook(self, project_id, hook_id):
         """
         get a particular hook from a project
-        :param id_: project id
+        :param project_id: project id
         :param hook_id: hook id
         :return: the hook
         """
-        request = requests.get("{}/{}/hooks/{}".format(self.projects_url, id_, hook_id),
+        request = requests.get("{}/{}/hooks/{}".format(self.projects_url, project_id, hook_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -571,48 +571,48 @@ class Gitlab(object):
 
             return False
 
-    def addprojecthook(self, id_, url):
+    def addprojecthook(self, project_id, url):
         """
         add a hook to a project
-        :param id_: project id
+        :param project_id: project id
         :param url: url of the hook
         :return: True if success
         """
-        data = {"id": id_, "url": url}
-        request = requests.post("{}/{}/hooks".format(self.projects_url, id_),
+        data = {"id": project_id, "url": url}
+        request = requests.post("{}/{}/hooks".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return True
         else:
             return False
 
-    def editprojecthook(self, id_, hook_id, url, sudo=""):
+    def editprojecthook(self, project_id, hook_id, url, sudo=""):
         """
         edit an existing hook from a project
-        :param id_: project id
+        :param project_id: project id
         :param hook_id: hook id
         :param url: the new url
         :param sudo: do the request as another user
         :return: True if success
         """
-        data = {"id": id_, "hook_id": hook_id, "url": url}
+        data = {"id": project_id, "hook_id": hook_id, "url": url}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.put("{}/{}/hooks/{}".format(self.projects_url, id_, hook_id),
+        request = requests.put("{}/{}/hooks/{}".format(self.projects_url, project_id, hook_id),
                                headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
             return False
 
-    def deleteprojecthook(self, id_, hook_id):
+    def deleteprojecthook(self, project_id, hook_id):
         """
         delete a project hook
-        :param id_: project id
+        :param project_id: project id
         :param hook_id: hook id
         :return: True if success
         """
-        request = requests.delete("{}/{}/hooks/{}".format(self.projects_url, id_, hook_id),
+        request = requests.delete("{}/{}/hooks/{}".format(self.projects_url, project_id, hook_id),
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
@@ -672,59 +672,59 @@ class Gitlab(object):
         else:
             return False
 
-    def listbranches(self, id_):
+    def listbranches(self, project_id):
         """
         list all the branches from a project
-        :param id_: project id
+        :param project_id: project id
         :return: the branches
         """
-        request = requests.get("{}/{}/repository/branches".format(self.projects_url, id_),
+        request = requests.get("{}/{}/repository/branches".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
-    def listbranch(self, id_, branch):
+    def listbranch(self, project_id, branch):
         """
         list one branch from a project
-        :param id_: project id
+        :param project_id: project id
         :param branch: branch id
         :return: the branch
         """
-        request = requests.get("{}/{}/repository/branches/{}".format(self.projects_url, id_, branch),
+        request = requests.get("{}/{}/repository/branches/{}".format(self.projects_url, project_id, branch),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
-    def createbranch(self, id_, branch, ref):
+    def createbranch(self, project_id, branch, ref):
         """
         Create branch from commit SHA or existing branch
-        :param id_:  The ID of a project
+        :param project_id:  The ID of a project
         :param branch: The name of the branch
         :param ref: Create branch from commit SHA or existing branch
         :return: True if success, False if not
         """
-        data = {"id": id_, "branch_name": branch, "ref": ref}
+        data = {"id": project_id, "branch_name": branch, "ref": ref}
 
-        request = requests.post("{}/{}/repository/branches".format(self.projects_url, id_),
+        request = requests.post("{}/{}/repository/branches".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
-    def deletebranch(self, id_, branch):
+    def deletebranch(self, project_id, branch):
         """
         Delete branch by name
-        :param id_:  The ID of a project
+        :param project_id:  The ID of a project
         :param branch: The name of the branch
         :return: True if success, False if not
         """
 
-        request = requests.delete("{}/{}/repository/branches/{}".format(self.projects_url, id_, branch),
+        request = requests.delete("{}/{}/repository/branches/{}".format(self.projects_url, project_id, branch),
                                   headers=self.headers, verify=self.verify_ssl)
 
         if request.status_code == 200:
@@ -732,28 +732,28 @@ class Gitlab(object):
         else:
             return False
 
-    def protectbranch(self, id_, branch):
+    def protectbranch(self, project_id, branch):
         """
         protect a branch from changes
-        :param id_: project id
+        :param project_id: project id
         :param branch: branch id
         :return: True if success
         """
-        request = requests.put("{}/{}/repository/branches/{}/protect".format(self.projects_url, id_, branch),
+        request = requests.put("{}/{}/repository/branches/{}/protect".format(self.projects_url, project_id, branch),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
         else:
             return False
 
-    def unprotectbranch(self, id_, branch):
+    def unprotectbranch(self, project_id, branch):
         """
         stop protecting a branch
-        :param id_: project id
+        :param project_id: project id
         :param branch: branch id
         :return: true if success
         """
-        request = requests.put("{}/{}/repository/branches/{}/unprotect".format(self.projects_url, id_, branch),
+        request = requests.put("{}/{}/repository/branches/{}/unprotect".format(self.projects_url, project_id, branch),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
@@ -761,16 +761,16 @@ class Gitlab(object):
 
             return False
 
-    def createforkrelation(self, id_, from_):
+    def createforkrelation(self, project_id, from_project_id):
         """
         create a fork relation. This DO NOT create a fork but only adds
         the relation between 2 repositories
-        :param id_: project id
-        :param from_: from id
+        :param project_id: project id
+        :param from_project_id: from id
         :return: true if success
         """
-        data = {"id": id_, "forked_from_id": from_}
-        request = requests.post("{}/{}/fork/{}".format(self.projects_url, id_, from_),
+        data = {"id": project_id, "forked_from_id": from_project_id}
+        request = requests.post("{}/{}/fork/{}".format(self.projects_url, project_id, from_project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return True
@@ -778,14 +778,14 @@ class Gitlab(object):
 
             return False
 
-    def removeforkrelation(self, id_):
+    def removeforkrelation(self, project_id):
         """
         remove an existing fork relation. this DO NOT remove the fork,
         only the relation between them
-        :param id_: project id
+        :param project_id: project id
         :return: true if success
         """
-        request = requests.delete("{}/{}/fork".format(self.projects_url, id_),
+        request = requests.delete("{}/{}/fork".format(self.projects_url, project_id),
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
@@ -810,17 +810,17 @@ class Gitlab(object):
 
             return False
 
-    def getprojectissues(self, id_, page=1, per_page=20, sudo=""):
+    def getprojectissues(self, project_id, page=1, per_page=20, sudo=""):
         """
         Return a list of issues for project id_.
-        :param id_: The id for the project.
+        :param project_id: The id for the project.
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
         """
         data = {'page': page, 'per_page': per_page}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.get("{}/{}/issues".format(self.projects_url, id_),
+        request = requests.get("{}/{}/issues".format(self.projects_url, project_id),
                                params=data, headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -828,14 +828,14 @@ class Gitlab(object):
 
             return False
 
-    def getprojectissue(self, id_, issue_id):
+    def getprojectissue(self, project_id, issue_id):
         """
         get an specific issue id from a project
-        :param id_: project id
+        :param project_id: project id
         :param issue_id: issue id
         :return: the issue
         """
-        request = requests.get("{}/{}/issues/{}".format(self.projects_url, id_, issue_id),
+        request = requests.get("{}/{}/issues/{}".format(self.projects_url, project_id, issue_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -843,47 +843,47 @@ class Gitlab(object):
 
             return False
 
-    def createissue(self, id_, title, **kwargs):
+    def createissue(self, project_id, title, **kwargs):
         """
         create a new issue
-        :param id_: project id
+        :param project_id: project id
         :param title: title of the issue
         :return: dict with the issue created
         """
         data = {"id": id, "title": title}
         if kwargs:
             data.update(kwargs)
-        request = requests.post("{}/{}/issues".format(self.projects_url, id_),
+        request = requests.post("{}/{}/issues".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
-    def editissue(self, id_, issue_id, **kwargs):
+    def editissue(self, project_id, issue_id, **kwargs):
         """
         edit an existing issue data
-        :param id_: project id
+        :param project_id: project id
         :param issue_id: issue id
         :return: true if success
         """
-        data = {"id": id_, "issue_id": issue_id}
+        data = {"id": project_id, "issue_id": issue_id}
         if kwargs:
             data.update(kwargs)
-        request = requests.put("{}/{}/issues/{}".format(self.projects_url, id_, issue_id),
+        request = requests.put("{}/{}/issues/{}".format(self.projects_url, project_id, issue_id),
                                headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
-    def getmilestones(self, id_):
+    def getmilestones(self, project_id):
         """
         get the milestones for a project
-        :param id_: project id
+        :param project_id: project id
         :return: the milestones
         """
-        request = requests.get("{}/{}/milestones".format(self.projects_url, id_),
+        request = requests.get("{}/{}/milestones".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -891,14 +891,14 @@ class Gitlab(object):
 
             return False
 
-    def getmilestone(self, id_, milestone_id):
+    def getmilestone(self, project_id, milestone_id):
         """
         get an specific milestone
-        :param id_: project id
+        :param project_id: project id
         :param milestone_id: milestone id
         :return: the milestone
         """
-        request = requests.get("{}/{}/milestones/{}".format(self.projects_url, id_, milestone_id),
+        request = requests.get("{}/{}/milestones/{}".format(self.projects_url, project_id, milestone_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -906,21 +906,21 @@ class Gitlab(object):
 
             return False
 
-    def createmilestone(self, id_, title, description="", due_date="", sudo=""):
+    def createmilestone(self, project_id, title, description="", due_date="", sudo=""):
         """
         create a new milestone
-        :param id_: project id
+        :param project_id: project id
         :param title: title
         :param description: description
         :param due_date: due date
         :param sudo: do the request as another user
         :return: true if success
         """
-        data = {"id": id_, "title": title, "description": description,
+        data = {"id": project_id, "title": title, "description": description,
                 "due_date": due_date}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.post("{}/{}/milestones".format(self.projects_url, id_),
+        request = requests.post("{}/{}/milestones".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
@@ -928,11 +928,11 @@ class Gitlab(object):
 
             return False
 
-    def editmilestone(self, id_, milestone_id, title="", description="",
+    def editmilestone(self, project_id, milestone_id, title="", description="",
                       due_date="", state_event="", sudo=""):
         """
         edit an existing milestone
-        :param id_: project id
+        :param project_id: project id
         :param milestone_id: milestone id
         :param title: title
         :param description: description
@@ -941,12 +941,12 @@ class Gitlab(object):
         :param sudo: do the request as another user
         :return: true if success
         """
-        data = {"id": id_, "milestone_id": milestone_id, "title": title,
+        data = {"id": project_id, "milestone_id": milestone_id, "title": title,
                 "description": description,
                 "due_date": due_date, "state_event": state_event}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.put("{}/{}/milestones/{}".format(self.projects_url, id_, milestone_id),
+        request = requests.put("{}/{}/milestones/{}".format(self.projects_url, project_id, milestone_id),
                                headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -954,13 +954,13 @@ class Gitlab(object):
 
             return False
 
-    def listdeploykeys(self, id_):
+    def listdeploykeys(self, project_id):
         """
         Get a list of a project's deploy keys.
-        :param id_: project id
+        :param project_id: project id
         :return: the keys in a dictionary if success, false if not
         """
-        request = requests.get("{}/{}/keys".format(self.projects_url, id_),
+        request = requests.get("{}/{}/keys".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -968,14 +968,14 @@ class Gitlab(object):
 
             return False
 
-    def listdeploykey(self, id_, key_id):
+    def listdeploykey(self, project_id, key_id):
         """
         Get a single key.
-        :param id_: project id
+        :param project_id: project id
         :param key_id: key id
         :return: the key in a dict if success, false if not
         """
-        request = requests.get("{}/{}/keys/{}".format(self.projects_url, id_, key_id),
+        request = requests.get("{}/{}/keys/{}".format(self.projects_url, project_id, key_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -983,20 +983,20 @@ class Gitlab(object):
 
             return False
 
-    def adddeploykey(self, id_, title, key, sudo=""):
+    def adddeploykey(self, project_id, title, key, sudo=""):
         """
         Creates a new deploy key for a project.
         If deploy key already exists in another project - it will be joined
         to project but only if original one was is accessible by same user
-        :param id_: project id
+        :param project_id: project id
         :param title: title of the key
         :param key: the key itself
         :return: true if sucess, false if not
         """
-        data = {"id": id_, "title": title, "key": key}
+        data = {"id": project_id, "title": title, "key": key}
         if sudo != "":
             data['sudo'] = sudo
-        request = requests.post("{}/{}/keys".format(self.projects_url, id_),
+        request = requests.post("{}/{}/keys".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
             return True
@@ -1004,14 +1004,14 @@ class Gitlab(object):
 
             return False
 
-    def deletedeploykey(self, id_, key_id):
+    def deletedeploykey(self, project_id, key_id):
         """
         Delete a deploy key from a project
-        :param id_: project id
+        :param project_id: project id
         :param key_id: key id to delete
         :return: true if success, false if not
         """
-        request = requests.delete("{}/{}/keys/{}".format(self.projects_url, id_, key_id),
+        request = requests.delete("{}/{}/keys/{}".format(self.projects_url, project_id, key_id),
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True
@@ -1057,10 +1057,10 @@ class Gitlab(object):
             msg = json.loads(request.content.decode("utf-8"))['message']
             return exceptions.HttpError(msg)
 
-    def getgroups(self, id_=None, page=1, per_page=20, sudo=""):
+    def getgroups(self, group_id=None, page=1, per_page=20, sudo=""):
         """
         Retrieve group information
-        :param id_: Specify a group. Otherwise, all groups are returned
+        :param group_id: Specify a group. Otherwise, all groups are returned
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
         """
@@ -1068,7 +1068,7 @@ class Gitlab(object):
         if sudo != "":
             data['sudo'] = sudo
         request = requests.get("{}/{}".format(self.groups_url,
-                                                id_ if id_ else ""),
+                                              group_id if group_id else ""),
                                params=data, headers=self.headers,
                                verify=self.verify_ssl)
         if request.status_code == 200:
@@ -1427,7 +1427,7 @@ class Gitlab(object):
             msg = json.loads(request.content.decode("utf-8"))['message']
             raise exceptions.HttpError(msg)
 
-    def getfilearchive(self, project_id, filepath="", sha1=""):
+    def getfilearchive(self, project_id, filepath=""):
         """
         repository section
         """
@@ -1448,7 +1448,7 @@ class Gitlab(object):
     def deletegroup(self, group_id):
         """
         Deletes an group by ID
-        :param id_: id of the group to delete
+        :param group_id: id of the group to delete
         :return: True if it deleted, False if it couldn't. False could happen
         for several reasons, but there isn't a
         good way of differentiating them
@@ -1481,7 +1481,6 @@ class Gitlab(object):
         # check the access level and put into a number
 
         adds a project member to a project
-        :param id_: project id
         :param user_id: user id
         :param access_level: access level, see gitlab help to know more
         :param sudo: do the request with another user
@@ -1514,7 +1513,7 @@ class Gitlab(object):
     def deletegroupmember(self, group_id, user_id):
         """
         Delete a group member
-        :param id_: project id
+        :param group_id: group id to remove the member from
         :param user_id: user id
         :return: always true
         """
