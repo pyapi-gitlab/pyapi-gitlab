@@ -1,7 +1,7 @@
 #!/bin/bash
 # install gitlab
 cd /home/git
-sudo -u git -H git clone --depth=1 https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-2-stable gitlab
+sudo -u git -H git clone --depth=1 https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-5-stable gitlab
 cd /home/git/gitlab
 sudo -u git -H sh -c "cat config/gitlab.yml.example | sed 's/port: 80/port: 8080/g' > config/gitlab.yml"
 sudo chown -R git log/
