@@ -2,6 +2,7 @@
 """
 pyapi-gitlab, a gitlab python wrapper for the gitlab API
 by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
+Check the license on the LICENSE file
 """
 
 import requests
@@ -10,12 +11,11 @@ from . import exceptions
 
 
 class Gitlab(object):
-    """
-    Gitlab class
-    """
+    """Gitlab class"""
+
     def __init__(self, host, token="", verify_ssl=True):
-        """
-        on init we setup the token used for all the api calls and all the urls
+        """on init we setup the token used for all the api calls and all the urls
+
         :param host: host of gitlab
         :param token: token
         """
@@ -43,8 +43,8 @@ class Gitlab(object):
         self.verify_ssl = verify_ssl
 
     def login(self, email=None, password=None, user=None):
-        """
-        Logs the user in and setups the header with the private token
+        """Logs the user in and setups the header with the private token
+
         :param user: gitlab user
         :param password: gitlab password
         :return: True if login successfull
@@ -69,8 +69,8 @@ class Gitlab(object):
             raise exceptions.HttpError(msg)
 
     def setsudo(self, user=None):
-        """
-        Set the subsequent API calls to the user provided
+        """Set the subsequent API calls to the user provided
+
         :param user: User id or username to change to, None to return to the logged user
         :return: Nothing
         """
@@ -83,12 +83,12 @@ class Gitlab(object):
             self.headers["SUDO"] = user
 
     def getusers(self, search=None, page=1, per_page=20):
-        """
-        Return a user list
+        """Return a user list
+
         :param search: Optional search query
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
-        return: returs a dictionary of the users, false if there is an error
+        :return: returs a dictionary of the users, false if there is an error
         """
         data = {'page': page, 'per_page': per_page}
         if search:
@@ -101,8 +101,8 @@ class Gitlab(object):
             return False
 
     def getuser(self, user_id):
-        """
-        Get info for a user identified by id
+        """Get info for a user identified by id
+
         :param user_id: id of the user
         :return: False if not found, a dictionary if found
         """
@@ -114,8 +114,8 @@ class Gitlab(object):
             return False
 
     def createuser(self, name, username, password, email, **kwargs):
-        """
-        Create a user
+        """Create a user
+
         :param name: Obligatory
         :param username: Obligatory
         :param password: Obligatory
@@ -136,12 +136,10 @@ class Gitlab(object):
             return False
 
     def deleteuser(self, user_id):
-        """
-        Deletes an user by ID
+        """Deletes an user by ID
+
         :param user_id: id of the user to delete
-        :return: True if it deleted, False if it couldn't. False could happen
-        for several reasons, but there isn't a
-        good way of differenting them
+        :return: True if it deleted, False if it couldn't. False could happen for several reasons, but there isn't a good way of differenting them
         """
         request = requests.delete("{}/{}".format(self.users_url, user_id),
                                   headers=self.headers, verify=self.verify_ssl)
@@ -152,9 +150,9 @@ class Gitlab(object):
             return False
 
     def currentuser(self):
-        """
-        Returns the current user parameters. The current user is linked
+        """Returns the current user parameters. The current user is linked
         to the secret token
+
         :return: a list with the current user properties
         """
         request = requests.get("{}/api/v3/user".format(self.host),
@@ -162,10 +160,8 @@ class Gitlab(object):
         return json.loads(request.content.decode("utf-8"))
 
     def edituser(self, user_id, **kwargs):
-        """
-        Edits an user data. Unfortunately we have to check ALL the params,
-        as they can't be empty or the user will get all their data empty,
-        so we only send the filled params
+        """Edits an user data.
+
         :param user_id: id of the user to change
         :param kwargs: Any param the the Gitlab API supports
         :return: Dict of the user
@@ -184,8 +180,8 @@ class Gitlab(object):
             return False
 
     def getsshkeys(self, page=1, per_page=20):
-        """
-        Gets all the ssh keys for the current user
+        """Gets all the ssh keys for the current user
+
         :return: a dictionary with the lists
         """
         data = {'page': page, 'per_page': per_page}
@@ -198,8 +194,8 @@ class Gitlab(object):
             return False
 
     def getsshkey(self, key_id):
-        """
-        Get a single ssh key identified by key_id
+        """Get a single ssh key identified by key_id
+
         :param key_id: the id of the key
         :return: the key itself
         """
@@ -212,12 +208,11 @@ class Gitlab(object):
             return False
 
     def addsshkey(self, title, key):
-        """
-        Add a new ssh key for the current user
+        """Add a new ssh key for the current user
+
         :param title: title of the new key
         :param key: the key itself
-        :return: true if added, false if it didn't add it
-        (it could be because the name or key already exists)
+        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
         """
         data = {"title": title, "key": key}
         request = requests.post(self.keys_url, headers=self.headers, data=data,
@@ -229,13 +224,12 @@ class Gitlab(object):
             return False
 
     def addsshkeyuser(self, user_id, title, key):
-        """
-        Add a new ssh key for the user identified by id
+        """Add a new ssh key for the user identified by id
+
         :param user_id: id of the user to add the key to
         :param title: title of the new key
         :param key: the key itself
-        :return: true if added, false if it didn't add it
-        (it could be because the name or key already exists)
+        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
         """
         data = {"title": title, "key": key}
 
@@ -248,8 +242,8 @@ class Gitlab(object):
             return False
 
     def deletesshkey(self, key_id):
-        """
-        Deletes an sshkey for the current user identified by id
+        """Deletes an sshkey for the current user identified by id
+
         :param key_id: the id of the key
         :return: False if it didn't delete it, True if it was deleted
         """
@@ -261,12 +255,9 @@ class Gitlab(object):
             return True
 
     def getprojects(self, page=1, per_page=20):
-        """
-        Returns a dictionary of all the projects
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
-        :return: list with the repo name, description, last activity,
-         web url, ssh url, owner and if its public
+        """Returns a dictionary of all the projects
+
+        :return: list with the repo name, description, last activity,web url, ssh url, owner and if its public
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -278,12 +269,9 @@ class Gitlab(object):
             return False
 
     def getprojectsall(self, page=1, per_page=20):
-        """
-        Returns a dictionary of all the projects for admins only
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
-        :return: list with the repo name, description, last activity,
-         web url, ssh url, owner and if its public
+        """Returns a dictionary of all the projects for admins only
+
+        :return: list with the repo name, description, last activity,web url, ssh url, owner and if its public
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -295,12 +283,9 @@ class Gitlab(object):
             return False
 
     def getprojectsowned(self, page=1, per_page=20):
-        """
-        Returns a dictionary of all the projects for the current user
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
-        :return: list with the repo name, description, last activity,
-         web url, ssh url, owner and if its public
+        """Returns a dictionary of all the projects for the current user
+
+        :return: list with the repo name, description, last activity, web url, ssh url, owner and if its public
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -312,8 +297,8 @@ class Gitlab(object):
             return False
 
     def getproject(self, project_id):
-        """
-        Get info for a project identified by id
+        """Get info for a project identified by id
+
         :param project_id: id of the project
         :return: False if not found, a dictionary if found
         """
@@ -326,13 +311,10 @@ class Gitlab(object):
             return False
 
     def getprojectevents(self, project_id, page=1, per_page=20):
-        """
-        Get the project identified by id, events(commits)
+        """Get the project identified by id, events(commits)
+
         :param project_id: id of the project
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
-        :return: False if no project with that id, a dictionary
-         with the events if found
+        :return: False if no project with that id, a dictionary with the events if found
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}/events".format(self.projects_url, project_id), params=data, headers=self.headers,
@@ -344,8 +326,8 @@ class Gitlab(object):
             return False
 
     def createproject(self, name, **kwargs):
-        """
-        Creates a new project owned by the authenticated user.
+        """Creates a new project owned by the authenticated user.
+
         :param name: new project name
         :param path: custom repository name for new project. By default generated based on name
         :param namespace_id: namespace for the new project (defaults to user)
@@ -378,8 +360,8 @@ class Gitlab(object):
             return False
 
     def deleteproject(self, project_id):
-        """
-        Delete a project
+        """Delete a project
+
         :param project_id: project id
         :return: always true
         """
@@ -389,7 +371,7 @@ class Gitlab(object):
             return True
 
     def createprojectuser(self, user_id, name, **kwargs):
-        """
+        """Creates a new project owned by the specified user. Available only for admins.
 
         :param user_id: user_id of owner
         :param name: new project name
@@ -419,8 +401,8 @@ class Gitlab(object):
             return False
 
     def getprojectmembers(self, project_id, query=None, page=1, per_page=20):
-        """
-        lists the members of a given project id
+        """Lists the members of a given project id
+
         :param project_id: the project id
         :param query: Optional search query
         :param page: Which page to return (default is 1)
@@ -440,9 +422,8 @@ class Gitlab(object):
             return False
 
     def addprojectmember(self, project_id, user_id, access_level):
-        # check the access level and put into a number
-        """
-        adds a project member to a project
+        """Adds a project member to a project
+
         :param project_id: project id
         :param user_id: user id
         :param access_level: access level, see gitlab help to know more
@@ -466,8 +447,8 @@ class Gitlab(object):
             return False
 
     def editprojectmember(self, project_id, user_id, access_level):
-        """
-        edit a project member
+        """Edit a project member
+
         :param project_id: project id
         :param user_id: user id
         :param access_level: access level
@@ -493,8 +474,8 @@ class Gitlab(object):
             return False
 
     def deleteprojectmember(self, project_id, user_id):
-        """
-        Delete a project member
+        """Delete a project member
+
         :param project_id: project id
         :param user_id: user id
         :return: always true
@@ -505,8 +486,8 @@ class Gitlab(object):
             return True  # It always returns true
 
     def getprojecthooks(self, project_id, page=1, per_page=20):
-        """
-        get all the hooks from a project
+        """Get all the hooks from a project
+
         :param project_id: project id
         :return: the hooks
         """
@@ -519,8 +500,8 @@ class Gitlab(object):
             return False
 
     def getprojecthook(self, project_id, hook_id):
-        """
-        get a particular hook from a project
+        """Get a particular hook from a project
+
         :param project_id: project id
         :param hook_id: hook id
         :return: the hook
@@ -534,8 +515,8 @@ class Gitlab(object):
             return False
 
     def addprojecthook(self, project_id, url):
-        """
-        add a hook to a project
+        """Add a hook to a project
+
         :param project_id: project id
         :param url: url of the hook
         :return: True if success
@@ -549,8 +530,8 @@ class Gitlab(object):
             return False
 
     def editprojecthook(self, project_id, hook_id, url):
-        """
-        edit an existing hook from a project
+        """Edit an existing hook from a project
+
         :param project_id: project id
         :param hook_id: hook id
         :param url: the new url
@@ -567,8 +548,8 @@ class Gitlab(object):
             return False
 
     def deleteprojecthook(self, project_id, hook_id):
-        """
-        delete a project hook
+        """Delete a project hook
+
         :param project_id: project id
         :param hook_id: hook id
         :return: True if success
@@ -581,8 +562,8 @@ class Gitlab(object):
             return False
 
     def getsystemhooks(self, page=1, per_page=20):
-        """
-        Get all system hooks
+        """Get all system hooks
+
         :return: list of hooks
         """
         data = {'page': page, 'per_page': per_page}
@@ -593,8 +574,8 @@ class Gitlab(object):
             return False
 
     def addsystemhook(self, url):
-        """
-        add a hook to a project
+        """Add a system hook
+
         :param url: url of the hook
         :return: True if success
         """
@@ -607,8 +588,8 @@ class Gitlab(object):
             return False
 
     def testsystemhook(self, hook_id):
-        """
-        Test a system hook
+        """Test a system hook
+
         :param hook_id: hook id
         :return: list of hooks
         """
@@ -621,8 +602,8 @@ class Gitlab(object):
             return False
 
     def deletesystemhook(self, hook_id):
-        """
-        delete a project hook
+        """Delete a project hook
+
         :param hook_id: hook id
         :return: True if success
         """
@@ -635,8 +616,8 @@ class Gitlab(object):
             return False
 
     def getbranches(self, project_id, page=1, per_page=20):
-        """
-        list all the branches from a project
+        """List all the branches from a project
+
         :param project_id: project id
         :return: the branches
         """
@@ -649,8 +630,8 @@ class Gitlab(object):
             return False
 
     def getbranch(self, project_id, branch):
-        """
-        list one branch from a project
+        """List one branch from a project
+
         :param project_id: project id
         :param branch: branch id
         :return: the branch
@@ -663,8 +644,8 @@ class Gitlab(object):
             return False
 
     def createbranch(self, project_id, branch, ref):
-        """
-        Create branch from commit SHA or existing branch
+        """Create branch from commit SHA or existing branch
+
         :param project_id:  The ID of a project
         :param branch: The name of the branch
         :param ref: Create branch from commit SHA or existing branch
@@ -680,8 +661,8 @@ class Gitlab(object):
             return False
 
     def deletebranch(self, project_id, branch):
-        """
-        Delete branch by name
+        """Delete branch by name
+
         :param project_id:  The ID of a project
         :param branch: The name of the branch
         :return: True if success, False if not
@@ -696,8 +677,8 @@ class Gitlab(object):
             return False
 
     def protectbranch(self, project_id, branch):
-        """
-        protect a branch from changes
+        """Protect a branch from changes
+
         :param project_id: project id
         :param branch: branch id
         :return: True if success
@@ -710,8 +691,8 @@ class Gitlab(object):
             return False
 
     def unprotectbranch(self, project_id, branch):
-        """
-        stop protecting a branch
+        """Stop protecting a branch
+
         :param project_id: project id
         :param branch: branch id
         :return: true if success
@@ -725,9 +706,8 @@ class Gitlab(object):
             return False
 
     def createforkrelation(self, project_id, from_project_id):
-        """
-        create a fork relation. This DO NOT create a fork but only adds
-        the relation between 2 repositories
+        """Create a fork relation. This DO NOT create a fork but only adds a link as fork the relation between 2 repositories
+
         :param project_id: project id
         :param from_project_id: from id
         :return: true if success
@@ -742,9 +722,8 @@ class Gitlab(object):
             return False
 
     def removeforkrelation(self, project_id):
-        """
-        remove an existing fork relation. this DO NOT remove the fork,
-        only the relation between them
+        """Remove an existing fork relation. this DO NOT remove the fork,only the relation between them
+
         :param project_id: project id
         :return: true if success
         """
@@ -757,8 +736,8 @@ class Gitlab(object):
             return False
 
     def createfork(self, project_id):
-        """
-        Forks a project into the user namespace of the authenticated user.
+        """Forks a project into the user namespace of the authenticated user.
+
         :param project_id: Project ID to fork
         :return: True if succeed
         """
@@ -771,10 +750,9 @@ class Gitlab(object):
             return False
 
     def getissues(self, page=1, per_page=20):
-        """
-        Return a global list of issues for your user.
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
+        """Return a global list of issues for your user.
+
+        :return: list of issues
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -787,11 +765,10 @@ class Gitlab(object):
             return False
 
     def getprojectissues(self, project_id, page=1, per_page=20):
-        """
-        Return a list of issues for project id_.
-        :param project_id: The id for the project.
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
+        """Return a list of issues for project id.
+
+        :param: project_id: The id for the project.
+        :return: list of issues
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -804,8 +781,8 @@ class Gitlab(object):
             return False
 
     def getprojectissue(self, project_id, issue_id):
-        """
-        get an specific issue id from a project
+        """Get an specific issue id from a project
+
         :param project_id: project id
         :param issue_id: issue id
         :return: the issue
@@ -819,8 +796,8 @@ class Gitlab(object):
             return False
 
     def createissue(self, project_id, title, **kwargs):
-        """
-        create a new issue
+        """Create a new issue
+
         :param project_id: project id
         :param title: title of the issue
         :return: dict with the issue created
@@ -836,8 +813,8 @@ class Gitlab(object):
             return False
 
     def editissue(self, project_id, issue_id, **kwargs):
-        """
-        edit an existing issue data
+        """Edit an existing issue data
+
         :param project_id: project id
         :param issue_id: issue id
         :return: true if success
@@ -853,8 +830,8 @@ class Gitlab(object):
             return False
 
     def getmilestones(self, project_id, page=1, per_page=20):
-        """
-        get the milestones for a project
+        """Get the milestones for a project
+
         :param project_id: project id
         :return: the milestones
         """
@@ -868,11 +845,11 @@ class Gitlab(object):
             return False
 
     def getmilestone(self, project_id, milestone_id):
-        """
-        get an specific milestone
+        """Get an specific milestone
+
         :param project_id: project id
         :param milestone_id: milestone id
-        :return: the milestone
+        :return: dict with the new milestone
         """
         request = requests.get("{}/{}/milestones/{}".format(self.projects_url, project_id, milestone_id),
                                headers=self.headers, verify=self.verify_ssl)
@@ -883,14 +860,14 @@ class Gitlab(object):
             return False
 
     def createmilestone(self, project_id, title, **kwargs):
-        """
-        create a new milestone
+        """Create a new milestone
+
         :param project_id: project id
         :param title: title
         :param description: description
         :param due_date: due date
         :param sudo: do the request as another user
-        :return: true if success
+        :return: dict of the new issue
         """
         data = {"id": project_id, "title": title}
 
@@ -906,8 +883,8 @@ class Gitlab(object):
             return False
 
     def editmilestone(self, project_id, milestone_id, **kwargs):
-        """
-        edit an existing milestone
+        """Edit an existing milestone
+
         :param project_id: project id
         :param milestone_id: milestone id
         :param title: title
@@ -915,7 +892,7 @@ class Gitlab(object):
         :param due_date: due date
         :param state_event: state
         :param sudo: do the request as another user
-        :return: true if success
+        :return: dict with the modified milestone
         """
         data = {"id": project_id, "milestone_id": milestone_id}
         if kwargs:
@@ -929,8 +906,8 @@ class Gitlab(object):
             return False
 
     def getdeploykeys(self, project_id, page=1, per_page=20):
-        """
-        Get a list of a project's deploy keys.
+        """Get a list of a project's deploy keys.
+
         :param project_id: project id
         :return: the keys in a dictionary if success, false if not
         """
@@ -944,8 +921,8 @@ class Gitlab(object):
             return False
 
     def getdeploykey(self, project_id, key_id):
-        """
-        Get a single key.
+        """Get a single key.
+
         :param project_id: project id
         :param key_id: key id
         :return: the key in a dict if success, false if not
@@ -959,10 +936,8 @@ class Gitlab(object):
             return False
 
     def adddeploykey(self, project_id, title, key):
-        """
-        Creates a new deploy key for a project.
-        If deploy key already exists in another project - it will be joined
-        to project but only if original one was is accessible by same user
+        """Creates a new deploy key for a project.
+
         :param project_id: project id
         :param title: title of the key
         :param key: the key itself
@@ -979,8 +954,8 @@ class Gitlab(object):
             return False
 
     def deletedeploykey(self, project_id, key_id):
-        """
-        Delete a deploy key from a project
+        """Delete a deploy key from a project
+
         :param project_id: project id
         :param key_id: key id to delete
         :return: true if success, false if not
@@ -994,10 +969,11 @@ class Gitlab(object):
             return False
 
     def creategroup(self, name, path):
-        """
-        Creates a new group
+        """Creates a new group
+
         :param name: The name of the group
         :param path: The path for the group
+        :return: dict of the new group
         """
         request = requests.post(self.groups_url,
                                 data={'name': name, 'path': path},
@@ -1009,11 +985,10 @@ class Gitlab(object):
             return exceptions.HttpError(msg)
 
     def getgroups(self, group_id=None, page=1, per_page=20):
-        """
-        Retrieve group information
+        """Retrieve group information
+
         :param group_id: Specify a group. Otherwise, all groups are returned
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
+        :return: list of groups
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -1028,14 +1003,15 @@ class Gitlab(object):
             return False
 
     def moveproject(self, group_id, project_id):
-        """
-        Move a given project into a given group
+        """Move a given project into a given group
+
         :param group_id: ID of the destination group
         :param project_id: ID of the project to be moved
+        :return: dict of the updated project
         """
         request = requests.post("{}/{}/projects/{}".format(self.groups_url,
-                                                              group_id,
-                                                              project_id),
+                                                           group_id,
+                                                           project_id),
                                 headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
@@ -1044,12 +1020,11 @@ class Gitlab(object):
             return False
 
     def getmergerequests(self, project_id, page=1, per_page=20, state=None):
-        """
-        Get all the merge requests for a project.
+        """Get all the merge requests for a project.
+
         :param project_id: ID of the project to retrieve merge requests for
-        :param page: If pagination is set, which page to return
         :param state: Passes merge request state to filter them by it
-        :param per_page: Number of merge requests to return per page
+        :return: list with all the merge requests
         """
         data = {'page': page, 'per_page': per_page, 'state': state}
 
@@ -1063,11 +1038,11 @@ class Gitlab(object):
             return False
 
     def getmergerequest(self, project_id, mergerequest_id):
-        """
-        Get information about a specific merge request.
-        :type project_id: int
+        """Get information about a specific merge request.
+
         :param project_id: ID of the project
         :param mergerequest_id: ID of the merge request
+        :return: dict of the merge request
         """
         request = requests.get('{}/{}/merge_request/{}'.format(self.projects_url, project_id, mergerequest_id),
                                headers=self.headers, verify=self.verify_ssl)
@@ -1079,11 +1054,11 @@ class Gitlab(object):
             return False
 
     def getmergerequestcomments(self, project_id, mergerequest_id, page=1, per_page=20):
-        """
-        Get comments of a merge request.
-        :type project_id: int
+        """Get comments of a merge request.
+
         :param project_id: ID of the project
         :param mergerequest_id: ID of the merge request
+        :return: list of the comments
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get('{}/{}/merge_request/{}/comments'.format(self.projects_url, project_id, mergerequest_id),
@@ -1097,13 +1072,14 @@ class Gitlab(object):
 
     def createmergerequest(self, project_id, sourcebranch, targetbranch,
                            title, target_project_id=None, assignee_id=None):
-        """
-        Create a new merge request.
+        """Create a new merge request.
+
         :param project_id: ID of the project originating the merge request
         :param sourcebranch: name of the branch to merge from
         :param targetbranch: name of the branch to merge to
         :param title: Title of the merge request
         :param assignee_id: Assignee user ID
+        :return: dict of the new merge request
         """
         data = {'source_branch': sourcebranch,
                 'target_branch': targetbranch,
@@ -1120,8 +1096,8 @@ class Gitlab(object):
             return False
 
     def updatemergerequest(self, project_id, mergerequest_id, **kwargs):
-        """
-        Update an existing merge request.
+        """Update an existing merge request.
+
         :param project_id: ID of the project originating the merge request
         :param mergerequest_id: ID of the merge request to update
         :param sourcebranch: name of the branch to merge from
@@ -1129,6 +1105,7 @@ class Gitlab(object):
         :param title: Title of the merge request
         :param assignee_id: Assignee user ID
         :param closed: MR status.  True = closed
+        :return: dict of the modified merge request
         """
         data = {}
 
@@ -1138,17 +1115,18 @@ class Gitlab(object):
         request = requests.put('{}/{}/merge_request/{}'.format(self.projects_url, project_id, mergerequest_id),
                                data=data, headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
 
             return False
 
     def acceptmergerequest(self, project_id, mergerequest_id, merge_commit_message=None):
-        """
-        Update an existing merge request.
+        """Update an existing merge request.
+
         :param project_id: ID of the project originating the merge request
         :param mergerequest_id: ID of the merge request to accept
         :param merge_commit_message: Custom merge commit message
+        :return: dict of the modified merge request
         """
 
         data = {'merge_commit_message': merge_commit_message}
@@ -1156,19 +1134,21 @@ class Gitlab(object):
         request = requests.put('{}/{}/merge_request/{}/merge'.format(self.projects_url, project_id, mergerequest_id),
                                data=data, headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
     def addcommenttomergerequest(self, project_id, mergerequest_id, note):
-        """
-        Add a comment to a merge request.
+        """Add a comment to a merge request.
+
         :param project_id: ID of the project originating the merge request
         :param mergerequest_id: ID of the merge request to comment on
         :param note: Text of comment
+        :return: True if success
         """
-        request = requests.post('{}/{}/merge_request/{}/comments'.format(self.projects_url, project_id, mergerequest_id),
-                                data={'note': note}, headers=self.headers, verify=self.verify_ssl)
+        request = requests.post(
+            '{}/{}/merge_request/{}/comments'.format(self.projects_url, project_id, mergerequest_id),
+            data={'note': note}, headers=self.headers, verify=self.verify_ssl)
 
         if request.status_code == 201:
             return True
@@ -1177,10 +1157,10 @@ class Gitlab(object):
             return False
 
     def getsnippets(self, project_id, page=1, per_page=20):
-        """
-        Get all the snippets of the project identified by project_id
-        @param project_id: project id to get the snippets from
-        @return: list of dictionaries
+        """Get all the snippets of the project identified by project_id
+
+        :param project_id: project id to get the snippets from
+        :return: list of dictionaries
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}/snippets".format(self.projects_url, project_id), params=data,
@@ -1191,11 +1171,11 @@ class Gitlab(object):
             return False
 
     def getsnippet(self, project_id, snippet_id):
-        """
-        Get one snippet from a project
-        @param project_id: project id to get the snippet from
-        @param snippet_id: snippet id
-        @return: dictionary
+        """Get one snippet from a project
+
+        :param project_id: project id to get the snippet from
+        :param snippet_id: snippet id
+        :return: dictionary
         """
         request = requests.get("{}/{}/snippets/{}".format(self.projects_url, project_id, snippet_id),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1205,14 +1185,14 @@ class Gitlab(object):
             return False
 
     def createsnippet(self, project_id, title, file_name, code, lifetime=""):
-        """
-        Creates an snippet
-        @param project_id: project id to create the snippet under
-        @param title: title of the snippet
-        @param file_name: filename for the snippet
-        @param code: content of the snippet
-        @param lifetime: expiration date
-        @return: True if correct, false if failed
+        """Creates an snippet
+
+        :param project_id: project id to create the snippet under
+        :param title: title of the snippet
+        :param file_name: filename for the snippet
+        :param code: content of the snippet
+        :param lifetime: expiration date
+        :return: True if correct, false if failed
         """
         data = {"id": project_id, "title": title, "file_name": file_name, "code": code}
         if lifetime != "":
@@ -1225,8 +1205,8 @@ class Gitlab(object):
             return False
 
     def getsnippetcontent(self, project_id, snippet_id):
-        """
-        Get raw content of a given snippet
+        """Get raw content of a given snippet
+
         :param project_id: project_id for the snippet
         :param snippet_id: snippet id
         :return: the content of the snippet
@@ -1239,11 +1219,11 @@ class Gitlab(object):
             return False
 
     def deletesnippet(self, project_id, snippet_id):
-        """
-        Deletes a given snippet
-        :param project_id:
-        :param snippet_id:
-        :return:
+        """Deletes a given snippet
+
+        :param project_id: project_id
+        :param snippet_id: snippet id
+        :return: True if success
         """
         request = requests.delete("{}/{}/snippets/{}".format(self.projects_url, project_id, snippet_id),
                                   headers=self.headers, verify=self.verify_ssl)
@@ -1253,10 +1233,10 @@ class Gitlab(object):
             return False
 
     def getrepositories(self, project_id, page=1, per_page=20):
-        """
-        Gets all repositories for a project id
-        :param project_id:
-        :return:
+        """Gets all repositories for a project id
+
+        :param project_id: project id
+        :return: list of repos
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}/repository/branches".format(self.projects_url, project_id), params=data,
@@ -1267,11 +1247,11 @@ class Gitlab(object):
             return False
 
     def getrepositorybranch(self, project_id, branch):
-        """
-        Get a single project repository branch.
-        :param project_id:
-        :param branch:
-        :return:
+        """Get a single project repository branch.
+
+        :param project_id: project id
+        :param branch: branch
+        :return: dict of the branch
         """
         request = requests.get("{}/{}/repository/branches/{}".format(self.projects_url, project_id, branch),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1285,12 +1265,12 @@ class Gitlab(object):
             return False
 
     def protectrepositorybranch(self, project_id, branch):
-        """
-        Protects a single project repository branch. This is an idempotent function,
+        """Protects a single project repository branch. This is an idempotent function,
         protecting an already protected repository branch still returns a 200 OK status code.
-        :param project_id:
-        :param branch:
-        :return:
+
+        :param project_id: project id
+        :param branch: branch to protech
+        :return: dict with the branch
         """
         request = requests.put("{}/{}/repository/branches/{}/protect".format(self.projects_url, project_id, branch),
                                headers=self.headers, verify=self.verify_ssl)
@@ -1300,12 +1280,12 @@ class Gitlab(object):
             return False
 
     def unprotectrepositorybranch(self, project_id, branch):
-        """
-        Unprotects a single project repository branch. This is an idempotent function,
+        """Unprotects a single project repository branch. This is an idempotent function,
         unprotecting an already unprotected repository branch still returns a 200 OK status code.
-        :param project_id:
-        :param branch:
-        :return:
+
+        :param project_id: project id
+        :param branch: branch to unprotect
+        :return: dict with the branch
         """
         request = requests.put("{}/{}/repository/branches/{}/unprotect".format(self.projects_url, project_id, branch),
                                headers=self.headers, verify=self.verify_ssl)
@@ -1315,10 +1295,10 @@ class Gitlab(object):
             return
 
     def getrepositorytags(self, project_id, page=1, per_page=20):
-        """
-        Get a list of repository tags from a project, sorted by name in reverse alphabetical order.
-        :param project_id:
-        :return:
+        """Get a list of repository tags from a project, sorted by name in reverse alphabetical order.
+
+        :param project_id: project id
+        :return: list with all the tags
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}/repository/tags".format(self.projects_url, project_id), params=data,
@@ -1329,13 +1309,13 @@ class Gitlab(object):
             return False
 
     def createrepositorytag(self, project_id, tag_name, ref, message=None):
-        """
-        Creates new tag in the repository that points to the supplied ref.
-        :param project_id:
-        :param tag_name:
-        :param ref:
-        :param message:
-        :return:
+        """Creates new tag in the repository that points to the supplied ref
+
+        :param project_id: project id
+        :param tag_name: tag
+        :param ref: sha1 of the commit or branch to tag
+        :param message: message
+        :return: dict
         """
 
         data = {"id": project_id, "tag_name": tag_name, "ref": ref, "message": message}
@@ -1348,11 +1328,11 @@ class Gitlab(object):
             return False
 
     def getrepositorycommits(self, project_id, ref_name=None, page=1, per_page=20):
-        """
-        Get a list of repository commits in a project.
+        """Get a list of repository commits in a project.
+
         :param project_id: The ID of a project
         :param ref_name: The name of a repository branch or tag or if not given the default branch
-        :return:
+        :return: list of commits
         """
         data = {'page': page, 'per_page': per_page}
         if ref_name is not None:
@@ -1365,11 +1345,11 @@ class Gitlab(object):
             return False
 
     def getrepositorycommit(self, project_id, sha1):
-        """
-        Get a specific commit identified by the commit hash or name of a branch or tag.
+        """Get a specific commit identified by the commit hash or name of a branch or tag.
+
         :param project_id: The ID of a project
         :param sha1: The commit hash or name of a repository branch or tag
-        :return:
+        :return: dic tof commit
         """
         request = requests.get("{}/{}/repository/commits/{}".format(self.projects_url, project_id, sha1),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1379,11 +1359,11 @@ class Gitlab(object):
             return False
 
     def getrepositorycommitdiff(self, project_id, sha1):
-        """
-        Get the diff of a commit in a project.
+        """Get the diff of a commit in a project
+
         :param project_id: The ID of a project
         :param sha1: The name of a repository branch or tag or if not given the default branch
-        :return:
+        :return: dict with the diff
         """
         request = requests.get("{}/{}/repository/commits/{}/diff".format(self.projects_url, project_id, sha1),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1393,12 +1373,12 @@ class Gitlab(object):
             return False
 
     def getrepositorytree(self, project_id, **kwargs):
-        """
-        Get a list of repository files and directories in a project.
+        """Get a list of repository files and directories in a project.
+
         :param project_id: The ID of a project
         :param path: The path inside repository. Used to get contend of subdirectories
         :param ref_name: The name of a repository branch or tag or if not given the default branch
-        :return:
+        :return: dcit with the tree
         """
         data = {}
         if kwargs:
@@ -1412,12 +1392,12 @@ class Gitlab(object):
             return False
 
     def getrawfile(self, project_id, sha1, filepath):
-        """
-        Get the raw file contents for a file by commit SHA and path.
+        """Get the raw file contents for a file by commit SHA and path.
+
         :param project_id: The ID of a project
         :param sha1: The commit or branch name
         :param filepath: The path the file
-        :return:
+        :return: raw file contents
         """
         data = {"filepath": filepath}
         request = requests.get("{}/{}/repository/blobs/{}".format(self.projects_url, project_id, sha1),
@@ -1429,11 +1409,11 @@ class Gitlab(object):
             return False
 
     def getrawblob(self, project_id, sha1):
-        """
-        Get the raw file contents for a blob by blob SHA.
+        """Get the raw file contents for a blob by blob SHA.
+
         :param project_id: The ID of a project
-        :param sha1:
-        :return:
+        :param sha1: the commit sha
+        :return: raw blob
         """
         request = requests.get("{}/{}/repository/raw_blobs/{}".format(self.projects_url, project_id, sha1),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1443,10 +1423,10 @@ class Gitlab(object):
             return False
 
     def getcontributors(self, project_id, page=1, per_page=20):
-        """
-        Get repository contributors list
-        :param project_id: The ID of a project
-        :return:
+        """Get repository contributors list
+
+        :param: project_id: The ID of a project
+        :return: list of contributors
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}/repository/contributors".format(self.projects_url, project_id), params=data,
@@ -1457,13 +1437,12 @@ class Gitlab(object):
             return False
 
     def compare_branches_tags_commits(self, project_id, from_id, to_id):
-        """
-        Compare branches, tags or commits
+        """Compare branches, tags or commits
+
         :param project_id: The ID of a project
         :param from_id: the commit sha or branch name
         :param to_id: the commit sha or branch name
-        return commit list and diff between two branches tags or commits provided by name
-        hash value
+        :return: commit list and diff between two branches tags or commits provided by name
         """
         data = {"from": from_id, "to": to_id}
         request = requests.get("{}/{}/repository/compare".format(self.projects_url, project_id),
@@ -1476,8 +1455,10 @@ class Gitlab(object):
             return False
 
     def searchproject(self, search, page=1, per_page=20):
-        """
-        Search for projects by name which are accessible to the authenticated user.
+        """Search for projects by name which are accessible to the authenticated user
+
+        :param search: query to search for
+        :return: list of results
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}".format(self.search_url, search), params=data,
@@ -1489,8 +1470,11 @@ class Gitlab(object):
             return False
 
     def getfilearchive(self, project_id, filepath=""):
-        """
-        Get an archive of the repository
+        """Get an archive of the repository
+
+        :param project_id: project id
+        :param filepath: path to save the file to
+        :return: True if the file was saved to the filepath
         """
         request = requests.get("{}/{}/repository/archive".format(self.projects_url, project_id),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1507,12 +1491,10 @@ class Gitlab(object):
             raise exceptions.HttpError(msg)
 
     def deletegroup(self, group_id):
-        """
-        Deletes an group by ID
+        """Deletes an group by ID
+
         :param group_id: id of the group to delete
-        :return: True if it deleted, False if it couldn't. False could happen
-        for several reasons, but there isn't a
-        good way of differentiating them
+        :return: True if it deleted, False if it couldn't. False could happen for several reasons, but there isn't a good way of differentiating them
         """
         request = requests.delete("{}/{}".format(self.groups_url, group_id),
                                   headers=self.headers, verify=self.verify_ssl)
@@ -1522,8 +1504,8 @@ class Gitlab(object):
             return False
 
     def getgroupmembers(self, group_id, page=1, per_page=20):
-        """
-        lists the members of a given group id
+        """Lists the members of a given group id
+
         :param group_id: the group id
         :param page: which page to return (default is 1)
         :param per_page: number of items to return per page (default is 20)
@@ -1538,10 +1520,8 @@ class Gitlab(object):
             return False
 
     def addgroupmember(self, group_id, user_id, access_level):
-        """
-        # check the access level and put into a number
+        """Adds a project member to a project
 
-        adds a project member to a project
         :param user_id: user id
         :param access_level: access level, see gitlab help to know more
         :return: True if success
@@ -1570,8 +1550,8 @@ class Gitlab(object):
             return False
 
     def deletegroupmember(self, group_id, user_id):
-        """
-        Delete a group member
+        """Delete a group member
+
         :param group_id: group id to remove the member from
         :param user_id: user id
         :return: always true
@@ -1582,11 +1562,11 @@ class Gitlab(object):
             return True  # It always returns true
 
     def getissuewallnotes(self, project_id, issue_id, page=1, per_page=20):
-        """
-        get the notes from the wall of a issue
+        """Get the notes from the wall of a issue
+
         """
         data = {'page': page, 'per_page': per_page}
-        request = requests.get("{}/{}/issues/{}/notes".format(self.projects_url, project_id, issue_id),  params=data,
+        request = requests.get("{}/{}/issues/{}/notes".format(self.projects_url, project_id, issue_id), params=data,
                                verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
@@ -1595,8 +1575,8 @@ class Gitlab(object):
             return False
 
     def getissuewallnote(self, project_id, issue_id, note_id):
-        """
-        get one note from the wall of the issue
+        """Get one note from the wall of the issue
+
         """
         request = requests.get("{}/{}/issues/{}/notes/{}".format(self.projects_url, project_id, issue_id, note_id),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1607,8 +1587,8 @@ class Gitlab(object):
             return False
 
     def createissuewallnote(self, project_id, issue_id, content):
-        """
-        create a new note
+        """Create a new note
+
         """
         data = {"body": content}
         request = requests.post("{}/{}/issues/{}/notes".format(self.projects_url, project_id, issue_id),
@@ -1620,8 +1600,8 @@ class Gitlab(object):
             return False
 
     def getsnippetwallnotes(self, project_id, snippet_id, page=1, per_page=20):
-        """
-        get the notes from the wall of a snippet
+        """Get the notes from the wall of a snippet
+
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}/snippets/{}/notes".format(self.projects_url, project_id, snippet_id),
@@ -1633,8 +1613,8 @@ class Gitlab(object):
             return False
 
     def getsnippetwallnote(self, project_id, snippet_id, note_id):
-        """
-        get one note from the wall of the snippet
+        """Get one note from the wall of the snippet
+
         """
         request = requests.get("{}/{}/snippets/{}/notes/{}".format(self.projects_url, project_id, snippet_id, note_id),
                                verify=self.verify_ssl, headers=self.headers)
@@ -1645,8 +1625,8 @@ class Gitlab(object):
             return False
 
     def createsnippetewallnote(self, project_id, snippet_id, content):
-        """
-        create a new note
+        """Create a new note
+
         """
         data = {"body": content}
         request = requests.post("{}/{}/snippets/{}/notes".format(self.projects_url, project_id, snippet_id),
@@ -1658,8 +1638,8 @@ class Gitlab(object):
             return False
 
     def getmergerequestwallnotes(self, project_id, merge_request_id, page=1, per_page=20):
-        """
-        get the notes from the wall of a merge request
+        """Get the notes from the wall of a merge request
+
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{}/{}/merge_requests/{}/notes".format(self.projects_url, project_id, merge_request_id),
@@ -1671,8 +1651,8 @@ class Gitlab(object):
             return False
 
     def getmergerequestwallnote(self, project_id, merge_request_id, note_id):
-        """
-        get one note from the wall of the merge request
+        """Get one note from the wall of the merge request
+
         """
         request = requests.get("{}/{}/merge_requests/{}/notes/{}".format(self.projects_url, project_id,
                                                                          merge_request_id, note_id),
@@ -1684,8 +1664,8 @@ class Gitlab(object):
             return False
 
     def createmergerequestewallnote(self, project_id, merge_request_id, content):
-        """
-        create a new note
+        """Create a new note
+
         """
         data = {"body": content}
         request = requests.post("{}/{}/merge_requests/{}/notes".format(self.projects_url, project_id, merge_request_id),
@@ -1697,8 +1677,8 @@ class Gitlab(object):
             return False
 
     def createfile(self, project_id, file_path, branch_name, content, commit_message):
-        """
-        Creates a new file in the repository
+        """Creates a new file in the repository
+
         :param project_id: project id
         :param file_path: Full path to new file. Ex. lib/class.rb
         :param branch_name: The name of branch
@@ -1716,8 +1696,8 @@ class Gitlab(object):
             return False
 
     def updatefile(self, project_id, file_path, branch_name, content, commit_message):
-        """
-        Updates an existing file in the repository
+        """Updates an existing file in the repository
+
         :param project_id: project id
         :param file_path: Full path to new file. Ex. lib/class.rb
         :param branch_name: The name of branch
@@ -1736,9 +1716,9 @@ class Gitlab(object):
             return False
 
     def getfile(self, project_id, file_path, ref):
-        """
-        Allows you to receive information about file in repository like name, size, content.
+        """Allows you to receive information about file in repository like name, size, content.
         Note that file content is Base64 encoded.
+
         :param project_id: project_id
         :param file_path: Full path to file. Ex. lib/class.rb
         :param ref: The name of branch, tag or commit
@@ -1753,8 +1733,8 @@ class Gitlab(object):
             return False
 
     def deletefile(self, project_id, file_path, branch_name, commit_message):
-        """
-        Deletes existing file in the repository
+        """Deletes existing file in the repository
+
         :param project_id: project id
         :param file_path: Full path to new file. Ex. lib/class.rb
         :param branch_name: The name of branch
@@ -1772,8 +1752,8 @@ class Gitlab(object):
             return False
 
     def setgitlabciservice(self, project_id, token, project_url):
-        """
-        Set GitLab CI service for project
+        """Set GitLab CI service for project
+
         :param project_id: project id
         :param token: CI project token
         :param project_url: CI project url
@@ -1789,11 +1769,11 @@ class Gitlab(object):
             return False
 
     def deletegitlabciservice(self, project_id, token, project_url):
-        """
-        Delete GitLab CI service settings
+        """Delete GitLab CI service settings
+
         :return: true if success, false if not
         """
-        request = requests.delete("{}/{}/services/gitlab-ci".format(self.projects_url,project_id),
+        request = requests.delete("{}/{}/services/gitlab-ci".format(self.projects_url, project_id),
                                   headers=self.headers, verify=self.verify_ssl)
 
         if request.status_code == 200:
@@ -1802,8 +1782,8 @@ class Gitlab(object):
             return False
 
     def getlabels(self, project_id, page=1, per_page=20):
-        """
-        Get all labels for given project.
+        """Get all labels for given project.
+
         :param project_id: The ID of a project
         :return: list of the labels
         """
@@ -1817,8 +1797,8 @@ class Gitlab(object):
             return False
 
     def createlabel(self, project_id, name, color):
-        """
-        Creates a new label for given repository with given name and color.
+        """Creates a new label for given repository with given name and color.
+
         :param project_id: The ID of a project
         :param name: The name of the label
         :param color: Color of the label given in 6-digit hex notation with leading '#' sign (e.g. #FFAABB)
@@ -1834,8 +1814,8 @@ class Gitlab(object):
             return False
 
     def deletelabel(self, project_id, name):
-        """
-        Deletes a label given by its name.
+        """Deletes a label given by its name.
+
         :param project_id: The ID of a project
         :param name: The name of the label
         :return: True if succeed
@@ -1851,8 +1831,8 @@ class Gitlab(object):
             return False
 
     def editlabel(self, project_id, name, new_name=None, color=None):
-        """
-        Updates an existing label with new name or now color. At least one parameter is required, to update the label.
+        """Updates an existing label with new name or now color. At least one parameter is required, to update the label.
+
         :param project_id: The ID of a project
         :param name: The name of the label
         :return: True if succeed
