@@ -61,7 +61,9 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
  - All methods have documentation (Inside the library only, the docs are lagging a bit behind).
  - Some methods now use kwargs for the optional parameters so the code is more easy. For example, createissue now will take as much optinal named params as you want without makind the code unreadable.
  - In the short future all methods will use kwargs for the optional parameters.
- 
+ - Project wallnotes does not exist anymore, seems that they have been moved to project snippets (getsnippets, getsnippet, createsnippet, deletesnippet)
+ - New fork api that allows to actually fork a project instead of doing fork relations
+ - Removed getreadme method as its not part of the gitlab api, nor was it ever.
 
 ## Examples/Documentation
 

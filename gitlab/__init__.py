@@ -6,10 +6,6 @@ by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 
 import requests
 import json
-try:
-    import markdown
-except ImportError:
-    pass
 from . import exceptions
 
 
@@ -793,6 +789,20 @@ class Gitlab(object):
 
             return False
 
+    def createfork(self, project_id):
+        """
+        Forks a project into the user namespace of the authenticated user.
+        :param project_id: Project ID to fork
+        :return: True if succeed
+        """
+
+        request = requests.post("{}/fork/{}".format(self.projects_url, project_id))
+
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
     def getissues(self, page=1, per_page=20, sudo=""):
         """
         Return a global list of issues for your user.
@@ -1019,29 +1029,6 @@ class Gitlab(object):
 
             return False
 
-    def getreadme(self, repo, mark=False):
-        """
-        returns the readme
-        :param mark: If false returns the raw readme,
-        else returns the readme parsed by markdown
-        :param repo: the web url to the project
-        """
-        request = requests.get("{}/raw/master/README.md?private_token={}".format(repo, self.token),
-                               verify=self.verify_ssl)  # setting the headers doesn't work
-        if b"<!DOCTYPE html>" in request.content:  # having HTML means a 404
-            if mark:
-                return "<p>There isn't a README.md for that project</p>"
-            else:
-                return "There isn't a README.md for that project"
-        else:
-            if mark:
-                try:
-                    return markdown.markdown(request.content.decode('utf-8'))
-                except Exception as e:
-                    return request.content.decode('utf-8')
-            else:
-                return request.content.decode('utf-8')
-
     def creategroup(self, name, path):
         """
         Creates a new group
@@ -1052,7 +1039,7 @@ class Gitlab(object):
                                 data={'name': name, 'path': path},
                                 headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             msg = json.loads(request.content.decode("utf-8"))['message']
             return exceptions.HttpError(msg)
@@ -1088,7 +1075,7 @@ class Gitlab(object):
                                                               project_id),
                                 headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
 
             return False
@@ -1399,7 +1386,7 @@ class Gitlab(object):
         request = requests.post("{}/{}/repository/tags".format(self.projects_url, project_id), data=data,
                                 verify=self.verify_ssl, headers=self.headers)
 
-        if request.status_code == 200:
+        if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
@@ -1638,43 +1625,6 @@ class Gitlab(object):
                                   headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return True  # It always returns true
-
-    def getprojectwallnotes(self, project_id):
-        """
-        get the notes from the wall of a project
-        """
-        request = requests.get("{}/{}/notes".format(self.projects_url, project_id),
-                               verify=self.verify_ssl, headers=self.headers)
-
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
-        else:
-            return False
-
-    def getprojectwallnote(self, project_id, note_id):
-        """
-        get one note from the wall of the project
-        """
-        request = requests.get("{}/{}/notes/{}".format(self.projects_url, project_id, note_id),
-                               verify=self.verify_ssl, headers=self.headers)
-
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
-        else:
-            return False
-
-    def createprojectwallnote(self, project_id, content):
-        """
-        create a new note
-        """
-        data = {"body": content}
-        request = requests.post("{}/{}/notes".format(self.projects_url, project_id),
-                                verify=self.verify_ssl, headers=self.headers, data=data)
-
-        if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
-        else:
-            return False
 
     def getissuewallnotes(self, project_id, issue_id):
         """
