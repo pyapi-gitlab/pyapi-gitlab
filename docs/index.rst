@@ -87,10 +87,6 @@ Every method now has the documentation as a docstring.
 The best way of checking what the API entails is to go to the Gitlab API page directly as this library is a 1:1 translation of it.
 http://doc.gitlab.com/ce/api/README.html
 
-Contents:
-
-.. toctree::
-   :maxdepth: 2
 
 .. automodule:: gitlab
 
