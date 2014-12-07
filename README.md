@@ -38,17 +38,17 @@ Old versions not maintained:
 
 Gitlab 5.4:
 ```bash
-pip install pyapi-gitlab==5.4-0
+pip install pyapi-gitlab=="5.4-0"
 ```
 
 Gitlab 6.0 or 6.1:
 ```bash
-pip install pyapi-gitlab==6.1.6
+pip install pyapi-gitlab=="6.1.6"
 ```
 
 Gitlab 6.2:
 ```bash
-pip install pyapi-gitlab==6.2.3
+pip install pyapi-gitlab=="6.2.3"
 ```
 
 pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
@@ -60,12 +60,15 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
  - All methods have documentation (Inside the library only, the docs are lagging a bit behind).
  - New fork api that allows to actually fork a project instead of doing fork relations
  - New label methods (getlabel, createlabel, editlabel, deletelabel)
+ - All get* methods that return more than one item support pagination. Check page and per_page args. Default to first page and 20 items per page.
 
+ - BREAKING CHANGE: Old sudo arg in methods to execute as other user is gone. Now there is a method setsudo(user_id/user_username) which will setup the header, so all the subsequent API calls will be done as that user. To get back to your user just do a setsudo() and the sudo parameter will be cleared
  - BREAKING CHANGE: Some methods were returning True or False instead of the object created. Now all the methods in which there is something returning from the server is returned as a dictionary/list of dictionaries to the user
- - BREAKING CHANGE: Some methods now use kwargs for the optional parameters so the code is more easy. For example, createissue now will take as much optional named params as you want without making the code unreadable.
+ - BREAKING CHANGE: Some methods now use kwargs for the optional parameters so the code is more easy and readable. Methods affected: createproject, createprojectuser, createmilestone, editmilestone, updatemergerequest
  - BREAKING CHANGE: Project wallnotes does not exist anymore, seems that they have been moved to project snippets (getsnippets, getsnippet, createsnippet, deletesnippet)
  - BREAKING CHANGE: Removed getreadme method as its not part of the gitlab api, nor was it ever.
  - BREAKING CHANGE: Old methods that started with list* are not get*. This is done in order to have a proper naming convention instead of having mixed listsomething and then getsomething. The actual
+ - BREAKING CHANGE: Old methods with new names: getownprojects -> getprojectsowned, getallprojects -> getprojectsall
 
 ## Examples/Documentation
 

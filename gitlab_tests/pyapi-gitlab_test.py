@@ -16,7 +16,7 @@ except ImportError:
 
 user = os.environ.get('gitlab_user', 'root')
 password = os.environ.get('gitlab_password', '5iveL!fe')
-host = os.environ.get('gitlab_host', 'http://localhost:8000')
+host = os.environ.get('gitlab_host', 'http://192.168.1.100')
 
 
 class GitlabTest(unittest.TestCase):
@@ -71,20 +71,15 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getproject(self.project_id), dict)
         self.assertFalse(self.git.getproject("wrong"))
 
-        # test getallprojectsuser
-        assert isinstance(self.git.getallprojectsuser(), list)
-        assert isinstance(self.git.getallprojectsuser(page=5), list)
-        assert isinstance(self.git.getallprojectsuser(per_page=7), list)
-
-        # test getallprojects
-        assert isinstance(self.git.getallprojects(), list)
-        assert isinstance(self.git.getallprojects(page=5), list)
-        assert isinstance(self.git.getallprojects(per_page=7), list)
+        # test getprojectsall
+        assert isinstance(self.git.getprojectsall(), list)
+        assert isinstance(self.git.getprojectsall(page=5), list)
+        assert isinstance(self.git.getprojectsall(per_page=7), list)
 
         # test getownprojects
-        assert isinstance(self.git.getownprojects(), list)
-        assert isinstance(self.git.getownprojects(page=5), list)
-        assert isinstance(self.git.getownprojects(per_page=7), list)
+        assert isinstance(self.git.getprojectsowned(), list)
+        assert isinstance(self.git.getprojectsowned(page=5), list)
+        assert isinstance(self.git.getprojectsowned(per_page=7), list)
 
         # test events
         assert isinstance(self.git.getprojectevents(self.project_id), list)
@@ -92,9 +87,9 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getprojectevents(self.project_id, per_page=4), list)
 
         # add-remove project members
-        self.assertTrue(self.git.addprojectmember(self.project_id, user_id=self.user_id, access_level="reporter", sudo=1))
+        self.assertTrue(self.git.addprojectmember(self.project_id, user_id=self.user_id, access_level="reporter"))
         assert isinstance(self.git.getprojectmembers(self.project_id), list)
-        self.assertTrue(self.git.editprojectmember(self.project_id, user_id=self.user_id, access_level="master", sudo=1))
+        self.assertTrue(self.git.editprojectmember(self.project_id, user_id=self.user_id, access_level="master"))
         self.assertTrue(self.git.deleteprojectmember(self.project_id, user_id=1))
 
         # Hooks testing
@@ -358,3 +353,16 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.deletelabel(self.project_id, "test_label"))
         labels = self.git.getlabels(self.project_id)
         self.assertEqual(len(labels), 0)
+
+    def test_sudo(self):
+        name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        newuser = self.git.createuser(name, name, "sudo_user", "{}@user.org".format(name))
+        # change to the new user
+        self.git.setsudo(user=newuser["id"])
+        self.assertEqual(len(self.git.getprojects()), 0)
+        self.assertEqual(self.git.currentuser()["username"], name)
+        # change back to logged user
+        self.git.setsudo()
+        self.assertGreaterEqual(len(self.git.getprojects()), 1)
+        self.assertEqual(self.git.currentuser()["username"], "root")
+        self.git.deleteuser(newuser["id"])
