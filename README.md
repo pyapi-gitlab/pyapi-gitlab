@@ -57,13 +57,15 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 ## Changes in the latest version
 
  - Support for the full Gitlab 7.5 API
- - Some methods were returning True or False instead of the object created. Now all the methods in which there is something returning from the server is returned as a dictionary/list of dictionaries to the user
  - All methods have documentation (Inside the library only, the docs are lagging a bit behind).
- - Some methods now use kwargs for the optional parameters so the code is more easy. For example, createissue now will take as much optinal named params as you want without makind the code unreadable.
- - In the short future all methods will use kwargs for the optional parameters.
- - Project wallnotes does not exist anymore, seems that they have been moved to project snippets (getsnippets, getsnippet, createsnippet, deletesnippet)
  - New fork api that allows to actually fork a project instead of doing fork relations
- - Removed getreadme method as its not part of the gitlab api, nor was it ever.
+ - New label methods (getlabel, createlabel, editlabel, deletelabel)
+
+ - BREAKING CHANGE: Some methods were returning True or False instead of the object created. Now all the methods in which there is something returning from the server is returned as a dictionary/list of dictionaries to the user
+ - BREAKING CHANGE: Some methods now use kwargs for the optional parameters so the code is more easy. For example, createissue now will take as much optional named params as you want without making the code unreadable.
+ - BREAKING CHANGE: Project wallnotes does not exist anymore, seems that they have been moved to project snippets (getsnippets, getsnippet, createsnippet, deletesnippet)
+ - BREAKING CHANGE: Removed getreadme method as its not part of the gitlab api, nor was it ever.
+ - BREAKING CHANGE: Old methods that started with list* are not get*. This is done in order to have a proper naming convention instead of having mixed listsomething and then getsomething. The actual
 
 ## Examples/Documentation
 

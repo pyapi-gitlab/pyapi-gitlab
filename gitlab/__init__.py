@@ -449,7 +449,7 @@ class Gitlab(object):
 
             return False
 
-    def listprojectmembers(self, project_id, query=None, page=1, per_page=20):
+    def getprojectmembers(self, project_id, query=None, page=1, per_page=20):
         """
         lists the members of a given project id
         :param project_id: the project id
@@ -668,7 +668,7 @@ class Gitlab(object):
         else:
             return False
 
-    def listbranches(self, project_id):
+    def getbranches(self, project_id):
         """
         list all the branches from a project
         :param project_id: project id
@@ -681,7 +681,7 @@ class Gitlab(object):
         else:
             return False
 
-    def listbranch(self, project_id, branch):
+    def getbranch(self, project_id, branch):
         """
         list one branch from a project
         :param project_id: project id
@@ -964,7 +964,7 @@ class Gitlab(object):
 
             return False
 
-    def listdeploykeys(self, project_id):
+    def getdeploykeys(self, project_id):
         """
         Get a list of a project's deploy keys.
         :param project_id: project id
@@ -978,7 +978,7 @@ class Gitlab(object):
 
             return False
 
-    def listdeploykey(self, project_id, key_id):
+    def getdeploykey(self, project_id, key_id):
         """
         Get a single key.
         :param project_id: project id
@@ -1359,7 +1359,7 @@ class Gitlab(object):
         else:
             return
 
-    def listrepositorytags(self, project_id):
+    def getrepositorytags(self, project_id):
         """
         Get a list of repository tags from a project, sorted by name in reverse alphabetical order.
         :param project_id:
@@ -1391,7 +1391,7 @@ class Gitlab(object):
         else:
             return False
 
-    def listrepositorycommits(self, project_id, ref_name=None, page=1, per_page=20):
+    def getrepositorycommits(self, project_id, ref_name=None, page=1, per_page=20):
         """
         Get a list of repository commits in a project.
         :param project_id: The ID of a project
@@ -1408,7 +1408,7 @@ class Gitlab(object):
         else:
             return False
 
-    def listrepositorycommit(self, project_id, sha1):
+    def getrepositorycommit(self, project_id, sha1):
         """
         Get a specific commit identified by the commit hash or name of a branch or tag.
         :param project_id: The ID of a project
@@ -1422,7 +1422,7 @@ class Gitlab(object):
         else:
             return False
 
-    def listrepositorycommitdiff(self, project_id, sha1):
+    def getrepositorycommitdiff(self, project_id, sha1):
         """
         Get the diff of a commit in a project.
         :param project_id: The ID of a project
@@ -1436,7 +1436,7 @@ class Gitlab(object):
         else:
             return False
 
-    def listrepositorytree(self, project_id, **kwargs):
+    def getrepositorytree(self, project_id, **kwargs):
         """
         Get a list of repository files and directories in a project.
         :param project_id: The ID of a project
@@ -1564,7 +1564,7 @@ class Gitlab(object):
         else:
             return False
 
-    def listgroupmembers(self, group_id, page=1, per_page=20):
+    def getgroupmembers(self, group_id, page=1, per_page=20):
         """
         lists the members of a given group id
         :param group_id: the group id
@@ -1840,5 +1840,71 @@ class Gitlab(object):
 
         if request.status_code == 200:
             return True
+        else:
+            return False
+
+    def getlabels(self, project_id):
+        """
+        Get all labels for given project.
+        :param project_id: The ID of a project
+        :return: list of the labels
+        """
+
+        request = requests.get("{}/{}/labels".format(self.projects_url, project_id),
+                               verify=self.verify_ssl, headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def createlabel(self, project_id, name, color):
+        """
+        Creates a new label for given repository with given name and color.
+        :param project_id: The ID of a project
+        :param name: The name of the label
+        :param color: Color of the label given in 6-digit hex notation with leading '#' sign (e.g. #FFAABB)
+        :return:
+        """
+
+        data = {"name": name, "color": color}
+        request = requests.post("{}/{}/labels".format(self.projects_url, project_id), data=data,
+                                verify=self.verify_ssl, headers=self.headers)
+        if request.status_code == 201:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
+    def deletelabel(self, project_id, name):
+        """
+        Deletes a label given by its name.
+        :param project_id: The ID of a project
+        :param name: The name of the label
+        :return: True if succeed
+        """
+        data = {"name": name}
+
+        request = requests.delete("{}/{}/labels".format(self.projects_url, project_id), data=data,
+                                  verify=self.verify_ssl, headers=self.headers)
+
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
+    def editlabel(self, project_id, name, new_name=None, color=None):
+        """
+        Updates an existing label with new name or now color. At least one parameter is required, to update the label.
+        :param project_id: The ID of a project
+        :param name: The name of the label
+        :return: True if succeed
+        """
+        data = {"name": name, "new_name": new_name, "color": color}
+
+        request = requests.put("{}/{}/labels".format(self.projects_url, project_id), data=data,
+                               verify=self.verify_ssl, headers=self.headers)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False

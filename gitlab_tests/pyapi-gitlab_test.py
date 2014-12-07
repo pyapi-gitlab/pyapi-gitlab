@@ -16,7 +16,7 @@ except ImportError:
 
 user = os.environ.get('gitlab_user', 'root')
 password = os.environ.get('gitlab_password', '5iveL!fe')
-host = os.environ.get('gitlab_host', 'http://192.168.1.100')
+host = os.environ.get('gitlab_host', 'http://localhost:8000')
 
 
 class GitlabTest(unittest.TestCase):
@@ -93,7 +93,7 @@ class GitlabTest(unittest.TestCase):
 
         # add-remove project members
         self.assertTrue(self.git.addprojectmember(self.project_id, user_id=self.user_id, access_level="reporter", sudo=1))
-        assert isinstance(self.git.listprojectmembers(self.project_id), list)
+        assert isinstance(self.git.getprojectmembers(self.project_id), list)
         self.assertTrue(self.git.editprojectmember(self.project_id, user_id=self.user_id, access_level="master", sudo=1))
         self.assertTrue(self.git.deleteprojectmember(self.project_id, user_id=1))
 
@@ -137,7 +137,7 @@ class GitlabTest(unittest.TestCase):
         self.git.createfork(self.project_id)
 
     def test_deploykeys(self):
-        keys = self.git.listdeploykeys(self.project_id)
+        keys = self.git.getdeploykeys(self.project_id)
         assert isinstance(keys, list)
         self.assertEqual(len(keys), 0)
         if ssh_test:
@@ -145,20 +145,20 @@ class GitlabTest(unittest.TestCase):
             rsa_key = RSA.generate(1024)
             self.assertTrue(self.git.adddeploykey(project_id=self.project_id, title=name,
                                                   key=str(rsa_key.publickey().exportKey(format="OpenSSH"))))
-            keys = self.git.listdeploykeys(self.project_id)
+            keys = self.git.getdeploykeys(self.project_id)
             self.assertGreater(len(keys), 0)
             key = keys[0]
-            assert isinstance(self.git.listdeploykey(self.project_id, key["id"]), dict)
+            assert isinstance(self.git.getdeploykey(self.project_id, key["id"]), dict)
             self.assertTrue(self.git.deletedeploykey(self.project_id, key["id"]))
-            keys = self.git.listdeploykeys(self.project_id)
+            keys = self.git.getdeploykeys(self.project_id)
             self.assertEqual(len(keys), 0)
 
     def test_branch(self):
-        sha1 = self.git.listrepositorycommits(project_id=self.project_id)[0]["id"]
+        sha1 = self.git.getrepositorycommits(project_id=self.project_id)[0]["id"]
         assert isinstance(self.git.createbranch(self.project_id, branch="deleteme", ref=sha1), dict)
         self.assertTrue(self.git.deletebranch(self.project_id, branch="deleteme"))
-        assert isinstance(self.git.listbranches(self.project_id), list)
-        assert isinstance(self.git.listbranch(self.project_id, branch="develop"), dict)
+        assert isinstance(self.git.getbranches(self.project_id), list)
+        assert isinstance(self.git.getbranch(self.project_id, branch="develop"), dict)
         self.assertTrue(self.git.protectbranch(self.project_id, branch="develop"))
         self.assertTrue(self.git.unprotectbranch(self.project_id, branch="develop"))
 
@@ -201,26 +201,26 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getrepositorybranch(self.project_id, "develop"), dict)
         assert isinstance(self.git.protectrepositorybranch(self.project_id, "develop"), dict)
         assert isinstance(self.git.unprotectrepositorybranch(self.project_id, "develop"), dict)
-        assert isinstance(self.git.listrepositorycommits(self.project_id), list)
-        assert isinstance(self.git.listrepositorycommits(self.project_id, page=1), list)
-        assert isinstance(self.git.listrepositorycommits(self.project_id, per_page=7), list)
-        commit = self.git.listrepositorycommits(self.project_id)[0]
+        assert isinstance(self.git.getrepositorycommits(self.project_id), list)
+        assert isinstance(self.git.getrepositorycommits(self.project_id, page=1), list)
+        assert isinstance(self.git.getrepositorycommits(self.project_id, per_page=7), list)
+        commit = self.git.getrepositorycommits(self.project_id)[0]
 
         # tags
-        tags = self.git.listrepositorytags(self.project_id)
+        tags = self.git.getrepositorytags(self.project_id)
         assert isinstance(tags, list)
         tag = self.git.createrepositorytag(self.project_id, "test_tag", commit["id"], "test_tag_message")
         assert isinstance(tag, dict)
         self.assertEqual(tag["name"], "test_tag")
 
-        assert isinstance(self.git.listrepositorycommit(self.project_id, commit["id"]), dict)
-        assert isinstance(self.git.listrepositorycommitdiff(self.project_id, commit["id"]), list)
-        assert isinstance(self.git.listrepositorytree(self.project_id), list)
-        assert isinstance(self.git.listrepositorytree(self.project_id, path="docs"), list)
-        assert isinstance(self.git.listrepositorytree(self.project_id, ref_name="develop"), list)
+        assert isinstance(self.git.getrepositorycommit(self.project_id, commit["id"]), dict)
+        assert isinstance(self.git.getrepositorycommitdiff(self.project_id, commit["id"]), list)
+        assert isinstance(self.git.getrepositorytree(self.project_id), list)
+        assert isinstance(self.git.getrepositorytree(self.project_id, path="docs"), list)
+        assert isinstance(self.git.getrepositorytree(self.project_id, ref_name="develop"), list)
         assert isinstance(str(self.git.getrawblob(self.project_id, commit['id'])), str)
         assert isinstance(str(self.git.getrawfile(self.project_id, commit['id'], "setup.py")), str)
-        commit = self.git.listrepositorycommits(self.project_id)
+        commit = self.git.getrepositorycommits(self.project_id)
         assert isinstance(self.git.compare_branches_tags_commits(self.project_id,
                                                                  from_id=commit[1]["id"],
                                                                  to_id=commit[0]["id"]), dict)
@@ -249,11 +249,11 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.creategroup("test_group", "test_group"), dict)
         assert isinstance(self.git.getgroups(), list)
         group = self.git.getgroups()[0]
-        assert isinstance(self.git.listgroupmembers(group["id"]), list)
-        self.assertEqual(len(self.git.listgroupmembers(group["id"])), 0)
+        assert isinstance(self.git.getgroupmembers(group["id"]), list)
+        self.assertEqual(len(self.git.getgroupmembers(group["id"])), 0)
         self.assertTrue(self.git.addgroupmember(group["id"], self.user_id, "master"))
-        assert isinstance(self.git.listgroupmembers(group["id"]), list)
-        self.assertGreater(len(self.git.listgroupmembers(group["id"])), 0)
+        assert isinstance(self.git.getgroupmembers(group["id"]), list)
+        self.assertGreater(len(self.git.getgroupmembers(group["id"])), 0)
         self.assertTrue(self.git.deletegroupmember(group["id"], self.user_id))
         self.assertFalse(self.git.addgroupmember(group["id"], self.user_id, "nonexistant"))
         self.assertTrue(self.git.deletegroup(group_id=group["id"]))
@@ -293,7 +293,7 @@ class GitlabTest(unittest.TestCase):
 
     def test_merge(self):
         # prepare for the merge
-        commit = self.git.listrepositorycommits(self.project_id)[5]
+        commit = self.git.getrepositorycommits(self.project_id)[5]
         branch = self.git.createbranch(self.project_id, "mergebranch", commit["id"])
         merge = self.git.createmergerequest(self.project_id, "develop", "mergebranch", "testmerge")
 
@@ -336,7 +336,7 @@ class GitlabTest(unittest.TestCase):
         self.assertEqual(note["body"], note2["body"])
 
         # merge request wallnotes
-        commit = self.git.listrepositorycommits(self.project_id)[5]
+        commit = self.git.getrepositorycommits(self.project_id)[5]
         branch = self.git.createbranch(self.project_id, "notesbranch", commit["id"])
         merge = self.git.createmergerequest(self.project_id, "develop", "notesbranch", "testnotes")
         self.assertEqual(len(self.git.getmergerequestwallnotes(self.project_id, merge["id"])), 0)
@@ -346,3 +346,15 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(note2, dict)
         self.assertEqual(note["body"], note2["body"])
         self.assertEqual(len(self.git.getmergerequestwallnotes(self.project_id, merge["id"])), 1)
+
+    def test_labels(self):
+        labels = self.git.getlabels(self.project_id)
+        assert isinstance(labels, list)
+        self.assertEqual(len(labels), 0)
+        newlabel = self.git.createlabel(self.project_id, "test_label", "#FFAABB")
+        assert isinstance(newlabel, dict)
+        labels = self.git.getlabels(self.project_id)
+        self.assertEqual(len(labels), 1)
+        self.assertTrue(self.git.deletelabel(self.project_id, "test_label"))
+        labels = self.git.getlabels(self.project_id)
+        self.assertEqual(len(labels), 0)
