@@ -78,8 +78,8 @@ Check the docs at [readthedocs.org](http://pyapi-gitlab.readthedocs.org)
 
 pyapi-gitlab is licensed under the GPL3. Check the LICENSE file.
 
-## Built with Pycharm
+## Built with PyCharm
 
-Thanks to Jetbrains for giving me an Open Source license for Pycharm, it has helped making development much faster!
+Thanks to Jetbrains for giving me an Open Source license for PyCharm, it has helped making development much faster!
 
 [![Pycharm](http://www.jetbrains.com/pycharm/docs/logo_pycharm.png)](https://www.jetbrains.com/pycharm/)
