@@ -1408,7 +1408,7 @@ class Gitlab(object):
                                params=data, verify=self.verify_ssl,
                                headers=self.headers)
         if request.status_code == 200:
-            return request.content.decode("utf-8")
+            return request.content
         else:
             return False
 
@@ -1422,7 +1422,7 @@ class Gitlab(object):
         request = requests.get("{0}/{1}/repository/raw_blobs/{2}".format(self.projects_url, project_id, sha1),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
-            return request.content.decode("utf-8")
+            return request.content
         else:
             return False
 
