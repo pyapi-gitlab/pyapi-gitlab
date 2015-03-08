@@ -13,7 +13,7 @@ from . import exceptions
 class Gitlab(object):
     """Gitlab class"""
 
-    def __init__(self, host, token="", verify_ssl=True):
+    def __init__(self, host, token="", oauth_token="", verify_ssl=True):
         """on init we setup the token used for all the api calls and all the urls
 
         :param host: host of gitlab
@@ -22,6 +22,10 @@ class Gitlab(object):
         if token != "":
             self.token = token
             self.headers = {"PRIVATE-TOKEN": self.token}
+        if oauth_token != "":
+            self.oauth_token = oauth_token
+            self.headers = {"Authorization": 'Bearer {}'.format(
+                self.oauth_token)}
         if not host:
             raise ValueError("host argument may not be empty")
         if host[-1] == '/':
@@ -1405,7 +1409,7 @@ class Gitlab(object):
                                params=data, verify=self.verify_ssl,
                                headers=self.headers)
         if request.status_code == 200:
-            return request.content.decode("utf-8")
+            return request.content
         else:
             return False
 
@@ -1419,7 +1423,7 @@ class Gitlab(object):
         request = requests.get("{0}/{1}/repository/raw_blobs/{2}".format(self.projects_url, project_id, sha1),
                                verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 200:
-            return request.content.decode("utf-8")
+            return request.content
         else:
             return False
 
