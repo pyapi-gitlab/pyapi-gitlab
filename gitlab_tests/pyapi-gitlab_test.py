@@ -2,12 +2,7 @@
 pyapi-gitlab tests
 """
 
-import sys
-if sys.version_info[:2] == (2, 6):
-    import unittest2 as unittest
-else:
-    import unittest
-
+import unittest2 as unittest
 import gitlab
 import os
 import time

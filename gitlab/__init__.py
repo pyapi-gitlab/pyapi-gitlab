@@ -1786,13 +1786,12 @@ class Gitlab(object):
         else:
             return False
 
-    def getlabels(self, project_id, page=1, per_page=20):
+    def getlabels(self, project_id):
         """Get all labels for given project.
 
         :param project_id: The ID of a project
         :return: list of the labels
         """
-        data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/labels".format(self.projects_url, project_id), params=data,
                                verify=self.verify_ssl, headers=self.headers)
 
