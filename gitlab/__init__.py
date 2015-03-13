@@ -768,20 +768,21 @@ class Gitlab(object):
 
             return False
 
-    def getprojectissues(self, project_id, page=1, per_page=20):
+    def getprojectissues(self, project_id, page=1, per_page=20, **kwargs):
         """Return a list of issues for project id.
 
         :param: project_id: The id for the project.
         :return: list of issues
         """
-        data = {'page': page, 'per_page': per_page}
-
+        kwargs['page'] = page
+        kwargs['per_page'] = per_page
+        data = kwargs
+        
         request = requests.get("{0}/{1}/issues".format(self.projects_url, project_id),
                                params=data, headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-
             return False
 
     def getprojectissue(self, project_id, issue_id):
