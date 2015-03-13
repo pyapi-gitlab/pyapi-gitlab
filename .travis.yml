@@ -18,7 +18,7 @@ before_install:
   - scripts/install_gitlab.sh
 # command to install dependencies
 install:
-  - pip install -r requirements.txt
+  - pip install -r test-requirements.txt
   - pip install coveralls
 # command to run tests
 script: coverage run --source=gitlab setup.py test
