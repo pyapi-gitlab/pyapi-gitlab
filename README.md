@@ -28,9 +28,9 @@ Depending on the gitlab version you are using (check it on your help section on 
 
 Latest version
 
-Gitlab 7.5.1:
+Gitlab 7.5.2:
 ```bash
-pip install pyapi-gitlab=="7.5.1"
+pip install pyapi-gitlab=="7.5.2"
 ```
 
 
