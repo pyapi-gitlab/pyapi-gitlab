@@ -1792,7 +1792,7 @@ class Gitlab(object):
         :param project_id: The ID of a project
         :return: list of the labels
         """
-        request = requests.get("{0}/{1}/labels".format(self.projects_url, project_id), params=data,
+        request = requests.get("{0}/{1}/labels".format(self.projects_url, project_id),
                                verify=self.verify_ssl, headers=self.headers)
 
         if request.status_code == 200:
