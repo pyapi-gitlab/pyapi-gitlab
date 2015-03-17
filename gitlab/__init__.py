@@ -538,13 +538,12 @@ class Gitlab(object):
             return False
 
     def editprojecthook(self, project_id, hook_id, url, push=False,
-            issues=False, merge_requests=False, tag_push=False, sudo=""):
+            issues=False, merge_requests=False, tag_push=False):
         """
         edit an existing hook from a project
         :param id_: project id
         :param hook_id: hook id
         :param url: the new url
-        :param sudo: do the request as another user
         :return: True if success
         """
         data = {"id": project_id, "hook_id": hook_id, "url": url}
@@ -552,8 +551,6 @@ class Gitlab(object):
         data['issues_events'] = int(bool(issues))
         data['merge_requests_events'] = int(bool(merge_requests))
         data['tag_push_events'] = int(bool(tag_push))
-        if sudo != "":
-            data['sudo'] = sudo
         request = requests.put("{0}/{1}/hooks/{2}".format(self.projects_url, project_id, hook_id),
                                headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 200:
