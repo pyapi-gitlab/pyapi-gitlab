@@ -1850,3 +1850,16 @@ class Gitlab(object):
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
+
+    @staticmethod
+    def getall(fn, *args, **kwargs):
+        """auto iterate over results
+        """
+        page = kwargs.pop('page', 1)
+        while True:
+            results = fn(*args, page=page, **kwargs)
+            if not results:
+                break
+            for x in results:
+                yield x
+            page += 1
