@@ -183,13 +183,12 @@ class Gitlab(object):
         else:
             return False
 
-    def getsshkeys(self, page=1, per_page=20):
+    def getsshkeys(self):
         """Gets all the ssh keys for the current user
 
         :return: a dictionary with the lists
         """
-        data = {'page': page, 'per_page': per_page}
-        request = requests.get(self.keys_url, headers=self.headers, params=data,
+        request = requests.get(self.keys_url, headers=self.headers,
                                verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
