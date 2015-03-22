@@ -183,13 +183,12 @@ class Gitlab(object):
         else:
             return False
 
-    def getsshkeys(self, page=1, per_page=20):
+    def getsshkeys(self):
         """Gets all the ssh keys for the current user
 
         :return: a dictionary with the lists
         """
-        data = {'page': page, 'per_page': per_page}
-        request = requests.get(self.keys_url, headers=self.headers, params=data,
+        request = requests.get(self.keys_url, headers=self.headers,
                                verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -626,14 +625,13 @@ class Gitlab(object):
         else:
             return False
 
-    def getbranches(self, project_id, page=1, per_page=20):
+    def getbranches(self, project_id):
         """List all the branches from a project
 
         :param project_id: project id
         :return: the branches
         """
-        data = {'page': page, 'per_page': per_page}
-        request = requests.get("{0}/{1}/repository/branches".format(self.projects_url, project_id), params=data,
+        request = requests.get("{0}/{1}/repository/branches".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
@@ -917,14 +915,13 @@ class Gitlab(object):
 
             return False
 
-    def getdeploykeys(self, project_id, page=1, per_page=20):
+    def getdeploykeys(self, project_id):
         """Get a list of a project's deploy keys.
 
         :param project_id: project id
         :return: the keys in a dictionary if success, false if not
         """
-        data = {'page': page, 'per_page': per_page}
-        request = requests.get("{0}/{1}/keys".format(self.projects_url, project_id), params=data,
+        request = requests.get("{0}/{1}/keys".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
