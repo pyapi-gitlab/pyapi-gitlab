@@ -245,8 +245,13 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getgroups(), list)
         group = self.git.getgroups()[0]
         assert isinstance(self.git.getgroupmembers(group["id"]), list)
-        self.assertEqual(len(self.git.getgroupmembers(group["id"])), 0)
-        self.assertTrue(self.git.addgroupmember(group["id"], self.user_id, "master"))
+        try:
+            # Gitlab < 7.8
+            self.assertEqual(len(self.git.getgroupmembers(group["id"])), 0)
+            self.assertTrue(self.git.addgroupmember(group["id"], self.user_id, "master"))
+        except AssertionError:
+            # In Gitlab > 7.7, Admin is automatically added to all groups. Keep breaking that api champs.
+            self.assertEqual(len(self.git.getgroupmembers(group["id"])), 1)
         assert isinstance(self.git.getgroupmembers(group["id"]), list)
         self.assertGreater(len(self.git.getgroupmembers(group["id"])), 0)
         self.assertTrue(self.git.deletegroupmember(group["id"], self.user_id))
