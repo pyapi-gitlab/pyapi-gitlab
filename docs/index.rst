@@ -19,7 +19,7 @@ First we import our library::
 
    import gitlab
 
-Then we need to authenticate to our Gitlab instance. There is 2 ways of doing this.
+Then we need to authenticate to our Gitlab instance. There is 3 ways of doing this.
 
 Authenticating via user/password
 ==================================
@@ -43,6 +43,16 @@ You can also authenticate via the private_token that you can get from your gitla
 Just call the instance with the parameter token::
 
     git = gitlab.Gitlab("our_gitlab_host", token="mytoken")
+
+
+Authenticating via oAuth2 token
+====================================
+
+You can also authenticate via the oAuth token that you can get from your gitlab profile and it's easier than using user/password
+
+Just call the instance with the parameter oauth_token::
+
+    git = gitlab.Gitlab("our_gitlab_host", oauth_token="mytoken")
 
 
 Using sudo on the functions
