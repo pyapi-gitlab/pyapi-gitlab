@@ -80,6 +80,37 @@ All get* functions now accept a page and per_page parameter::
 
 The default is to get page 1 and 20 results per page. The max value for per_page is 100.
 
+
+Getting all results
+====================
+
+There is a getall method which will return all results for any call that accepts pagination::
+
+    git.getall(git.getprojects)
+
+Used in loops::
+
+    for project in git.getall(git.getprojects):
+        pass
+
+Treated as a generator::
+
+    print ", ".join(user['username'] for user in git.getall(git.getusers, per_page=100))
+
+Wrap with list() which retrieves all the elements::
+
+    print 'number of users: %d' % len(list(git.getall(git.getusers)))
+
+Start from any page::
+
+    # skip the first 4400 results
+    len(list(git.getall(git.getusers, page=51, per_page=80)))
+
+And with positional args::
+
+    print len(list(git.getall(git.getgroupmembers, 191, page=3, per_page=7)))
+
+
 API doc
 ==================
 
