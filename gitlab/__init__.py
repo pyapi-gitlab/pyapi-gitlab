@@ -1854,3 +1854,26 @@ class Gitlab(object):
             return json.loads(request.content.decode("utf-8"))
         else:
             return False
+
+    @staticmethod
+    def getall(fn, *args, **kwargs):
+        """Auto-iterate over the paginated results of various methods of the API.
+        Pass the GitLabAPI method as the first argument, followed by the
+        other parameters as normal. Include `page` to determine first page to poll.
+        Remaining kwargs are passed on to the called method, including `per_page`.
+
+        :param fn: Actual method to call
+        :param *args: Positional arguments to actual method
+        :param page: Optional, page number to start at, defaults to 1
+        :param **kwargs: Keyword arguments to actual method
+        :return: Yields each item in the result until exhausted, and then
+        implicit StopIteration; or no elements if error
+        """
+        page = kwargs.pop('page', 1)
+        while True:
+            results = fn(*args, page=page, **kwargs)
+            if not results:
+                break
+            for x in results:
+                yield x
+            page += 1
