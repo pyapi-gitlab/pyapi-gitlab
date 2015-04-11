@@ -226,7 +226,7 @@ class GitlabTest(unittest.TestCase):
         self.assertNotEqual(firstfile["commit_id"], secondfile["commit_id"])
         self.assertNotEqual(firstfile["content"], secondfile["content"])
         self.assertTrue(self.git.deletefile(self.project_id, "test.file", "develop", "remove_testfile"))
-        assert isinstance(self.git.getcontributors(self.project_id), list)
+        assert self.git.getcontributors(self.project_id) is not False
 
     def test_search(self):
         self.assertGreater(len(self.git.searchproject(self.project['name'])), 0)
@@ -351,8 +351,7 @@ class GitlabTest(unittest.TestCase):
         labels = self.git.getlabels(self.project_id)
         assert isinstance(labels, list)
         self.assertEqual(len(labels), 0)
-        newlabel = self.git.createlabel(self.project_id, "test_label", "#FFAABB")
-        assert isinstance(newlabel, dict)
+        assert self.git.createlabel(self.project_id, "test_label", "#FFAABB") is not False
         labels = self.git.getlabels(self.project_id)
         self.assertEqual(len(labels), 1)
         self.assertTrue(self.git.deletelabel(self.project_id, "test_label"))

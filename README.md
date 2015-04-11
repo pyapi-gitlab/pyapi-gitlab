@@ -22,46 +22,51 @@ pyapi-gitlab has its own versioning in which the 2 first numbers indicates the G
 
 ## Installation
 
-pyapi-gitlab is now on Pypi!
-
-Depending on the gitlab version you are using (check it on your help section on gitlab) you will need a different version.
-
-Latest version
-
-Gitlab 7.5.2:
 ```bash
-pip install pyapi-gitlab=="7.5.2"
-```
-
-
-Old versions not maintained:
-
-Gitlab 5.4:
-```bash
-pip install pyapi-gitlab=="5.4-0"
-```
-
-Gitlab 6.0 or 6.1:
-```bash
-pip install pyapi-gitlab=="6.1.6"
-```
-
-Gitlab 6.2:
-```bash
-pip install pyapi-gitlab=="6.2.3"
+pip install pyapi-gitlab
 ```
 
 pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 
 
-## Changes in the latest version
+# Versions tested
+
+| Gitlab version | Status |
+|:-------------:| :-----:|
+| 7.9.X      | :x:<sup>1</sup> |
+| 7.8.X      | :heavy_check_mark: |
+| 7.7.X      | :heavy_check_mark: |
+| 7.6.X      | :heavy_check_mark: |
+| 7.5.X      | :heavy_check_mark: |
+| 7.4.X      | :heavy_check_mark: |
+| 7.3.X      | :heavy_check_mark: |
+| 7.2.X      | :heavy_check_mark: |
+| 7.1.X      | :x:<sup>2</sup> |
+| 7.0.X      | :x:<sup>3</sup>   |
+
+1. 3 out of 17 tests failing: Seems that create snippet wall note now returns true/false instead of the created snippet. Snippet creating now does not return the created snippet. And move project does not return a dict either.
+2. Label creation is not supported on this version.
+3. Contributors endpoint seems to not exists in this version. Label creation is not supported on this version.
+
+## Changelog
+
+# 7.5.3
+
+ - New function wrapper ``getall`` to get all results from any function that provides pagination [Anirudh Dutt]
+ - Remove pagination params from ``getdeploykeys``, ``getbranches`` and ``getsshkeys`` as they dont support it [Anirudh Dutt]
+ - Add oAuth tokens to the login method [Ken Cochrane]
+ - You can now add the type of hook when creating it [tonicbupt]
+ - Allow Project Issues to be filtered by passing kwargs [Nick Whyte]
+ - Update docs [Itxaka Serrano]
+
+# 7.5.2
 
  - Support for the full Gitlab 7.5 API
+ - Fix python 2.6 compatibility
  - All methods have documentation (Inside the library only, the docs are lagging a bit behind).
  - New fork api that allows to actually fork a project instead of doing fork relations
  - New label methods (getlabel, createlabel, editlabel, deletelabel)
  - All get* methods that return more than one item support pagination. Check page and per_page args. Default to first page and 20 items per page.
-
  - BREAKING CHANGE: Old sudo arg in methods to execute as other user is gone. Now there is a method setsudo(user_id/user_username) which will setup the header, so all the subsequent API calls will be done as that user. To get back to your user just do a setsudo() and the sudo parameter will be cleared
  - BREAKING CHANGE: Some methods were returning True or False instead of the object created. Now all the methods in which there is something returning from the server is returned as a dictionary/list of dictionaries to the user
  - BREAKING CHANGE: Some methods now use kwargs for the optional parameters so the code is more easy and readable. Methods affected: createproject, createprojectuser, createmilestone, editmilestone, updatemergerequest
