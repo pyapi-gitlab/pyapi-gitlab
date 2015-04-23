@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 setup(
     name = "pyapi-gitlab",
-    version = "7.5.3",
+    version = "7.5.4",
     packages = find_packages(),
     install_requires = ['requests'],
     extras_require = {
@@ -13,7 +13,7 @@ setup(
     author = "Itxaka Serrano Garcia",
     author_email = "itxakaserrano@gmail.com",
     description = "Gitlab API wrapper for Gitlab 7.X",
-    license = "GPL3",
+    license = "Apache License 2.0",
     keywords = "gitlab git wrapper",
     url = "http://github.com/itxaka/pyapi-gitlab/",
     test_suite="gitlab_tests",

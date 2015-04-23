@@ -50,6 +50,11 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 
 ## Changelog
 
+# 7.5.4
+
+ - Change license to Apache 2.0
+ - getproject now accepts a namespace/projectname as well like the gitlab api
+
 # 7.5.3
 
  - New function wrapper ``getall`` to get all results from any function that provides pagination [Anirudh Dutt]
