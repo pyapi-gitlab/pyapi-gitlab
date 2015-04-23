@@ -69,6 +69,7 @@ class GitlabTest(unittest.TestCase):
         assert isinstance(self.git.getprojects(page=5), list)
         assert isinstance(self.git.getprojects(per_page=7), list)
         assert isinstance(self.git.getproject(self.project_id), dict)
+        assert isinstance(self.git.getproject(self.project['path_with_namespace']), dict)
         self.assertFalse(self.git.getproject("wrong"))
 
         # test getprojectsall
