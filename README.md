@@ -81,7 +81,7 @@ Check the docs at [readthedocs.org](http://pyapi-gitlab.readthedocs.org)
 
 ## License
 
-pyapi-gitlab is licensed under the GPL3. Check the LICENSE file.
+pyapi-gitlab is licensed under the Apache License 2.0. Check the LICENSE file.
 
 ## Built with PyCharm
 
