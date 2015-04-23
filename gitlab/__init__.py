@@ -28,11 +28,8 @@ class Gitlab(object):
                 self.oauth_token)}
         if not host:
             raise ValueError("host argument may not be empty")
-        if host[-1] == '/':
-            self.host = host[:-1]
-        else:
-            self.host = host
-        if self.host[:7] == 'http://' or self.host[:8] == 'https://':
+        self.host = host.rstrip('/')
+        if self.host.startswith('http://') or self.host.startswith('https://'):
             pass
         else:
             self.host = 'https://' + self.host
