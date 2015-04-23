@@ -8,6 +8,11 @@ Check the license on the LICENSE file
 import requests
 import json
 from . import exceptions
+try:
+    from urllib import quote_plus
+except ImportError:
+    from urllib.parse import quote_plus
+    basestring = str
 
 
 class Gitlab(object):
@@ -300,17 +305,18 @@ class Gitlab(object):
             return False
 
     def getproject(self, project_id):
-        """Get info for a project identified by id
+        """Get info for a project identified by id or namespace/project_name
 
-        :param project_id: id of the project
+        :param project_id: id or namespace/project_name of the project
         :return: False if not found, a dictionary if found
         """
+        if isinstance(project_id, basestring):
+            project_id = quote_plus(project_id)
         request = requests.get("{0}/{1}".format(self.projects_url, project_id),
                                headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return json.loads(request.content.decode("utf-8"))
         else:
-
             return False
 
     def getprojectevents(self, project_id, page=1, per_page=20):
