@@ -50,6 +50,10 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 
 ## Changelog
 
+# 7.8.4
+
+ - Just a bumped version, now that its tested and fully supports Gitlab versions up to 7.8
+
 # 7.5.4
 
  - Change license to Apache 2.0
