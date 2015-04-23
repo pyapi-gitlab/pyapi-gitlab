@@ -915,6 +915,21 @@ class Gitlab(object):
 
             return False
 
+    def getmilestoneissues(self, project_id, milestone_id, page=1, per_page=20):
+        """Get the issues associated with a milestone
+
+        :param project_id: project id
+        :param milestone_id: milestone id
+        :return: list of issues
+        """
+        data = {'page': page, 'per_page': per_page}
+        request = requests.get("{0}/{1}/milestones/{2}/issues".format(self.projects_url, project_id, milestone_id),
+                               params=data, headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+            return False
+
     def getdeploykeys(self, project_id):
         """Get a list of a project's deploy keys.
 
