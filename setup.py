@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 setup(
     name = "pyapi-gitlab",
-    version = "7.5.4",
+    version = "7.8.4",
     packages = find_packages(),
     install_requires = ['requests'],
     extras_require = {
