@@ -1085,6 +1085,22 @@ class Gitlab(object):
 
             return False
 
+    def getmergerequestchanges(self, project_id, mergerequest_id):
+        """Get changes of a merge request.
+
+        :param project_id: ID of the project
+        :param mergerequest_id: ID of the merge request
+        :return: information about the merge request including files and changes
+        """
+        request = requests.get('{0}/{1}/merge_request/{2}/changes'.format(self.projects_url, project_id, mergerequest_id),
+                               headers=self.headers, verify=self.verify_ssl)
+
+        if request.status_code == 200:
+            return json.loads(request.content.decode("utf-8"))
+        else:
+
+            return False
+
     def createmergerequest(self, project_id, sourcebranch, targetbranch,
                            title, target_project_id=None, assignee_id=None):
         """Create a new merge request.
