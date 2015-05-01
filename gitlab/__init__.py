@@ -538,7 +538,7 @@ class Gitlab(object):
         request = requests.post("{0}/{1}/hooks".format(self.projects_url, project_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
-            return True
+            return json.loads(request.content.decode("utf-8"))
         else:
             return False
 
@@ -788,7 +788,7 @@ class Gitlab(object):
         kwargs['page'] = page
         kwargs['per_page'] = per_page
         data = kwargs
-        
+
         request = requests.get("{0}/{1}/issues".format(self.projects_url, project_id),
                                params=data, headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
