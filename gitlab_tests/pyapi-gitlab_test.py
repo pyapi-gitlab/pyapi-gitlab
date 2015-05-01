@@ -94,7 +94,7 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.deleteprojectmember(self.project_id, user_id=1))
 
         # Hooks testing
-        self.assertTrue(self.git.addprojecthook(self.project_id, "http://web.com"))
+        assert isinstance(self.git.addprojecthook(self.project_id, "http://web.com"), dict)
         assert isinstance(self.git.getprojecthooks(self.project_id), list)
         assert isinstance(self.git.getprojecthook(self.project_id,
                                                   self.git.getprojecthooks(self.project_id)[0]['id']), dict)
