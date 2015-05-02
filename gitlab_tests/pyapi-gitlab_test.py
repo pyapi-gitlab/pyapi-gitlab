@@ -139,8 +139,8 @@ class GitlabTest(unittest.TestCase):
         if ssh_test:
             name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             rsa_key = RSA.generate(1024)
-            self.assertTrue(self.git.adddeploykey(project_id=self.project_id, title=name,
-                                                  key=str(rsa_key.publickey().exportKey(format="OpenSSH"))))
+            assert isinstance(self.git.adddeploykey(project_id=self.project_id, title=name,
+                                                    key=str(rsa_key.publickey().exportKey(format="OpenSSH"))), dict)
             keys = self.git.getdeploykeys(self.project_id)
             self.assertGreater(len(keys), 0)
             key = keys[0]
