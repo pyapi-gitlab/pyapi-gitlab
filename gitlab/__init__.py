@@ -1592,6 +1592,37 @@ class Gitlab(object):
         else:
             return False
 
+    def editgroupmember(self, group_id, user_id, access_level):
+        """Edit user access level in a group
+
+        :param group_id: group id
+        :param user_id: user id
+        :param access_level: access level, see gitlab help to know more
+        :return: True if success
+        """
+        if not isinstance(access_level, int):
+            if access_level.lower() == "owner":
+                access_level = 50
+            elif access_level.lower() == "master":
+                access_level = 40
+            elif access_level.lower() == "developer":
+                access_level = 30
+            elif access_level.lower() == "reporter":
+                access_level = 20
+            elif access_level.lower() == "guest":
+                access_level = 10
+            else:
+                return False
+
+        data = {"id": group_id, "user_id": user_id, "access_level": access_level}
+
+        request = requests.put("{0}/{1}/members/{2}".format(self.groups_url, group_id, user_id),
+                                headers=self.headers, data=data, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return True
+        else:
+            return False
+
     def deletegroupmember(self, group_id, user_id):
         """Delete a group member
 
