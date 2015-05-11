@@ -995,15 +995,21 @@ class Gitlab(object):
 
             return False
 
-    def creategroup(self, name, path):
+    def creategroup(self, name, path, **kwargs):
         """Creates a new group
 
         :param name: The name of the group
         :param path: The path for the group
+        :param kwargs: Any param the the Gitlab API supports
         :return: dict of the new group
         """
-        request = requests.post(self.groups_url,
-                                data={'name': name, 'path': path},
+
+        data = {'name': name, 'path': path}
+
+        if kwargs:
+            data.update(kwargs)
+
+        request = requests.post(self.groups_url, data=data,
                                 headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
