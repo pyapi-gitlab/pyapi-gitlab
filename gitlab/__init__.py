@@ -435,14 +435,15 @@ class Gitlab(object):
         :param access_level: access level, see gitlab help to know more
         :return: True if success
         """
-        if access_level.lower() == "master":
-            access_level = 40
-        elif access_level.lower() == "developer":
-            access_level = 30
-        elif access_level.lower() == "reporter":
-            access_level = 20
-        else:
-            access_level = 10
+        if isinstance(access_level, basestring):
+            if access_level.lower() == "master":
+                access_level = 40
+            elif access_level.lower() == "developer":
+                access_level = 30
+            elif access_level.lower() == "reporter":
+                access_level = 20
+            else:
+                access_level = 10
         data = {"id": project_id, "user_id": user_id, "access_level": access_level}
 
         request = requests.post("{0}/{1}/members".format(self.projects_url, project_id),
