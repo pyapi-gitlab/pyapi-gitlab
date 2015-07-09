@@ -1720,7 +1720,7 @@ class Gitlab(object):
         else:
             return False
 
-    def createfile(self, project_id, file_path, branch_name, content, commit_message):
+    def createfile(self, project_id, file_path, branch_name, encoding, content, commit_message):
         """Creates a new file in the repository
 
         :param project_id: project id
@@ -1730,7 +1730,7 @@ class Gitlab(object):
         :param commit_message: Commit message
         :return: true if success, false if not
         """
-        data = {"file_path": file_path, "branch_name": branch_name,
+        data = {"file_path": file_path, "branch_name": branch_name, "encoding": encoding,
                 "content": content, "commit_message": commit_message}
         request = requests.post("{0}/{1}/repository/files".format(self.projects_url, project_id),
                                 verify=self.verify_ssl, headers=self.headers, data=data)
