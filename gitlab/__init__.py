@@ -365,6 +365,40 @@ class Gitlab(object):
 
             return False
 
+    def editproject(self, project_id, **kwargs):
+        """Edit an existing project.
+
+        :param name: new project name
+        :param path: custom repository name for new project. By default generated based on name
+        :param default_branch: they default branch
+        :param description: short project description
+        :param issues_enabled:
+        :param merge_requests_enabled:
+        :param wiki_enabled:
+        :param snippets_enabled:
+        :param public: if true same as setting visibility_level = 20
+        :param visibility_level:
+        :return:
+        """
+        data = {"id": project_id}
+
+        if kwargs:
+            data.update(kwargs)
+
+        request = requests.put("{0}/{1}".format(self.projects_url, project_id),
+                                            headers=self.headers, data=data, verify=self.verify_ssl)
+
+        if request.status_code == 200:
+            return True
+        elif request.status_code == 400:
+            if "Your param's are invalid" in request.text:
+                print(request.text)
+                return False
+        else:
+
+            return False
+
+
     def deleteproject(self, project_id):
         """Delete a project
 
