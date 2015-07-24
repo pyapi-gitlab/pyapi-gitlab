@@ -1050,7 +1050,7 @@ class Gitlab(object):
             return json.loads(request.content.decode("utf-8"))
         else:
             msg = json.loads(request.content.decode("utf-8"))['message']
-            return exceptions.HttpError(msg)
+            raise exceptions.HttpError(msg)
 
     def getgroups(self, group_id=None, page=1, per_page=20):
         """Retrieve group information
