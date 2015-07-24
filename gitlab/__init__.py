@@ -1030,15 +1030,21 @@ class Gitlab(object):
 
             return False
 
-    def creategroup(self, name, path):
+    def creategroup(self, name, path, **kwargs):
         """Creates a new group
 
         :param name: The name of the group
         :param path: The path for the group
+        :param kwargs: Any param the the Gitlab API supports
         :return: dict of the new group
         """
-        request = requests.post(self.groups_url,
-                                data={'name': name, 'path': path},
+
+        data = {'name': name, 'path': path}
+
+        if kwargs:
+            data.update(kwargs)
+
+        request = requests.post(self.groups_url, data=data,
                                 headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 201:
             return json.loads(request.content.decode("utf-8"))
@@ -1623,6 +1629,37 @@ class Gitlab(object):
         request = requests.post("{0}/{1}/members".format(self.groups_url, group_id),
                                 headers=self.headers, data=data, verify=self.verify_ssl)
         if request.status_code == 201:
+            return True
+        else:
+            return False
+
+    def editgroupmember(self, group_id, user_id, access_level):
+        """Edit user access level in a group
+
+        :param group_id: group id
+        :param user_id: user id
+        :param access_level: access level, see gitlab help to know more
+        :return: True if success
+        """
+        if not isinstance(access_level, int):
+            if access_level.lower() == "owner":
+                access_level = 50
+            elif access_level.lower() == "master":
+                access_level = 40
+            elif access_level.lower() == "developer":
+                access_level = 30
+            elif access_level.lower() == "reporter":
+                access_level = 20
+            elif access_level.lower() == "guest":
+                access_level = 10
+            else:
+                return False
+
+        data = {"id": group_id, "user_id": user_id, "access_level": access_level}
+
+        request = requests.put("{0}/{1}/members/{2}".format(self.groups_url, group_id, user_id),
+                                headers=self.headers, data=data, verify=self.verify_ssl)
+        if request.status_code == 200:
             return True
         else:
             return False
