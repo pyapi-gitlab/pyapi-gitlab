@@ -1268,19 +1268,19 @@ class Gitlab(object):
         else:
             return False
 
-    def createsnippet(self, project_id, title, file_name, code, lifetime=""):
+    def createsnippet(self, project_id, title, file_name, code, visibility_level=0):
         """Creates an snippet
 
         :param project_id: project id to create the snippet under
         :param title: title of the snippet
         :param file_name: filename for the snippet
         :param code: content of the snippet
-        :param lifetime: expiration date
+        :param visibility_level: snippets can be either private (0), internal(10) or public(20) 
         :return: True if correct, false if failed
         """
         data = {"id": project_id, "title": title, "file_name": file_name, "code": code}
-        if lifetime != "":
-            data["lifetime"] = lifetime
+        if visibility_level in [0,10,20]:
+            data["visibility_level"] = visibility_level
         request = requests.post("{0}/{1}/snippets".format(self.projects_url, project_id),
                                 data=data, verify=self.verify_ssl, headers=self.headers)
         if request.status_code == 201:
