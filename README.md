@@ -50,6 +50,17 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 
 ## Changelog
 
+# 7.8.5
+
+ - Use ```requests.json()``` instead of decoding everything (@satreix)
+ - Add getmergerequestchanges (@bor-sh)
+ - Add getmilestoneissues (@JonathonReinhart)
+ - Add editproject (@nelg)
+ - Add editgroupmember (@)
+ - Fix hook metadata creation #137 (@jzelinskie)
+ - Fix addprojectmember (@btall)
+ - Fix Raise exception instead of returing it in creategroup (@brenard)
+
 # 7.8.4
 
  - Just a bumped version, now that its tested and fully supports Gitlab versions up to 7.8
