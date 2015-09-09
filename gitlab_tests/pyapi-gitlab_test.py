@@ -315,6 +315,14 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.acceptmergerequest(self.project_id, merge["id"], "closed!"))
         self.assertEqual(self.git.getmergerequest(self.project_id, merge["id"])["state"], "merged")
 
+    def test_commit_comment(self):
+        commit = self.git.getrepositorycommits(self.project_id)[5]
+        branch = self.git.createbranch(self.project_id, "mergebranch", commit["id"])
+        merge = self.git.createmergerequest(self.project_id, "develop", "mergebranch", "testmerge")
+
+        self.assertTrue(self.git.addcommenttocommit(self.project_id, merge['author'], merge['source_branch'], 'README.md', 1, 'Hello'))
+
+
     def test_notes(self):
 
         # issue wallnotes
