@@ -46,6 +46,7 @@ class Gitlab(object):
         self.groups_url = self.api_url + "/groups"
         self.search_url = self.api_url + "/projects/search"
         self.hook_url = self.api_url + "/hooks"
+        self.namespaces_url = self.api_url + "/namespaces"
         self.verify_ssl = verify_ssl
 
     def login(self, email=None, password=None, user=None):
@@ -1892,6 +1893,24 @@ class Gitlab(object):
         request = requests.put("{0}/{1}/labels".format(self.projects_url, project_id), data=data,
                                verify=self.verify_ssl, headers=self.headers)
 
+        if request.status_code == 200:
+            return request.json()
+        else:
+            return False
+
+    def getnamespaces(self, search=None, page=1, per_page=20):
+        """Return a namespace list
+
+        :param search: Optional search query
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
+        :return: returs a list of namespaces, false if there is an error
+        """
+        data = {'page': page, 'per_page': per_page}
+        if search:
+            data['search'] = search
+        request = requests.get(self.namespaces_url, params=data,
+                               headers=self.headers, verify=self.verify_ssl)
         if request.status_code == 200:
             return request.json()
         else:
