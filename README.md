@@ -1,3 +1,8 @@
+# Looking for contributors
+
+Unfortunately I dont have enough time to keep up with the API random changes from Gitlab, nor with their ability to break the API every minor release.
+I transfered the library into its own organization, if you are interested in maintaining the lib, just drop me a line and Ill add you to the org. Thanks!
+
 # pyapi-gitlab
 
 pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabhq/gitlabhq/tree/master/doc/api).
