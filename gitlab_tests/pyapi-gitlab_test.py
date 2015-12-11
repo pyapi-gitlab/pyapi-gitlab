@@ -259,6 +259,11 @@ class GitlabTest(unittest.TestCase):
         self.assertFalse(self.git.addgroupmember(group["id"], self.user_id, "nonexistant"))
         self.assertTrue(self.git.deletegroup(group_id=group["id"]))
 
+    def test_namespaces(self):
+        assert isinstance(self.git.getnamespaces(), list)
+        group = self.git.getgroups()[0]
+        self.assertGreaterEqual(len(self.git.getnamespaces(search=group["name"])), 1)
+
     def test_issues(self):
         issue = self.git.createissue(self.project_id, title="Test_issue", description="blaaaaa")
         assert isinstance(issue, dict)
