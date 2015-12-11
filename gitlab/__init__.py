@@ -27,7 +27,7 @@ def urlencode_strings(func):
 class Gitlab(object):
     """Gitlab class"""
 
-    def __init__(self, host, token="", oauth_token="", verify_ssl=True):
+    def __init__(self, host, token="", oauth_token="", verify_ssl=True, auth=None):
         """on init we setup the token used for all the api calls and all the urls
 
         :param host: host of gitlab
@@ -42,15 +42,13 @@ class Gitlab(object):
                 self.oauth_token)}
         if not host:
             raise ValueError("host argument may not be empty")
-        if host[-1] == '/':
-            self.host = host[:-1]
-        else:
-            self.host = host
-        if self.host[:7] == 'http://' or self.host[:8] == 'https://':
+        self.host = host.rstrip('/')
+        if self.host.startswith('http://') or self.host.startswith('https://'):
             pass
         else:
             self.host = 'https://' + self.host
 
+        self.auth = auth
         self.api_url = self.host + "/api/v3"
         self.projects_url = self.api_url + "/projects"
         self.users_url = self.api_url + "/users"
@@ -58,6 +56,7 @@ class Gitlab(object):
         self.groups_url = self.api_url + "/groups"
         self.search_url = self.api_url + "/projects/search"
         self.hook_url = self.api_url + "/hooks"
+        self.namespaces_url = self.api_url + "/namespaces"
         self.verify_ssl = verify_ssl
 
     def login(self, email=None, password=None, user=None):
@@ -75,15 +74,15 @@ class Gitlab(object):
             raise ValueError('Neither username nor email provided to login')
 
         request = requests.post("{0}/api/v3/session".format(self.host), data=data,
-                                verify=self.verify_ssl,
+                                verify=self.verify_ssl, auth=self.auth,
                                 headers={"connection": "close"})
         if request.status_code == 201:
-            self.token = json.loads(request.content.decode("utf-8"))['private_token']
+            self.token = request.json()['private_token']
             self.headers = {"PRIVATE-TOKEN": self.token,
                             "connection": "close"}
             return True
         else:
-            msg = json.loads(request.content.decode("utf-8"))['message']
+            msg = request.json()['message']
             raise exceptions.HttpError(msg)
 
     def setsudo(self, user=None):
@@ -112,9 +111,9 @@ class Gitlab(object):
         if search:
             data['search'] = search
         request = requests.get(self.users_url, params=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -125,9 +124,9 @@ class Gitlab(object):
         :return: False if not found, a dictionary if found
         """
         request = requests.get("{0}/{1}".format(self.users_url, user_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -147,9 +146,9 @@ class Gitlab(object):
             data.update(kwargs)
 
         request = requests.post(self.users_url, headers=self.headers, data=data,
-                                verify=self.verify_ssl)
+                                verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         elif request.status_code == 404:
             return False
 
@@ -160,11 +159,10 @@ class Gitlab(object):
         :return: True if it deleted, False if it couldn't. False could happen for several reasons, but there isn't a good way of differenting them
         """
         request = requests.delete("{0}/{1}".format(self.users_url, user_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
-
             return False
 
     def currentuser(self):
@@ -174,8 +172,8 @@ class Gitlab(object):
         :return: a list with the current user properties
         """
         request = requests.get("{0}/api/v3/user".format(self.host),
-                               headers=self.headers, verify=self.verify_ssl)
-        return json.loads(request.content.decode("utf-8"))
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
+        return request.json()
 
     def edituser(self, user_id, **kwargs):
         """Edits an user data.
@@ -191,9 +189,29 @@ class Gitlab(object):
 
         request = requests.put("{0}/{1}".format(self.users_url, user_id),
                                headers=self.headers, data=data,
+                               verify=self.verify_ssl, auth=self.auth)
+        if request.status_code == 200:
+            return request.json()
+        else:
+            return False
+
+    def blockuser(self, user_id, **kwargs):
+        """Block a user.
+
+        :param user_id: id of the user to change
+        :param kwargs: Any param the the Gitlab API supports
+        :return: Dict of the user
+        """
+        data = {}
+
+        if kwargs:
+            data.update(kwargs)
+
+        request = requests.put("{0}/{1}/block".format(self.users_url, user_id),
+                               headers=self.headers, data=data,
                                verify=self.verify_ssl)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -203,9 +221,9 @@ class Gitlab(object):
         :return: a dictionary with the lists
         """
         request = requests.get(self.keys_url, headers=self.headers,
-                               verify=self.verify_ssl)
+                               verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
 
             return False
@@ -217,9 +235,9 @@ class Gitlab(object):
         :return: the key itself
         """
         request = requests.get("{0}/{1}".format(self.keys_url, key_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
 
             return False
@@ -233,11 +251,10 @@ class Gitlab(object):
         """
         data = {"title": title, "key": key}
         request = requests.post(self.keys_url, headers=self.headers, data=data,
-                                verify=self.verify_ssl)
+                                verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
             return True
         else:
-
             return False
 
     def addsshkeyuser(self, user_id, title, key):
@@ -251,11 +268,10 @@ class Gitlab(object):
         data = {"title": title, "key": key}
 
         request = requests.post("{0}/{1}/keys".format(self.users_url, user_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
             return True
         else:
-
             return False
 
     def deletesshkey(self, key_id):
@@ -265,7 +281,7 @@ class Gitlab(object):
         :return: False if it didn't delete it, True if it was deleted
         """
         request = requests.delete("{0}/{1}".format(self.keys_url, key_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.content == b"null":
             return False
         else:
@@ -279,9 +295,9 @@ class Gitlab(object):
         data = {'page': page, 'per_page': per_page}
 
         request = requests.get(self.projects_url, params=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -293,9 +309,9 @@ class Gitlab(object):
         data = {'page': page, 'per_page': per_page}
 
         request = requests.get("{0}/all".format(self.projects_url), params=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -307,9 +323,9 @@ class Gitlab(object):
         data = {'page': page, 'per_page': per_page}
 
         request = requests.get("{0}/owned".format(self.projects_url), params=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -321,9 +337,9 @@ class Gitlab(object):
         :return: False if not found, a dictionary if found
         """
         request = requests.get("{0}/{1}".format(self.projects_url, project_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -336,11 +352,10 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/events".format(self.projects_url, project_id), params=data, headers=self.headers,
-                               verify=self.verify_ssl)
+                               verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     def createproject(self, name, **kwargs):
@@ -366,15 +381,46 @@ class Gitlab(object):
             data.update(kwargs)
 
         request = requests.post(self.projects_url, headers=self.headers,
-                                data=data, verify=self.verify_ssl)
+                                data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         elif request.status_code == 403:
             if "Your own projects limit is 0" in request.text:
                 print(request.text)
                 return False
         else:
+            return False
 
+    def editproject(self, project_id, **kwargs):
+        """Edit an existing project.
+
+        :param name: new project name
+        :param path: custom repository name for new project. By default generated based on name
+        :param default_branch: they default branch
+        :param description: short project description
+        :param issues_enabled:
+        :param merge_requests_enabled:
+        :param wiki_enabled:
+        :param snippets_enabled:
+        :param public: if true same as setting visibility_level = 20
+        :param visibility_level:
+        :return:
+        """
+        data = {"id": project_id}
+
+        if kwargs:
+            data.update(kwargs)
+
+        request = requests.put("{0}/{1}".format(self.projects_url, project_id),
+                                            headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
+
+        if request.status_code == 200:
+            return True
+        elif request.status_code == 400:
+            if "Your param's are invalid" in request.text:
+                print(request.text)
+                return False
+        else:
             return False
 
     @urlencode_strings
@@ -385,7 +431,7 @@ class Gitlab(object):
         :return: always true
         """
         request = requests.delete("{0}/{1}".format(self.projects_url, project_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
 
@@ -412,7 +458,7 @@ class Gitlab(object):
             data.update(kwargs)
 
         request = requests.post("{0}/user/{1}".format(self.projects_url, user_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
             return True
         else:
@@ -434,11 +480,10 @@ class Gitlab(object):
             data['query'] = query
         request = requests.get("{0}/{1}/members".format(self.projects_url, project_id),
                                params=data, headers=self.headers,
-                               verify=self.verify_ssl)
+                               verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -450,18 +495,19 @@ class Gitlab(object):
         :param access_level: access level, see gitlab help to know more
         :return: True if success
         """
-        if access_level.lower() == "master":
-            access_level = 40
-        elif access_level.lower() == "developer":
-            access_level = 30
-        elif access_level.lower() == "reporter":
-            access_level = 20
-        else:
-            access_level = 10
+        if isinstance(access_level, basestring):
+            if access_level.lower() == "master":
+                access_level = 40
+            elif access_level.lower() == "developer":
+                access_level = 30
+            elif access_level.lower() == "reporter":
+                access_level = 20
+            else:
+                access_level = 10
         data = {"id": project_id, "user_id": user_id, "access_level": access_level}
 
         request = requests.post("{0}/{1}/members".format(self.projects_url, project_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
             return True
         else:
@@ -488,11 +534,10 @@ class Gitlab(object):
                 "access_level": access_level}
 
         request = requests.put("{0}/{1}/members/{2}".format(self.projects_url, project_id, user_id),
-                               headers=self.headers, data=data, verify=self.verify_ssl)
+                               headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
-
             return False
 
     @urlencode_strings
@@ -504,7 +549,7 @@ class Gitlab(object):
         :return: always true
         """
         request = requests.delete("{0}/{1}/members/{2}".format(self.projects_url, project_id, user_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True  # It always returns true
 
@@ -517,9 +562,9 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/hooks".format(self.projects_url, project_id), params=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -532,11 +577,10 @@ class Gitlab(object):
         :return: the hook
         """
         request = requests.get("{0}/{1}/hooks/{2}".format(self.projects_url, project_id, hook_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -553,9 +597,9 @@ class Gitlab(object):
         data['merge_requests_events'] = int(bool(merge_requests))
         data['tag_push_events'] = int(bool(tag_push))
         request = requests.post("{0}/{1}/hooks".format(self.projects_url, project_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return True
+            return request.json()
         else:
             return False
 
@@ -575,7 +619,7 @@ class Gitlab(object):
         data['merge_requests_events'] = int(bool(merge_requests))
         data['tag_push_events'] = int(bool(tag_push))
         request = requests.put("{0}/{1}/hooks/{2}".format(self.projects_url, project_id, hook_id),
-                               headers=self.headers, data=data, verify=self.verify_ssl)
+                               headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
@@ -590,7 +634,7 @@ class Gitlab(object):
         :return: True if success
         """
         request = requests.delete("{0}/{1}/hooks/{2}".format(self.projects_url, project_id, hook_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
@@ -602,9 +646,9 @@ class Gitlab(object):
         :return: list of hooks
         """
         data = {'page': page, 'per_page': per_page}
-        request = requests.get(self.hook_url, params=data, headers=self.headers, verify=self.verify_ssl)
+        request = requests.get(self.hook_url, params=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -616,7 +660,7 @@ class Gitlab(object):
         """
         data = {"url": url}
         request = requests.post(self.hook_url, headers=self.headers,
-                                data=data, verify=self.verify_ssl)
+                                data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
             return True
         else:
@@ -630,9 +674,9 @@ class Gitlab(object):
         """
         data = {"id": hook_id}
         request = requests.get(self.hook_url, data=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -644,7 +688,7 @@ class Gitlab(object):
         """
         data = {"id": hook_id}
         request = requests.delete("{0}/{1}".format(self.hook_url, hook_id), data=data,
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
@@ -658,9 +702,9 @@ class Gitlab(object):
         :return: the branches
         """
         request = requests.get("{0}/{1}/repository/branches".format(self.projects_url, project_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -673,9 +717,9 @@ class Gitlab(object):
         :return: the branch
         """
         request = requests.get("{0}/{1}/repository/branches/{2}".format(self.projects_url, project_id, branch),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -691,9 +735,9 @@ class Gitlab(object):
         data = {"id": project_id, "branch_name": branch, "ref": ref}
 
         request = requests.post("{0}/{1}/repository/branches".format(self.projects_url, project_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -707,7 +751,7 @@ class Gitlab(object):
         """
 
         request = requests.delete("{0}/{1}/repository/branches/{2}".format(self.projects_url, project_id, branch),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
 
         if request.status_code == 200:
             return True
@@ -723,7 +767,7 @@ class Gitlab(object):
         :return: True if success
         """
         request = requests.put("{0}/{1}/repository/branches/{2}/protect".format(self.projects_url, project_id, branch),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
@@ -738,11 +782,10 @@ class Gitlab(object):
         :return: true if success
         """
         request = requests.put("{0}/{1}/repository/branches/{2}/unprotect".format(self.projects_url, project_id, branch),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
-
             return False
 
     @urlencode_strings
@@ -755,11 +798,10 @@ class Gitlab(object):
         """
         data = {"id": project_id, "forked_from_id": from_project_id}
         request = requests.post("{0}/{1}/fork/{2}".format(self.projects_url, project_id, from_project_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
             return True
         else:
-
             return False
 
     @urlencode_strings
@@ -770,11 +812,10 @@ class Gitlab(object):
         :return: true if success
         """
         request = requests.delete("{0}/{1}/fork".format(self.projects_url, project_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
-
             return False
 
     @urlencode_strings
@@ -800,11 +841,10 @@ class Gitlab(object):
         data = {'page': page, 'per_page': per_page}
 
         request = requests.get("{0}/api/v3/issues".format(self.host),
-                               params=data, headers=self.headers, verify=self.verify_ssl)
+                               params=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -819,9 +859,9 @@ class Gitlab(object):
         data = kwargs
 
         request = requests.get("{0}/{1}/issues".format(self.projects_url, project_id),
-                               params=data, headers=self.headers, verify=self.verify_ssl)
+                               params=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -834,11 +874,10 @@ class Gitlab(object):
         :return: the issue
         """
         request = requests.get("{0}/{1}/issues/{2}".format(self.projects_url, project_id, issue_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -853,9 +892,9 @@ class Gitlab(object):
         if kwargs:
             data.update(kwargs)
         request = requests.post("{0}/{1}/issues".format(self.projects_url, project_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -871,9 +910,9 @@ class Gitlab(object):
         if kwargs:
             data.update(kwargs)
         request = requests.put("{0}/{1}/issues/{2}".format(self.projects_url, project_id, issue_id),
-                               headers=self.headers, data=data, verify=self.verify_ssl)
+                               headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -886,11 +925,10 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/milestones".format(self.projects_url, project_id), params=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -902,11 +940,10 @@ class Gitlab(object):
         :return: dict with the new milestone
         """
         request = requests.get("{0}/{1}/milestones/{2}".format(self.projects_url, project_id, milestone_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -926,11 +963,10 @@ class Gitlab(object):
             data.update(kwargs)
 
         request = requests.post("{0}/{1}/milestones".format(self.projects_url, project_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -950,11 +986,25 @@ class Gitlab(object):
         if kwargs:
             data.update(kwargs)
         request = requests.put("{0}/{1}/milestones/{2}".format(self.projects_url, project_id, milestone_id),
-                               headers=self.headers, data=data, verify=self.verify_ssl)
+                               headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
+            return False
 
+    def getmilestoneissues(self, project_id, milestone_id, page=1, per_page=20):
+        """Get the issues associated with a milestone
+
+        :param project_id: project id
+        :param milestone_id: milestone id
+        :return: list of issues
+        """
+        data = {'page': page, 'per_page': per_page}
+        request = requests.get("{0}/{1}/milestones/{2}/issues".format(self.projects_url, project_id, milestone_id),
+                               params=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
+        if request.status_code == 200:
+            return request.json()
+        else:
             return False
 
     @urlencode_strings
@@ -965,11 +1015,10 @@ class Gitlab(object):
         :return: the keys in a dictionary if success, false if not
         """
         request = requests.get("{0}/{1}/keys".format(self.projects_url, project_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -981,11 +1030,10 @@ class Gitlab(object):
         :return: the key in a dict if success, false if not
         """
         request = requests.get("{0}/{1}/keys/{2}".format(self.projects_url, project_id, key_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     def adddeploykey(self, project_id, title, key):
@@ -1001,11 +1049,10 @@ class Gitlab(object):
         data = {"id": project_id, "title": title, "key": key}
 
         request = requests.post("{0}/{1}/keys".format(self.projects_url, project_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return True
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -1017,28 +1064,33 @@ class Gitlab(object):
         :return: true if success, false if not
         """
         request = requests.delete("{0}/{1}/keys/{2}".format(self.projects_url, project_id, key_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True
         else:
-
             return False
 
-    def creategroup(self, name, path):
+    def creategroup(self, name, path, **kwargs):
         """Creates a new group
 
         :param name: The name of the group
         :param path: The path for the group
+        :param kwargs: Any param the the Gitlab API supports
         :return: dict of the new group
         """
-        request = requests.post(self.groups_url,
-                                data={'name': name, 'path': path},
-                                headers=self.headers, verify=self.verify_ssl)
+
+        data = {'name': name, 'path': path}
+
+        if kwargs:
+            data.update(kwargs)
+
+        request = requests.post(self.groups_url, data=data,
+                                headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-            msg = json.loads(request.content.decode("utf-8"))['message']
-            return exceptions.HttpError(msg)
+            msg = request.json()['message']
+            raise exceptions.HttpError(msg)
 
     def getgroups(self, group_id=None, page=1, per_page=20):
         """Retrieve group information
@@ -1051,11 +1103,10 @@ class Gitlab(object):
         request = requests.get("{0}/{1}".format(self.groups_url,
                                               group_id if group_id else ""),
                                params=data, headers=self.headers,
-                               verify=self.verify_ssl)
+                               verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -1069,11 +1120,10 @@ class Gitlab(object):
         request = requests.post("{0}/{1}/projects/{2}".format(self.groups_url,
                                                            group_id,
                                                            project_id),
-                                headers=self.headers, verify=self.verify_ssl)
+                                headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -1087,12 +1137,11 @@ class Gitlab(object):
         data = {'page': page, 'per_page': per_page, 'state': state}
 
         request = requests.get('{0}/{1}/merge_requests'.format(self.projects_url, project_id),
-                               params=data, headers=self.headers, verify=self.verify_ssl)
+                               params=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -1104,12 +1153,11 @@ class Gitlab(object):
         :return: dict of the merge request
         """
         request = requests.get('{0}/{1}/merge_request/{2}'.format(self.projects_url, project_id, mergerequest_id),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -1122,12 +1170,26 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get('{0}/{1}/merge_request/{2}/comments'.format(self.projects_url, project_id, mergerequest_id),
-                               params=data, headers=self.headers, verify=self.verify_ssl)
+                               params=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
+            return False
 
+    def getmergerequestchanges(self, project_id, mergerequest_id):
+        """Get changes of a merge request.
+
+        :param project_id: ID of the project
+        :param mergerequest_id: ID of the merge request
+        :return: information about the merge request including files and changes
+        """
+        request = requests.get('{0}/{1}/merge_request/{2}/changes'.format(self.projects_url, project_id, mergerequest_id),
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
+
+        if request.status_code == 200:
+            return request.json()
+        else:
             return False
 
     @urlencode_strings
@@ -1149,11 +1211,10 @@ class Gitlab(object):
                 'target_project_id': target_project_id}
 
         request = requests.post('{0}/{1}/merge_requests'.format(self.projects_url, project_id),
-                                data=data, headers=self.headers, verify=self.verify_ssl)
+                                data=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     @urlencode_strings
@@ -1175,11 +1236,10 @@ class Gitlab(object):
             data.update(kwargs)
 
         request = requests.put('{0}/{1}/merge_request/{2}'.format(self.projects_url, project_id, mergerequest_id),
-                               data=data, headers=self.headers, verify=self.verify_ssl)
+                               data=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
-
             return False
 
     def acceptmergerequest(self, project_id, mergerequest_id, merge_commit_message=None):
@@ -1195,9 +1255,9 @@ class Gitlab(object):
         data = {'merge_commit_message': merge_commit_message}
 
         request = requests.put('{0}/{1}/merge_request/{2}/merge'.format(self.projects_url, project_id, mergerequest_id),
-                               data=data, headers=self.headers, verify=self.verify_ssl)
+                               data=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1213,13 +1273,9 @@ class Gitlab(object):
             project_id = quote_plus(project_id)
         request = requests.post(
             '{0}/{1}/merge_request/{2}/comments'.format(self.projects_url, project_id, mergerequest_id),
-            data={'note': note}, headers=self.headers, verify=self.verify_ssl)
+            data={'note': note}, headers=self.headers, verify=self.verify_ssl, auth=self.auth)
 
-        if request.status_code == 201:
-            return True
-        else:
-
-            return False
+        return request.status_code == 201
 
     @urlencode_strings
     def getsnippets(self, project_id, page=1, per_page=20):
@@ -1230,9 +1286,9 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/snippets".format(self.projects_url, project_id), params=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1245,31 +1301,31 @@ class Gitlab(object):
         :return: dictionary
         """
         request = requests.get("{0}/{1}/snippets/{2}".format(self.projects_url, project_id, snippet_id),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode('utf-8'))
+            return request.json()
         else:
             return False
 
-    def createsnippet(self, project_id, title, file_name, code, lifetime=""):
+    def createsnippet(self, project_id, title, file_name, code, visibility_level=0):
         """Creates an snippet
 
         :param project_id: project id to create the snippet under
         :param title: title of the snippet
         :param file_name: filename for the snippet
         :param code: content of the snippet
-        :param lifetime: expiration date
+        :param visibility_level: snippets can be either private (0), internal(10) or public(20) 
         :return: True if correct, false if failed
         """
         if isinstance(project_id, basestring):
             project_id = quote_plus(project_id)
         data = {"id": project_id, "title": title, "file_name": file_name, "code": code}
-        if lifetime != "":
-            data["lifetime"] = lifetime
+        if visibility_level in [0,10,20]:
+            data["visibility_level"] = visibility_level
         request = requests.post("{0}/{1}/snippets".format(self.projects_url, project_id),
-                                data=data, verify=self.verify_ssl, headers=self.headers)
+                                data=data, verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1282,9 +1338,9 @@ class Gitlab(object):
         :return: the content of the snippet
         """
         request = requests.get("{0}/{1}/snippets/{2}/raw".format(self.projects_url, project_id, snippet_id),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return request.content.decode("utf-8")
+            return request.json()
         else:
             return False
 
@@ -1297,11 +1353,8 @@ class Gitlab(object):
         :return: True if success
         """
         request = requests.delete("{0}/{1}/snippets/{2}".format(self.projects_url, project_id, snippet_id),
-                                  headers=self.headers, verify=self.verify_ssl)
-        if request.status_code == 200:
-            return True
-        else:
-            return False
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
+        return request.status_code == 200
 
     @urlencode_strings
     def getrepositories(self, project_id, page=1, per_page=20):
@@ -1312,9 +1365,9 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/repository/branches".format(self.projects_url, project_id), params=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1327,11 +1380,11 @@ class Gitlab(object):
         :return: dict of the branch
         """
         request = requests.get("{0}/{1}/repository/branches/{2}".format(self.projects_url, project_id, branch),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         elif request.status_code == 404:
-            if json.loads(request.content.decode("utf-8"))['message'] == "404 Branch does not exist Not Found":
+            if request.json()['message'] == "404 Branch does not exist Not Found":
                 # In the future we should raise an exception here
                 return False
         else:
@@ -1347,9 +1400,9 @@ class Gitlab(object):
         :return: dict with the branch
         """
         request = requests.put("{0}/{1}/repository/branches/{2}/protect".format(self.projects_url, project_id, branch),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1363,9 +1416,9 @@ class Gitlab(object):
         :return: dict with the branch
         """
         request = requests.put("{0}/{1}/repository/branches/{2}/unprotect".format(self.projects_url, project_id, branch),
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return
 
@@ -1378,9 +1431,9 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/repository/tags".format(self.projects_url, project_id), params=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1397,14 +1450,42 @@ class Gitlab(object):
             project_id = quote_plus(project_id)
         data = {"id": project_id, "tag_name": tag_name, "ref": ref, "message": message}
         request = requests.post("{0}/{1}/repository/tags".format(self.projects_url, project_id), data=data,
-                                verify=self.verify_ssl, headers=self.headers)
+                                verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
     @urlencode_strings
+    def addcommenttocommit(self, project_id, author, sha, path, line, note):
+        """Adds an inline comment to a specific commit
+        :param project_id project id
+        :param author The author info as returned by createmergerequest
+        :param sha The name of a repository branch or tag or if not given the default branch
+        :param path The file path
+        :param line The line number
+        :param note Text of comment
+        """
+
+        data = {
+            "author": author,
+            "note": note,
+            "path": path,
+            "line": line,
+            "line_type": "new"
+        }
+
+        request = requests.post("{0}/{1}/repository/commits/{2}/comments".format(self.projects_url, project_id, sha),
+                                headers=self.headers, data=data, verify=self.verify_ssl)
+        if request.status_code == 201:
+            return True
+        else:
+
+            return False
+
+
+>>>>>>> develop
     def getrepositorycommits(self, project_id, ref_name=None, page=1, per_page=20):
         """Get a list of repository commits in a project.
 
@@ -1416,9 +1497,9 @@ class Gitlab(object):
         if ref_name is not None:
             data.update({"ref_name": ref_name})
         request = requests.get("{0}/{1}/repository/commits".format(self.projects_url, project_id),
-                               verify=self.verify_ssl, params=data, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, params=data, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1431,9 +1512,9 @@ class Gitlab(object):
         :return: dic tof commit
         """
         request = requests.get("{0}/{1}/repository/commits/{2}".format(self.projects_url, project_id, sha1),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1446,9 +1527,9 @@ class Gitlab(object):
         :return: dict with the diff
         """
         request = requests.get("{0}/{1}/repository/commits/{2}/diff".format(self.projects_url, project_id, sha1),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1466,9 +1547,9 @@ class Gitlab(object):
             data.update(kwargs)
 
         request = requests.get("{0}/{1}/repository/tree".format(self.projects_url, project_id), params=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1484,7 +1565,7 @@ class Gitlab(object):
             project_id = quote_plus(project_id)
         data = {"filepath": filepath}
         request = requests.get("{0}/{1}/repository/blobs/{2}".format(self.projects_url, project_id, sha1),
-                               params=data, verify=self.verify_ssl,
+                               params=data, verify=self.verify_ssl, auth=self.auth,
                                headers=self.headers)
         if request.status_code == 200:
             return request.content
@@ -1500,7 +1581,7 @@ class Gitlab(object):
         :return: raw blob
         """
         request = requests.get("{0}/{1}/repository/raw_blobs/{2}".format(self.projects_url, project_id, sha1),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
             return request.content
         else:
@@ -1515,9 +1596,9 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/repository/contributors".format(self.projects_url, project_id), params=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1532,11 +1613,11 @@ class Gitlab(object):
         """
         data = {"from": from_id, "to": to_id}
         request = requests.get("{0}/{1}/repository/compare".format(self.projects_url, project_id),
-                               params=data, verify=self.verify_ssl,
+                               params=data, verify=self.verify_ssl, auth=self.auth,
                                headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1548,10 +1629,10 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}".format(self.search_url, search), params=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1565,7 +1646,7 @@ class Gitlab(object):
         if isinstance(project_id, basestring):
             project_id = quote_plus(project_id)
         request = requests.get("{0}/{1}/repository/archive".format(self.projects_url, project_id),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 200:
             if filepath == "":
                 filepath = request.headers['content-disposition'].split(";")[1].split("=")[1].strip('"')
@@ -1575,7 +1656,7 @@ class Gitlab(object):
                 # TODO: change the filepath to a path and keep always the filename?
             return True
         else:
-            msg = json.loads(request.content.decode("utf-8"))['message']
+            msg = request.json()['message']
             raise exceptions.HttpError(msg)
 
     def deletegroup(self, group_id):
@@ -1585,11 +1666,8 @@ class Gitlab(object):
         :return: True if it deleted, False if it couldn't. False could happen for several reasons, but there isn't a good way of differentiating them
         """
         request = requests.delete("{0}/{1}".format(self.groups_url, group_id),
-                                  headers=self.headers, verify=self.verify_ssl)
-        if request.status_code == 200:
-            return True
-        else:
-            return False
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
+        return request.status_code == 200
 
     def getgroupmembers(self, group_id, page=1, per_page=20):
         """Lists the members of a given group id
@@ -1601,9 +1679,9 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/members".format(self.groups_url, group_id), params=data,
-                               headers=self.headers, verify=self.verify_ssl)
+                               headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1631,11 +1709,36 @@ class Gitlab(object):
         data = {"id": group_id, "user_id": user_id, "access_level": access_level}
 
         request = requests.post("{0}/{1}/members".format(self.groups_url, group_id),
-                                headers=self.headers, data=data, verify=self.verify_ssl)
-        if request.status_code == 201:
-            return True
-        else:
-            return False
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
+        return request.status_code == 201
+
+    def editgroupmember(self, group_id, user_id, access_level):
+        """Edit user access level in a group
+
+        :param group_id: group id
+        :param user_id: user id
+        :param access_level: access level, see gitlab help to know more
+        :return: True if success
+        """
+        if not isinstance(access_level, int):
+            if access_level.lower() == "owner":
+                access_level = 50
+            elif access_level.lower() == "master":
+                access_level = 40
+            elif access_level.lower() == "developer":
+                access_level = 30
+            elif access_level.lower() == "reporter":
+                access_level = 20
+            elif access_level.lower() == "guest":
+                access_level = 10
+            else:
+                return False
+
+        data = {"id": group_id, "user_id": user_id, "access_level": access_level}
+
+        request = requests.put("{0}/{1}/members/{2}".format(self.groups_url, group_id, user_id),
+                                headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
+        return request.status_code == 200
 
     def deletegroupmember(self, group_id, user_id):
         """Delete a group member
@@ -1645,21 +1748,52 @@ class Gitlab(object):
         :return: always true
         """
         request = requests.delete("{0}/{1}/members/{2}".format(self.groups_url, group_id, user_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
             return True  # It always returns true
 
     @urlencode_strings
+    def addldapgrouplink(self, group_id, cn, group_access, provider):
+        """Add LDAP group link
+
+        :param id: The ID of a group
+        :param cn: The CN of a LDAP group
+        :param group_access: Minimum access level for members of the LDAP group
+        :param provider: LDAP provider for the LDAP group (when using several providers)
+        :return: True if success
+        """
+        data = {"id": group_id, "cn": cn, "group_access": group_access,
+            "provider": provider}
+        request = requests.post("{0}/{1}/ldap_group_links".format(self.groups_url, group_id),
+                                headers=self.headers, data=data, verify=self.verify_ssl)
+        return request.status_code == 201
+
+    def deleteldapgrouplink(self, group_id, cn, provider=None):
+        """Deletes a LDAP group link (for a specific LDAP provider if given)
+
+        :param id: The ID of a group
+        :param cn: The CN of a LDAP group
+        :param provider: Name of a LDAP provider
+        :return True if success
+        """
+        url = "{base}/{gid}/ldap_group_links/{provider}{cn}".format(
+                                base=self.groups_url, gid=group_id, cn=cn,
+                                provider=("{0}/".format(provider)
+                                    if provider else ""))
+        request = requests.delete(url, headers=self.headers,
+                                verify=self.verify_ssl)
+        return request.status_code == 200
+
     def getissuewallnotes(self, project_id, issue_id, page=1, per_page=20):
         """Get the notes from the wall of a issue
 
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/issues/{2}/notes".format(self.projects_url, project_id, issue_id), params=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1669,10 +1803,10 @@ class Gitlab(object):
 
         """
         request = requests.get("{0}/{1}/issues/{2}/notes/{3}".format(self.projects_url, project_id, issue_id, note_id),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1684,10 +1818,10 @@ class Gitlab(object):
             project_id = quote_plus(project_id)
         data = {"body": content}
         request = requests.post("{0}/{1}/issues/{2}/notes".format(self.projects_url, project_id, issue_id),
-                                verify=self.verify_ssl, headers=self.headers, data=data)
+                                verify=self.verify_ssl, auth=self.auth, headers=self.headers, data=data)
 
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1698,10 +1832,10 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/snippets/{2}/notes".format(self.projects_url, project_id, snippet_id),
-                               params=data, verify=self.verify_ssl, headers=self.headers)
+                               params=data, verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1711,10 +1845,10 @@ class Gitlab(object):
 
         """
         request = requests.get("{0}/{1}/snippets/{2}/notes/{3}".format(self.projects_url, project_id, snippet_id, note_id),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1726,10 +1860,10 @@ class Gitlab(object):
             project_id = quote_plus(project_id)
         data = {"body": content}
         request = requests.post("{0}/{1}/snippets/{2}/notes".format(self.projects_url, project_id, snippet_id),
-                                verify=self.verify_ssl, headers=self.headers, data=data)
+                                verify=self.verify_ssl, auth=self.auth, headers=self.headers, data=data)
 
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1740,10 +1874,10 @@ class Gitlab(object):
         """
         data = {'page': page, 'per_page': per_page}
         request = requests.get("{0}/{1}/merge_requests/{2}/notes".format(self.projects_url, project_id, merge_request_id),
-                               params=data, verify=self.verify_ssl, headers=self.headers)
+                               params=data, verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1754,10 +1888,10 @@ class Gitlab(object):
         """
         request = requests.get("{0}/{1}/merge_requests/{2}/notes/{3}".format(self.projects_url, project_id,
                                                                          merge_request_id, note_id),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1769,14 +1903,14 @@ class Gitlab(object):
             project_id = quote_plus(project_id)
         data = {"body": content}
         request = requests.post("{0}/{1}/merge_requests/{2}/notes".format(self.projects_url, project_id, merge_request_id),
-                                verify=self.verify_ssl, headers=self.headers, data=data)
+                                verify=self.verify_ssl, auth=self.auth, headers=self.headers, data=data)
 
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
-    def createfile(self, project_id, file_path, branch_name, content, commit_message):
+    def createfile(self, project_id, file_path, branch_name, encoding, content, commit_message):
         """Creates a new file in the repository
 
         :param project_id: project id
@@ -1788,14 +1922,11 @@ class Gitlab(object):
         """
         if isinstance(project_id, basestring):
             project_id = quote_plus(project_id)
-        data = {"file_path": file_path, "branch_name": branch_name,
+        data = {"file_path": file_path, "branch_name": branch_name, "encoding": encoding,
                 "content": content, "commit_message": commit_message}
         request = requests.post("{0}/{1}/repository/files".format(self.projects_url, project_id),
-                                verify=self.verify_ssl, headers=self.headers, data=data)
-        if request.status_code == 201:
-            return True
-        else:
-            return False
+                                verify=self.verify_ssl, auth=self.auth, headers=self.headers, data=data)
+        return request.status_code == 201
 
     def updatefile(self, project_id, file_path, branch_name, content, commit_message):
         """Updates an existing file in the repository
@@ -1812,12 +1943,9 @@ class Gitlab(object):
         data = {"file_path": file_path, "branch_name": branch_name,
                 "content": content, "commit_message": commit_message}
         request = requests.put("{0}/{1}/repository/files".format(self.projects_url, project_id),
-                               headers=self.headers, data=data, verify=self.verify_ssl)
+                               headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
 
-        if request.status_code == 200:
-            return True
-        else:
-            return False
+        return request.status_code == 200
 
     def getfile(self, project_id, file_path, ref):
         """Allows you to receive information about file in repository like name, size, content.
@@ -1832,9 +1960,9 @@ class Gitlab(object):
             project_id = quote_plus(project_id)
         data = {"file_path": file_path, "ref": ref}
         request = requests.get("{0}/{1}/repository/files".format(self.projects_url, project_id),
-                               headers=self.headers, data=data, verify=self.verify_ssl)
+                               headers=self.headers, data=data, verify=self.verify_ssl, auth=self.auth)
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1853,11 +1981,8 @@ class Gitlab(object):
                 "commit_message": commit_message}
         request = requests.delete("{0}/{1}/repository/files".format(self.projects_url, project_id),
                                   headers=self.headers, data=data,
-                                  verify=self.verify_ssl)
-        if request.status_code == 200:
-            return True
-        else:
-            return False
+                                  verify=self.verify_ssl, auth=self.auth)
+        return request.status_code == 200
 
     @urlencode_strings
     def setgitlabciservice(self, project_id, token, project_url):
@@ -1870,12 +1995,9 @@ class Gitlab(object):
         """
         data = {"token": token, "project_url": project_url}
         request = requests.put("{0}/{1}/services/gitlab-ci".format(self.projects_url, project_id),
-                               verify=self.verify_ssl, headers=self.headers, data=data)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers, data=data)
 
-        if request.status_code == 200:
-            return True
-        else:
-            return False
+        return request.status_code == 200
 
     @urlencode_strings
     def deletegitlabciservice(self, project_id, token, project_url):
@@ -1884,12 +2006,9 @@ class Gitlab(object):
         :return: true if success, false if not
         """
         request = requests.delete("{0}/{1}/services/gitlab-ci".format(self.projects_url, project_id),
-                                  headers=self.headers, verify=self.verify_ssl)
+                                  headers=self.headers, verify=self.verify_ssl, auth=self.auth)
 
-        if request.status_code == 200:
-            return True
-        else:
-            return False
+        return request.status_code == 200
 
     @urlencode_strings
     def getlabels(self, project_id):
@@ -1899,10 +2018,10 @@ class Gitlab(object):
         :return: list of the labels
         """
         request = requests.get("{0}/{1}/labels".format(self.projects_url, project_id),
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1918,9 +2037,9 @@ class Gitlab(object):
 
         data = {"name": name, "color": color}
         request = requests.post("{0}/{1}/labels".format(self.projects_url, project_id), data=data,
-                                verify=self.verify_ssl, headers=self.headers)
+                                verify=self.verify_ssl, auth=self.auth, headers=self.headers)
         if request.status_code == 201:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
         else:
             return False
 
@@ -1935,12 +2054,9 @@ class Gitlab(object):
         data = {"name": name}
 
         request = requests.delete("{0}/{1}/labels".format(self.projects_url, project_id), data=data,
-                                  verify=self.verify_ssl, headers=self.headers)
+                                  verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
-        if request.status_code == 200:
-            return True
-        else:
-            return False
+        return request.status_code == 200
 
     @urlencode_strings
     def editlabel(self, project_id, name, new_name=None, color=None):
@@ -1953,10 +2069,28 @@ class Gitlab(object):
         data = {"name": name, "new_name": new_name, "color": color}
 
         request = requests.put("{0}/{1}/labels".format(self.projects_url, project_id), data=data,
-                               verify=self.verify_ssl, headers=self.headers)
+                               verify=self.verify_ssl, auth=self.auth, headers=self.headers)
 
         if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+            return request.json()
+        else:
+            return False
+
+    def getnamespaces(self, search=None, page=1, per_page=20):
+        """Return a namespace list
+
+        :param search: Optional search query
+        :param page: Which page to return (default is 1)
+        :param per_page: Number of items to return per page (default is 20)
+        :return: returs a list of namespaces, false if there is an error
+        """
+        data = {'page': page, 'per_page': per_page}
+        if search:
+            data['search'] = search
+        request = requests.get(self.namespaces_url, params=data,
+                               headers=self.headers, verify=self.verify_ssl)
+        if request.status_code == 200:
+            return request.json()
         else:
             return False
 

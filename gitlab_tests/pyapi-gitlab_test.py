@@ -94,7 +94,7 @@ class GitlabTest(unittest.TestCase):
         self.assertTrue(self.git.deleteprojectmember(self.project_id, user_id=1))
 
         # Hooks testing
-        self.assertTrue(self.git.addprojecthook(self.project_id, "http://web.com"))
+        assert isinstance(self.git.addprojecthook(self.project_id, "http://web.com"), dict)
         assert isinstance(self.git.getprojecthooks(self.project_id), list)
         assert isinstance(self.git.getprojecthook(self.project_id,
                                                   self.git.getprojecthooks(self.project_id)[0]['id']), dict)
@@ -139,8 +139,8 @@ class GitlabTest(unittest.TestCase):
         if ssh_test:
             name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             rsa_key = RSA.generate(1024)
-            self.assertTrue(self.git.adddeploykey(project_id=self.project_id, title=name,
-                                                  key=str(rsa_key.publickey().exportKey(format="OpenSSH"))))
+            assert isinstance(self.git.adddeploykey(project_id=self.project_id, title=name,
+                                                    key=str(rsa_key.publickey().exportKey(format="OpenSSH"))), dict)
             keys = self.git.getdeploykeys(self.project_id)
             self.assertGreater(len(keys), 0)
             key = keys[0]
@@ -259,6 +259,11 @@ class GitlabTest(unittest.TestCase):
         self.assertFalse(self.git.addgroupmember(group["id"], self.user_id, "nonexistant"))
         self.assertTrue(self.git.deletegroup(group_id=group["id"]))
 
+    def test_namespaces(self):
+        assert isinstance(self.git.getnamespaces(), list)
+        group = self.git.getgroups()[0]
+        self.assertGreaterEqual(len(self.git.getnamespaces(search=group["name"])), 1)
+
     def test_issues(self):
         issue = self.git.createissue(self.project_id, title="Test_issue", description="blaaaaa")
         assert isinstance(issue, dict)
@@ -314,6 +319,14 @@ class GitlabTest(unittest.TestCase):
         self.assertEqual(self.git.getmergerequest(self.project_id, merge["id"])["state"], "opened")
         self.assertTrue(self.git.acceptmergerequest(self.project_id, merge["id"], "closed!"))
         self.assertEqual(self.git.getmergerequest(self.project_id, merge["id"])["state"], "merged")
+
+    def test_commit_comment(self):
+        commit = self.git.getrepositorycommits(self.project_id)[5]
+        branch = self.git.createbranch(self.project_id, "mergebranch", commit["id"])
+        merge = self.git.createmergerequest(self.project_id, "develop", "mergebranch", "testmerge")
+
+        self.assertTrue(self.git.addcommenttocommit(self.project_id, merge['author'], merge['source_branch'], 'README.md', 1, 'Hello'))
+
 
     def test_notes(self):
 

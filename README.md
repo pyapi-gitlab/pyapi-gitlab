@@ -1,3 +1,8 @@
+# Looking for contributors
+
+Unfortunately I dont have enough time to keep up with the API random changes from Gitlab, nor with their ability to break the API every minor release.
+I transfered the library into its own organization, if you are interested in maintaining the lib, just drop me a line and Ill add you to the org. Thanks!
+
 # pyapi-gitlab
 
 pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabhq/gitlabhq/tree/master/doc/api).
@@ -5,8 +10,9 @@ pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabh
 [![Build Status](https://travis-ci.org/Itxaka/pyapi-gitlab.svg?branch=develop)](https://travis-ci.org/Itxaka/pyapi-gitlab)
 [![Coverage Status](https://coveralls.io/repos/Itxaka/pyapi-gitlab/badge.png?branch=develop)](https://coveralls.io/r/Itxaka/pyapi-gitlab?branch=develop)
 [![PyPI](https://img.shields.io/pypi/v/pyapi-gitlab.svg)](https://pypi.python.org/pypi/pyapi-gitlab)
-[![PyPi downloads](https://pypip.in/d/pyapi-gitlab/badge.png)](https://crate.io/packages/pyapi-gitlab/)
-[![License](http://img.shields.io/pypi/l/pyapi-gitlab.svg)](http://www.gnu.org/copyleft/gpl.html)
+![PyPi downloads](https://img.shields.io/pypi/dm/pyapi-gitlab.svg)
+[![Requirements Status](https://requires.io/github/Itxaka/pyapi-gitlab/requirements.svg?branch=develop)](https://requires.io/github/Itxaka/pyapi-gitlab/requirements/?branch=develop)
+[![License](http://img.shields.io/pypi/l/pyapi-gitlab.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Docs](https://readthedocs.org/projects/pyapi-gitlab/badge/?version=latest)](http://pyapi-gitlab.readthedocs.org/)
 
 
@@ -49,6 +55,17 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 3. Contributors endpoint seems to not exists in this version. Label creation is not supported on this version.
 
 ## Changelog
+
+# 7.8.5
+
+ - Use ```requests.json()``` instead of decoding everything (@satreix)
+ - Add getmergerequestchanges (@bor-sh)
+ - Add getmilestoneissues (@JonathonReinhart)
+ - Add editproject (@nelg)
+ - Add editgroupmember (@)
+ - Fix hook metadata creation #137 (@jzelinskie)
+ - Fix addprojectmember (@btall)
+ - Fix Raise exception instead of returing it in creategroup (@brenard)
 
 # 7.8.4
 
