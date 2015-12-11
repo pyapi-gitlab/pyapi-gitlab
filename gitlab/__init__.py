@@ -185,6 +185,26 @@ class Gitlab(object):
         else:
             return False
 
+    def blockuser(self, user_id, **kwargs):
+        """Block a user.
+
+        :param user_id: id of the user to change
+        :param kwargs: Any param the the Gitlab API supports
+        :return: Dict of the user
+        """
+        data = {}
+
+        if kwargs:
+            data.update(kwargs)
+
+        request = requests.put("{0}/{1}/block".format(self.users_url, user_id),
+                               headers=self.headers, data=data,
+                               verify=self.verify_ssl)
+        if request.status_code == 200:
+            return request.json()
+        else:
+            return False
+
     def getsshkeys(self):
         """Gets all the ssh keys for the current user
 
