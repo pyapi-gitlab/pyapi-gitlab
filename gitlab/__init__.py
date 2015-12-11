@@ -14,7 +14,6 @@ except ImportError:
     from urllib.parse import quote_plus
     basestring = str
 
-
 class Gitlab(object):
     """Gitlab class"""
 
@@ -1395,6 +1394,33 @@ class Gitlab(object):
             return request.json()
         else:
             return False
+
+    def addcommenttocommit(self, project_id, author, sha, path, line, note):
+        """Adds an inline comment to a specific commit
+        :param project_id project id
+        :param author The author info as returned by createmergerequest
+        :param sha The name of a repository branch or tag or if not given the default branch
+        :param path The file path
+        :param line The line number
+        :param note Text of comment
+        """
+
+        data = {
+            "author": author,
+            "note": note,
+            "path": path,
+            "line": line,
+            "line_type": "new"
+        }
+
+        request = requests.post("{0}/{1}/repository/commits/{2}/comments".format(self.projects_url, project_id, sha),
+                                headers=self.headers, data=data, verify=self.verify_ssl)
+        if request.status_code == 201:
+            return True
+        else:
+
+            return False
+
 
     def getrepositorycommits(self, project_id, ref_name=None, page=1, per_page=20):
         """Get a list of repository commits in a project.
