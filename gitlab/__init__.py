@@ -1631,6 +1631,37 @@ class Gitlab(object):
         if request.status_code == 200:
             return True  # It always returns true
 
+    def addldapgrouplink(self, group_id, cn, group_access, provider):
+        """Add LDAP group link
+
+        :param id: The ID of a group
+        :param cn: The CN of a LDAP group
+        :param group_access: Minimum access level for members of the LDAP group
+        :param provider: LDAP provider for the LDAP group (when using several providers)
+        :return: True if success
+        """
+        data = {"id": group_id, "cn": cn, "group_access": group_access,
+            "provider": provider}
+        request = requests.post("{0}/{1}/ldap_group_links".format(self.groups_url, group_id),
+                                headers=self.headers, data=data, verify=self.verify_ssl)
+        return request.status_code == 201
+
+    def deleteldapgrouplink(self, group_id, cn, provider=None):
+        """Deletes a LDAP group link (for a specific LDAP provider if given)
+
+        :param id: The ID of a group
+        :param cn: The CN of a LDAP group
+        :param provider: Name of a LDAP provider
+        :return True if success
+        """
+        url = "{base}/{gid}/ldap_group_links/{provider}{cn}".format(
+                                base=self.groups_url, gid=group_id, cn=cn,
+                                provider=("{0}/".format(provider)
+                                    if provider else ""))
+        request = requests.delete(url, headers=self.headers,
+                                verify=self.verify_ssl)
+        return request.status_code == 200
+
     def getissuewallnotes(self, project_id, issue_id, page=1, per_page=20):
         """Get the notes from the wall of a issue
 
