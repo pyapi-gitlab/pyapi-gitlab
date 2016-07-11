@@ -1416,7 +1416,6 @@ class Gitlab(object):
             return False
 
     def deleterepositorytag(self, project_id, tag_name):
-
         """Deletes tag in the repository 
 
         :param project_id: project id
