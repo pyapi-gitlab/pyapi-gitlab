@@ -23,10 +23,10 @@ class Gitlab(object):
         :param host: host of gitlab
         :param token: token
         """
-        if token != "":
+        if token is not "":
             self.token = token
             self.headers = {"PRIVATE-TOKEN": self.token}
-        if oauth_token != "":
+        if oauth_token is not "":
             self.oauth_token = oauth_token
             self.headers = {"Authorization": 'Bearer {}'.format(
                 self.oauth_token)}
@@ -57,9 +57,9 @@ class Gitlab(object):
         :param password: gitlab password
         :return: True if login successfull
         """
-        if user != None:
+        if user is not None:
             data = {"login": user, "password": password}
-        elif email != None:
+        elif email is not None:
             data = {"email": email, "password": password}
         else:
             raise ValueError('Neither username nor email provided to login')
