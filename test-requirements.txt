@@ -1,2 +1,3 @@
-requests
-unittest2
+-r requirements.txt
+responses
+coverage

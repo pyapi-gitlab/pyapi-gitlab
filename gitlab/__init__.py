@@ -51,11 +51,15 @@ class Gitlab(object):
         self.timeout = timeout
 
     def login(self, email=None, password=None, user=None):
-        """Logs the user in and setups the header with the private token
+        """
+        Logs the user in and setups the header with the private token
 
-        :param user: gitlab user
-        :param password: gitlab password
-        :return: True if login successfull
+        :param email: Gitlab user Email
+        :param user: Gitlab username
+        :param password: Gitlab user password
+        :return: True if login successful
+        :raise: HttpError
+        :raise: ValueError
         """
         if user != None:
             data = {"login": user, "password": password}
