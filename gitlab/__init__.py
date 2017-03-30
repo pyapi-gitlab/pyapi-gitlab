@@ -6,7 +6,6 @@ Check the license on the LICENSE file
 """
 
 import requests
-import json
 from . import exceptions
 try:
     from urllib import quote_plus
