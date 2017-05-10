@@ -1,7 +1,6 @@
 # Looking for contributors
 
-Unfortunately I dont have enough time to keep up with the API random changes from Gitlab, nor with their ability to break the API every minor release.
-I transfered the library into its own organization, if you are interested in maintaining the lib, just drop me a line and Ill add you to the org. Thanks!
+If you are intrested in contributing to this wrapper we ask that all pull requests have an open issue that and they be referanced. We also ask that you submit unit tests for your changes to make sure there are no regrestions.
 
 # pyapi-gitlab
 
