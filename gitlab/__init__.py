@@ -1806,23 +1806,19 @@ class Gitlab(object):
         else:
             return False
 
-    def deleterepositorytag(self, project_id, tag_name):
-        """Deletes tag in the repository 
-
-        :param project_id: project id
-        :param tag_name: tag
-        :return: dict
+    def delete_repository_tag(self, project_id, tag_name):
         """
+        Deletes a tag of a repository with given name.
 
-        data = {"tag_name": tag_name}
-        request = requests.delete("{0}/{1}/repository/tags/{2}".format(self.projects_url, project_id, tag_name), data=data,
-                                  verify=self.verify_ssl, auth=self.auth, headers=self.headers, timeout=self.timeout)
-
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
+        :param project_id: The ID of a project
+        :param tag_name: The name of a tag
+        :return: Dictionary containing delete tag
+        """
+        # url = '/projects/{project_id}/repository/tags/{tag_name}'.format(
+        #     project_id=project_id, tag_name=tag_name)
+        # print(url)
+        return self.delete('/projects/{project_id}/repository/tags/{tag_name}'.format(
+            project_id=project_id, tag_name=tag_name))
 
     def addcommenttocommit(self, project_id, author, sha, path, line, note):
         """

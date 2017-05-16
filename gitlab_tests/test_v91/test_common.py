@@ -8,9 +8,6 @@ from response_data.users import *
 
 
 class TestSuccessOrRaise(BaseTest):
-    def setUp(self):
-        super(TestSuccessOrRaise, self).setUp()
-
     def test_success_or_raise_without_error(self):
         response = mock.MagicMock()
         response_config = {
@@ -45,9 +42,6 @@ class TestLogin(BaseTest):
 
 
 class TestGet(BaseTest):
-    def setUp(self):
-        super(TestGet, self).setUp()
-
     @responses.activate
     def test_get_with_200(self):
         responses.add(
@@ -72,9 +66,6 @@ class TestGet(BaseTest):
 
 
 class TestPost(BaseTest):
-    def setUp(self):
-        super(TestPost, self).setUp()
-
     @responses.activate
     def test_post_with_201(self):
         responses.add(
@@ -111,9 +102,6 @@ class TestPost(BaseTest):
 
 
 class TestDelete(BaseTest):
-    def setUp(self):
-        super(TestDelete, self).setUp()
-
     @responses.activate
     def test_delete(self):
         responses.add(

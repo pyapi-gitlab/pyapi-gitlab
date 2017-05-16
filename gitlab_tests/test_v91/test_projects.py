@@ -6,9 +6,6 @@ from response_data.projects import *
 
 
 class TestDeleteProject(BaseTest):
-    def setUp(self):
-        super(TestDeleteProject, self).setUp()
-
     @responses.activate
     def test_delete_project_true(self):
         responses.add(
