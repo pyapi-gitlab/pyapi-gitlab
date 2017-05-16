@@ -1282,6 +1282,22 @@ class Gitlab(object):
         else:
             return False
 
+    def getdeploykeysall(self):
+        """
+        Get a list of all available deploy keys.
+
+        :return: the keys in a dictionary if success, false if not
+        """
+        request = requests.get(
+            '{0}/deploy_keys'.format(self.projects_url),
+            headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout
+        )
+
+        if request.status_code == 200:
+            return request.json()
+        else:
+            return False
+
     def getdeploykeys(self, project_id):
         """
         Get a list of a project's deploy keys.
