@@ -6,10 +6,6 @@ from response_data.tags import *
 
 
 class TestDeleteRepositoryTag(BaseTest):
-    def setUp(self):
-        super(TestDeleteRepositoryTag, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
-
     @responses.activate
     def test_delete_repository_tag(self):
         responses.add(
