@@ -1,5 +1,8 @@
 Thanks to all contributors to pyapy-gitlab.
 
+https://github.com/sijis
+
+https://github.com/owmtia
 
 https://github.com/tobias-reese
 
