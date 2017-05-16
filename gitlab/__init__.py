@@ -1814,9 +1814,6 @@ class Gitlab(object):
         :param tag_name: The name of a tag
         :return: Dictionary containing delete tag
         """
-        # url = '/projects/{project_id}/repository/tags/{tag_name}'.format(
-        #     project_id=project_id, tag_name=tag_name)
-        # print(url)
         return self.delete('/projects/{project_id}/repository/tags/{tag_name}'.format(
             project_id=project_id, tag_name=tag_name))
 
