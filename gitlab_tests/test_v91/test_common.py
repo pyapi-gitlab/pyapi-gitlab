@@ -10,7 +10,6 @@ from response_data.users import *
 class TestSuccessOrRaise(BaseTest):
     def setUp(self):
         super(TestSuccessOrRaise, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
 
     def test_success_or_raise_without_error(self):
         response = mock.MagicMock()
@@ -48,7 +47,6 @@ class TestLogin(BaseTest):
 class TestGet(BaseTest):
     def setUp(self):
         super(TestGet, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
 
     @responses.activate
     def test_get_with_200(self):
@@ -76,7 +74,6 @@ class TestGet(BaseTest):
 class TestPost(BaseTest):
     def setUp(self):
         super(TestPost, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
 
     @responses.activate
     def test_post_with_201(self):
@@ -116,7 +113,6 @@ class TestPost(BaseTest):
 class TestDelete(BaseTest):
     def setUp(self):
         super(TestDelete, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
 
     @responses.activate
     def test_delete(self):
