@@ -4,10 +4,12 @@ pyapi-gitlab, a gitlab python wrapper for the gitlab API
 by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 Check the license on the LICENSE file
 """
+from json import JSONDecodeError
 
 import requests
+
 from . import exceptions
-from json import JSONDecodeError
+
 try:
     from urllib import quote_plus
 except ImportError:
@@ -115,13 +117,21 @@ class Gitlab(object):
         """
         url = self.api_url + uri
         response = requests.delete(
-            url, headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
+            url, headers=self.headers, verify=self.verify_ssl,
+            auth=self.auth, timeout=self.timeout)
 
-        return self.success_or_raise(response, [204])
+        return self.success_or_raise(response, [204, 200])
 
     @staticmethod
     def success_or_raise(response, status_codes):
+        """
+        Check if request was successful or raises an HttpError
+        
+        :param response: Response Object to check
+        :param status_codes: List of Ints, Valid status codes to check for
+        :return: Dictionary containing response data
+        :raise: HttpError: If invalid response returned
+        """
         if response.status_code in status_codes:
             try:
                 return response.json()
@@ -576,20 +586,39 @@ class Gitlab(object):
 
         return request.status_code == 201
 
+    def delete_project(self, id):
+        """
+        Delete a project from the Gitlab server
+        
+        Gitlab currently returns a Boolean True if the deleted and as such we return an
+        empty Dictionary
 
-    def deleteproject(self, project_id):
+        :param id: The ID of the project or NAMESPACE/PROJECT_NAME
+        :return: Dictionary
+        :raise: HttpError: If invalid response returned
+        """
+        url = '/projects/{id}'.format(id=id)
+
+        response = self.delete(url)
+        if response is True:
+            return {}
+        else:
+            return response
+
+    def deleteproject(self, project_id):  # TODO: Add deprecated decorator
         """
         Delete a project
+        
+        Warning this is being deprecated
 
         :param project_id: project id
         :return: always true
         """
-        request = requests.delete(
-            '{0}/{1}'.format(self.projects_url, project_id),
-            headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return True
+        try:
+            self.delete_project(project_id)
+        except exceptions.HttpError:
+            pass
+        return True
 
     def createprojectuser(self, user_id, name, **kwargs):
         """
