@@ -38,7 +38,8 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 
 | Gitlab version | Status |
 |:-------------:| :-----:|
-| 7.9.X      | :x:<sup>1</sup> |
+| 9.1.X      | :x:<sup>1</sup> |
+| 7.9.X      | :x:<sup>2</sup> |
 | 7.8.X      | :heavy_check_mark: |
 | 7.7.X      | :heavy_check_mark: |
 | 7.6.X      | :heavy_check_mark: |
@@ -46,12 +47,13 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 | 7.4.X      | :heavy_check_mark: |
 | 7.3.X      | :heavy_check_mark: |
 | 7.2.X      | :heavy_check_mark: |
-| 7.1.X      | :x:<sup>2</sup> |
-| 7.0.X      | :x:<sup>3</sup>   |
+| 7.1.X      | :x:<sup>3</sup> |
+| 7.0.X      | :x:<sup>4</sup>   |
 
-1. 3 out of 17 tests failing: Seems that create snippet wall note now returns true/false instead of the created snippet. Snippet creating now does not return the created snippet. And move project does not return a dict either.
-2. Label creation is not supported on this version.
-3. Contributors endpoint seems to not exists in this version. Label creation is not supported on this version.
+1. Currently under development
+2. 3 out of 17 tests failing: Seems that create snippet wall note now returns true/false instead of the created snippet. Snippet creating now does not return the created snippet. And move project does not return a dict either.
+3. Label creation is not supported on this version.
+4. Contributors endpoint seems to not exists in this version. Label creation is not supported on this version.
 
 ## Changelog
 
