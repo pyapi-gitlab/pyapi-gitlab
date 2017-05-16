@@ -42,3 +42,30 @@ class TestGetAllDeployKeys(BaseTest):
             content_type='application/json')
 
         self.assertRaises(HttpError, self.gitlab.get_all_deploy_keys)
+
+class TestEnableDeployKeys(BaseTest):
+    def setUp(self):
+        super(TestEnableDeployKeys, self).setUp()
+        self.gitlab.login(user=self.user, password=self.password)
+
+    @responses.activate
+    def test_enable_deploy_key(self):
+        responses.add(
+            responses.POST,
+            self.gitlab.api_url + '/projects/5/deploy_keys/1/enable',
+            json=get_deploy_keys[0],
+            status=201,
+            content_type='application/json')
+
+        self.assertEqual(get_deploy_keys[0], self.gitlab.enable_deploy_key(5, 1))
+
+    @responses.activate
+    def test_enable_deploy_key_exception(self):
+        responses.add(
+            responses.POST,
+            self.gitlab.api_url + '/projects/5/deploy_keys/2/enable',
+            body='{"message": "500 Internal Server Error"}',
+            status=500,
+            content_type='application/json')
+
+        self.assertRaises(HttpError, self.gitlab.enable_deploy_key, 5, 2)
