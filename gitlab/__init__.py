@@ -59,7 +59,7 @@ class Gitlab(object):
         self.verify_ssl = verify_ssl
         self.timeout = timeout
 
-    def get(self, uri, **kwargs):
+    def get(self, uri, default_response={}, **kwargs):
         """
         Call GET on the Gitlab server
         
@@ -68,6 +68,7 @@ class Gitlab(object):
         >>> gitlab.get('/users/5')
         
         :param uri: String with the URI for the endpoint to GET from
+        :param default_response: Return value if JSONDecodeError
         :param kwargs: Key word arguments to use as GET arguments
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
@@ -77,9 +78,9 @@ class Gitlab(object):
                                 verify=self.verify_ssl, auth=self.auth,
                                 timeout=self.timeout)
 
-        return self.success_or_raise(response, [200])
+        return self.success_or_raise(response, [200], default_response=default_response)
 
-    def post(self, uri, **kwargs):
+    def post(self, uri, default_response={}, **kwargs):
         """
         Call POST on the Gitlab server
         
@@ -91,6 +92,7 @@ class Gitlab(object):
         >>> gitlab.post('/users/5')
         
         :param uri: String with the URI for the endpoint to POST to
+        :param default_response: Return value if JSONDecodeError
         :param kwargs: Key word arguments representing the data to use in the POST
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
@@ -101,9 +103,9 @@ class Gitlab(object):
             url, headers=self.headers, data=kwargs,
             verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
 
-        return self.success_or_raise(response, [201])
+        return self.success_or_raise(response, [201], default_response=default_response)
 
-    def delete(self, uri):
+    def delete(self, uri, default_response={}):
         """
         Call DELETE on the Gitlab server
         
@@ -112,6 +114,7 @@ class Gitlab(object):
         >>> gitlab.delete('/users/5')
         
         :param uri: String with the URI you wish to delete
+        :param default_response: Return value if JSONDecodeError
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
@@ -120,15 +123,17 @@ class Gitlab(object):
             url, headers=self.headers, verify=self.verify_ssl,
             auth=self.auth, timeout=self.timeout)
 
-        return self.success_or_raise(response, [204, 200])
+        return self.success_or_raise(
+            response, [204, 200], default_response=default_response)
 
     @staticmethod
-    def success_or_raise(response, status_codes):
+    def success_or_raise(response, status_codes, default_response={}):
         """
         Check if request was successful or raises an HttpError
         
         :param response: Response Object to check
         :param status_codes: List of Ints, Valid status codes to check for
+        :param default_response: Return value if JSONDecodeError
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
@@ -136,7 +141,7 @@ class Gitlab(object):
             try:
                 return response.json()
             except JSONDecodeError:
-                return {}
+                return default_response
 
         raise exceptions.HttpError(
             ('Something went wrong, '
@@ -1281,6 +1286,19 @@ class Gitlab(object):
             return request.json()
         else:
             return False
+
+    def get_all_deploy_keys(self):
+        """
+        Get a list of all deploy keys across all projects of the GitLab instance.
+        This endpoint requires admin access.
+        
+        >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
+        >>> gitlab.login(user='root', password='5iveL!fe')
+        >>> gitlab.get_all_deploy_keys()
+
+        :return: List of Dictionaries containing all deploy keys 
+        """
+        return self.get('/deploy_keys', default_response=[])
 
     def getdeploykeys(self, project_id):
         """

@@ -132,6 +132,10 @@ class GitlabTest(unittest.TestCase):
         # Create an actual fork of the main project
         self.git.createfork(self.project_id)
 
+    def test_get_all_deploy_keys(self):
+        keys = self.git.get_all_deploy_keys()
+        assert isinstance(keys, list)
+
     def test_deploykeys(self):
         keys = self.git.getdeploykeys(self.project_id)
         assert isinstance(keys, list)
