@@ -198,26 +198,35 @@ class Gitlab(object):
         else:
             self.headers['SUDO'] = user
 
-    def getusers(self, search=None, page=1, per_page=20):
+    def get_users(self, search=None, page=1, per_page=20, **kwargs):
         """
-        Return a user list
+        Returns a list of users from the Gitlab server
 
         :param search: Optional search query
-        :param page: Which page to return (default is 1)
-        :param per_page: Number of items to return per page (default is 20)
+        :param page: Page number (default: 1)
+        :param per_page: Number of items to list per page (default: 20, max: 100)
+        :return: List of Dictionaries containing users
+        :raise: HttpError if invalid response returned
+        """
+        if search:
+            return self.get('/users', page=page, per_page=per_page, search=search, **kwargs)
+
+        return self.get('/users', page=page, per_page=per_page, **kwargs)
+
+    def getusers(self, search=None, page=1, per_page=20, **kwargs):  # TODO: Add deprecated decorator
+        """
+        Returns a list of users from the Gitlab server
+        
+        Warning this is being deprecated
+
+        :param search: Optional search query
+        :param page: Page number (default: 1)
+        :param per_page: Number of items to list per page (default: 20, max: 100)
         :return: returs a dictionary of the users, false if there is an error
         """
-        data = {'page': page, 'per_page': per_page}
-
-        if search:
-            data['search'] = search
-        request = requests.get(
-            self.users_url, params=data, headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
+        try:
+            return self.get_users(search=search, page=page, per_page=per_page, **kwargs)
+        except exceptions.HttpError:
             return False
 
     def getuser(self, user_id):

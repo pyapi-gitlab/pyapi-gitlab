@@ -8,7 +8,6 @@ from response_data.projects import *
 class TestDeleteProject(BaseTest):
     def setUp(self):
         super(TestDeleteProject, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
 
     @responses.activate
     def test_delete_project_true(self):
