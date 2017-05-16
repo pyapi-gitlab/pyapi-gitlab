@@ -6,9 +6,6 @@ from response_data.users import *
 
 
 class TestGetUsers(BaseTest):
-    def setUp(self):
-        super(TestGetUsers, self).setUp()
-
     @responses.activate
     def test_get_users(self):
         responses.add(

@@ -1806,6 +1806,17 @@ class Gitlab(object):
         else:
             return False
 
+    def delete_repository_tag(self, project_id, tag_name):
+        """
+        Deletes a tag of a repository with given name.
+
+        :param project_id: The ID of a project
+        :param tag_name: The name of a tag
+        :return: Dictionary containing delete tag
+        """
+        return self.delete('/projects/{project_id}/repository/tags/{tag_name}'.format(
+            project_id=project_id, tag_name=tag_name))
+
     def addcommenttocommit(self, project_id, author, sha, path, line, note):
         """
         Adds an inline comment to a specific commit

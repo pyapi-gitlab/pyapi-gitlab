@@ -1,0 +1,1 @@
+delete_repository_tag = {'tag_name': 'test'}
