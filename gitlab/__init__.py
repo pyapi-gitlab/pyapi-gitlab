@@ -7,6 +7,7 @@ Check the license on the LICENSE file
 
 import requests
 from . import exceptions
+from json import JSONDecodeError
 try:
     from urllib import quote_plus
 except ImportError:
@@ -55,6 +56,85 @@ class Gitlab(object):
         self.namespaces_url = self.api_url + '/namespaces'
         self.verify_ssl = verify_ssl
         self.timeout = timeout
+
+    def get(self, uri, **kwargs):
+        """
+        Call GET on the Gitlab server
+        
+        >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
+        >>> gitlab.login(user='root', password='5iveL!fe')
+        >>> gitlab.get('/users/5')
+        
+        :param uri: String with the URI for the endpoint to GET from
+        :param kwargs: Key word arguments to use as GET arguments
+        :return: Dictionary containing response data
+        :raise: HttpError: If invalid response returned
+        """
+        url = self.api_url + uri
+        response = requests.get(url, params=kwargs, headers=self.headers,
+                                verify=self.verify_ssl, auth=self.auth,
+                                timeout=self.timeout)
+
+        return self.success_or_raise(response, [200])
+
+    def post(self, uri, **kwargs):
+        """
+        Call POST on the Gitlab server
+        
+        >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
+        >>> gitlab.login(user='root', password='5iveL!fe')
+        >>> password = 'MyTestPassword1'
+        >>> email = 'example@example.com'
+        >>> data = {'name': 'test', 'username': 'test1', 'password': password, 'email': email}
+        >>> gitlab.post('/users/5')
+        
+        :param uri: String with the URI for the endpoint to POST to
+        :param kwargs: Key word arguments representing the data to use in the POST
+        :return: Dictionary containing response data
+        :raise: HttpError: If invalid response returned
+        """
+        url = self.api_url + uri
+
+        response = requests.post(
+            url, headers=self.headers, data=kwargs,
+            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
+
+        return self.success_or_raise(response, [201])
+
+    def delete(self, uri):
+        """
+        Call DELETE on the Gitlab server
+        
+        >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
+        >>> gitlab.login(user='root', password='5iveL!fe')
+        >>> gitlab.delete('/users/5')
+        
+        :param uri: String with the URI you wish to delete
+        :return: Dictionary containing response data
+        :raise: HttpError: If invalid response returned
+        """
+        url = self.api_url + uri
+        response = requests.delete(
+            url, headers=self.headers,
+            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
+
+        return self.success_or_raise(response, [204])
+
+    @staticmethod
+    def success_or_raise(response, status_codes):
+        if response.status_code in status_codes:
+            try:
+                return response.json()
+            except JSONDecodeError:
+                return {}
+
+        raise exceptions.HttpError(
+            ('Something went wrong, '
+             'status code: {status_code}, '
+             'text response: {json}').format(
+                status_code=response.status_code,
+                json=response.text
+            ))
 
     def login(self, email=None, password=None, user=None):
         """

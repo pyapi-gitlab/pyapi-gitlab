@@ -42,3 +42,4 @@ nosetests.xml
 
 # build dir
 docs/_build
+coverage_html_report/
