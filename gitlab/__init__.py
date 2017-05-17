@@ -62,11 +62,11 @@ class Gitlab(object):
     def get(self, uri, default_response=None, **kwargs):
         """
         Call GET on the Gitlab server
-        
+
         >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
         >>> gitlab.login(user='root', password='5iveL!fe')
         >>> gitlab.get('/users/5')
-        
+
         :param uri: String with the URI for the endpoint to GET from
         :param default_response: Return value if JSONDecodeError
         :param kwargs: Key word arguments to use as GET arguments
@@ -86,14 +86,14 @@ class Gitlab(object):
     def post(self, uri, default_response=None, **kwargs):
         """
         Call POST on the Gitlab server
-        
+
         >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
         >>> gitlab.login(user='root', password='5iveL!fe')
         >>> password = 'MyTestPassword1'
         >>> email = 'example@example.com'
         >>> data = {'name': 'test', 'username': 'test1', 'password': password, 'email': email}
         >>> gitlab.post('/users/5')
-        
+
         :param uri: String with the URI for the endpoint to POST to
         :param default_response: Return value if JSONDecodeError
         :param kwargs: Key word arguments representing the data to use in the POST
@@ -114,11 +114,11 @@ class Gitlab(object):
     def delete(self, uri, default_response=None):
         """
         Call DELETE on the Gitlab server
-        
+
         >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
         >>> gitlab.login(user='root', password='5iveL!fe')
         >>> gitlab.delete('/users/5')
-        
+
         :param uri: String with the URI you wish to delete
         :param default_response: Return value if JSONDecodeError
         :return: Dictionary containing response data
@@ -139,7 +139,7 @@ class Gitlab(object):
     def success_or_raise(response, status_codes, default_response=None):
         """
         Check if request was successful or raises an HttpError
-        
+
         :param response: Response Object to check
         :param status_codes: List of Ints, Valid status codes to check for
         :param default_response: Return value if JSONDecodeError
@@ -159,9 +159,9 @@ class Gitlab(object):
             ('Something went wrong, '
              'status code: {status_code}, '
              'text response: {json}').format(
-                status_code=response.status_code,
-                json=response.text
-            ))
+                 status_code=response.status_code,
+                 json=response.text)
+            )
 
     def login(self, email=None, password=None, user=None):
         """
@@ -228,7 +228,7 @@ class Gitlab(object):
     def getusers(self, search=None, page=1, per_page=20, **kwargs):  # TODO: Add deprecated decorator
         """
         Returns a list of users from the Gitlab server
-        
+
         Warning this is being deprecated
 
         :param search: Optional search query
@@ -615,7 +615,7 @@ class Gitlab(object):
     def delete_project(self, id):
         """
         Delete a project from the Gitlab server
-        
+
         Gitlab currently returns a Boolean True if the deleted and as such we return an
         empty Dictionary
 
@@ -634,7 +634,7 @@ class Gitlab(object):
     def deleteproject(self, project_id):  # TODO: Add deprecated decorator
         """
         Delete a project
-        
+
         Warning this is being deprecated
 
         :param project_id: project id
@@ -833,7 +833,7 @@ class Gitlab(object):
     def editprojecthook(self, project_id, hook_id, url, push=False, issues=False, merge_requests=False, tag_push=False):
         """
         edit an existing hook from a project
-        
+
         :param id_: project id
         :param hook_id: hook id
         :param url: the new url
@@ -1056,7 +1056,7 @@ class Gitlab(object):
     def createforkrelation(self, project_id, from_project_id):
         """
         Create a fork relation.
-        
+
         This DO NOT create a fork but only adds a link as fork the relation between 2 repositories
 
         :param project_id: project id
@@ -1312,12 +1312,12 @@ class Gitlab(object):
         """
         Get a list of all deploy keys across all projects of the GitLab instance.
         This endpoint requires admin access.
-        
+
         >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
         >>> gitlab.login(user='root', password='5iveL!fe')
         >>> gitlab.get_all_deploy_keys()
 
-        :return: List of Dictionaries containing all deploy keys 
+        :return: List of Dictionaries containing all deploy keys
         """
         return self.get('/deploy_keys', default_response=[])
 
@@ -1588,7 +1588,7 @@ class Gitlab(object):
 
         request = requests.put(
             '{0}/{1}/merge_request/{2}'.format(self.projects_url, project_id, mergerequest_id),
-           data=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
+            data=data, headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
 
         if request.status_code == 200:
             return request.json()
@@ -1679,7 +1679,7 @@ class Gitlab(object):
         """
         data = {'id': project_id, 'title': title, 'file_name': file_name, 'code': code}
 
-        if visibility_level in [0,10,20]:
+        if visibility_level in [0, 10, 20]:
             data['visibility_level'] = visibility_level
 
         request = requests.post(
@@ -1848,7 +1848,7 @@ class Gitlab(object):
     def addcommenttocommit(self, project_id, author, sha, path, line, note):
         """
         Adds an inline comment to a specific commit
-        
+
         :param project_id project id
         :param author The author info as returned by createmergerequest
         :param sha The name of a repository branch or tag or if not given the default branch
