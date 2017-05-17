@@ -10,11 +10,7 @@ import requests
 
 from . import exceptions
 
-try:
-    from urllib import quote_plus
-except ImportError:
-    from urllib.parse import quote_plus
-    basestring = str
+from six.moves.urllib.parse import quote_plus
 
 
 class Gitlab(object):
@@ -490,22 +486,25 @@ class Gitlab(object):
         else:
             return False
 
+    def get_project(self, project):
+        """
+        Get info for a project identified by id or namespace/project_name
+
+        :param project: The ID or URL-encoded path of the project
+        :return: Dictionary containing the Project
+        """
+        return self.get(
+            '/projects/{project}'.format(project=project))
+
     def getproject(self, project_id):
         """Get info for a project identified by id or namespace/project_name
 
         :param project_id: id or namespace/project_name of the project
         :return: False if not found, a dictionary if found
         """
-        if isinstance(project_id, basestring):
-            project_id = quote_plus(project_id)
-
-        request = requests.get(
-            '{0}/{1}'.format(self.projects_url, project_id), headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
+        try:
+            return self.get_project(project_id)
+        except exceptions.HttpError:
             return False
 
     def getprojectevents(self, project_id, page=1, per_page=20):
@@ -711,15 +710,15 @@ class Gitlab(object):
         :param access_level: access level, see gitlab help to know more
         :return: True if success
         """
-        if isinstance(access_level, basestring):
-            if access_level.lower() == 'master':
-                access_level = 40
-            elif access_level.lower() == 'developer':
-                access_level = 30
-            elif access_level.lower() == 'reporter':
-                access_level = 20
-            else:
-                access_level = 10
+        # if isinstance(access_level, basestring):
+        if access_level.lower() == 'master':
+            access_level = 40
+        elif access_level.lower() == 'developer':
+            access_level = 30
+        elif access_level.lower() == 'reporter':
+            access_level = 20
+        else:
+            access_level = 10
 
         data = {'id': project_id, 'user_id': user_id, 'access_level': access_level}
 
