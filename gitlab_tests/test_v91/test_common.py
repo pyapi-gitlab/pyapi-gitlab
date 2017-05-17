@@ -52,6 +52,7 @@ class TestGet(BaseTest):
             content_type='application/json')
 
         self.assertEqual(get_users, self.gitlab.get('/users'))
+        self.assertEqual(get_users, self.gitlab.get('/users', default_response={}))
 
     @responses.activate
     def test_get_with_404(self):
@@ -82,6 +83,7 @@ class TestPost(BaseTest):
         }
 
         self.assertEqual(post_users, self.gitlab.post('/users', **data))
+        self.assertEqual(post_users, self.gitlab.post('/users', default_response={}, **data))
 
     @responses.activate
     def test_get_with_404(self):
@@ -112,6 +114,7 @@ class TestDelete(BaseTest):
             content_type='application/json')
 
         self.assertEqual({}, self.gitlab.delete('/users/5'))
+        self.assertEqual({}, self.gitlab.delete('/users/5', default_response={}))
 
     @responses.activate
     def test_delete_404(self):
