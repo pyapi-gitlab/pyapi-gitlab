@@ -59,7 +59,7 @@ class Gitlab(object):
         self.verify_ssl = verify_ssl
         self.timeout = timeout
 
-    def get(self, uri, default_response={}, **kwargs):
+    def get(self, uri, default_response=None, **kwargs):
         """
         Call GET on the Gitlab server
         
@@ -73,6 +73,9 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
+        if default_response is None:
+            default_response = {}
+
         url = self.api_url + uri
         response = requests.get(url, params=kwargs, headers=self.headers,
                                 verify=self.verify_ssl, auth=self.auth,
@@ -80,7 +83,7 @@ class Gitlab(object):
 
         return self.success_or_raise(response, [200], default_response=default_response)
 
-    def post(self, uri, default_response={}, **kwargs):
+    def post(self, uri, default_response=None, **kwargs):
         """
         Call POST on the Gitlab server
         
@@ -97,6 +100,9 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
+        if default_response is None:
+            default_response = {}
+
         url = self.api_url + uri
 
         response = requests.post(
@@ -105,7 +111,7 @@ class Gitlab(object):
 
         return self.success_or_raise(response, [201], default_response=default_response)
 
-    def delete(self, uri, default_response={}):
+    def delete(self, uri, default_response=None):
         """
         Call DELETE on the Gitlab server
         
@@ -118,6 +124,9 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
+        if default_response is None:
+            default_response = {}
+
         url = self.api_url + uri
         response = requests.delete(
             url, headers=self.headers, verify=self.verify_ssl,
@@ -127,7 +136,7 @@ class Gitlab(object):
             response, [204, 200], default_response=default_response)
 
     @staticmethod
-    def success_or_raise(response, status_codes, default_response={}):
+    def success_or_raise(response, status_codes, default_response=None):
         """
         Check if request was successful or raises an HttpError
         
@@ -137,6 +146,9 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
+        if default_response is None:
+            default_response = {}
+
         if response.status_code in status_codes:
             try:
                 return response.json()
