@@ -1309,6 +1309,22 @@ class Gitlab(object):
         """
         return self.get('/deploy_keys', default_response=[])
 
+    def enable_deploy_key(self, project, key_id):
+        """
+        Enables a deploy key for a project.
+
+        >>> gitlab = Gitlab(host='http://localhost:10080', verify_ssl=False)
+        >>> gitlab.login(user='root', password='5iveL!fe')
+        >>> gitlab.enable_deploy_key(15, 5)
+
+        :param project: The ID or URL-encoded path of the project owned by the authenticated user
+        :param key_id: The ID of the deploy key
+        :return: A dictionary containing deploy key details
+        """
+        url = '/projects/{project}/deploy_keys/{key_id}/enable'.format(
+            project=project, key_id=key_id)
+        return self.post(url, default_response={})
+
     def getdeploykeys(self, project_id):
         """
         Get a list of a project's deploy keys.
