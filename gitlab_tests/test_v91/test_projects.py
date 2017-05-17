@@ -41,3 +41,29 @@ class TestDeleteProject(BaseTest):
 
         self.assertRaises(HttpError, self.gitlab.delete_project, 1)
         self.assertEqual(True, self.gitlab.deleteproject(1))
+
+
+class TestGetProject(BaseTest):
+    @responses.activate
+    def test_delete_project_true(self):
+        responses.add(
+            responses.GET,
+            self.gitlab.api_url + '/projects/1',
+            json=get_project,
+            status=200,
+            content_type='application/json')
+
+        self.assertEqual(get_project, self.gitlab.get_project(1))
+        self.assertEqual(get_project, self.gitlab.getproject(1))
+
+    @responses.activate
+    def test_delete_project_json(self):
+        responses.add(
+            responses.GET,
+            self.gitlab.api_url + '/projects/1',
+            body='{"error": "Not found"}',
+            status=404,
+            content_type='application/json')
+
+        self.assertRaises(HttpError, self.gitlab.get_project, 1)
+        self.assertFalse(self.gitlab.getproject(1))
