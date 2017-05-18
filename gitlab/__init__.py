@@ -132,6 +132,18 @@ class Gitlab(object):
             response, [204, 200], default_response=default_response)
 
     @staticmethod
+    def _format_string(string):
+        """
+        Formats a string so its ready for Gitlab or returns an int
+        
+        :param string: String to be formatted
+        :return: Int or String
+        """
+        if isinstance(string, str):
+            return quote_plus(string)
+        return string
+
+    @staticmethod
     def success_or_raise(response, status_codes, default_response=None):
         """
         Check if request was successful or raises an HttpError
@@ -493,6 +505,8 @@ class Gitlab(object):
         :param project: The ID or URL-encoded path of the project
         :return: Dictionary containing the Project
         """
+        project = self._format_string(project)
+
         return self.get(
             '/projects/{project}'.format(project=project))
 

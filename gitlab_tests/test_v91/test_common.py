@@ -126,3 +126,9 @@ class TestDelete(BaseTest):
             content_type='application/json')
 
         self.assertRaises(HttpError, self.gitlab.post, '/users')
+
+
+class TestFormatString(BaseTest):
+    def test__format_string(self):
+        self.assertEqual('foo%2Fbar', self.gitlab._format_string('foo/bar'))
+        self.assertEqual(1, self.gitlab._format_string(1))
