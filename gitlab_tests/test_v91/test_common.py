@@ -2,6 +2,7 @@ from unittest import mock
 
 import responses
 
+from gitlab import Gitlab
 from gitlab.exceptions import HttpError
 from gitlab_tests.base import BaseTest
 from response_data.users import *
@@ -132,3 +133,26 @@ class TestFormatString(BaseTest):
     def test__format_string(self):
         self.assertEqual('foo%2Fbar', self.gitlab._format_string('foo/bar'))
         self.assertEqual(1, self.gitlab._format_string(1))
+
+
+class TestInit(BaseTest):
+    def test___init__with_token(self):
+        gitlab = Gitlab('http://localhost:10080', verify_ssl=False, token='something')
+        self.assertEqual('something', gitlab.token)
+        self.assertEqual({'PRIVATE-TOKEN': 'something'}, gitlab.headers)
+
+    def test___init__with_oauth_token(self):
+        gitlab = Gitlab('http://localhost:10080', verify_ssl=False, oauth_token='something')
+        self.assertEqual('something', gitlab.oauth_token)
+        self.assertEqual({'Authorization': 'Bearer something'}, gitlab.headers)
+
+    def test___init__without_host(self):
+        self.assertRaises(ValueError, Gitlab, None, verify_ssl=False, oauth_token='something')
+
+    def test___init__without_protocol(self):
+        gitlab = Gitlab('localhost:10080', verify_ssl=False, oauth_token='something')
+        self.assertEqual('https://localhost:10080', gitlab.host)
+
+    def test___init__with_https(self):
+        gitlab = Gitlab('https://localhost:10080', verify_ssl=False, oauth_token='something')
+        self.assertEqual('https://localhost:10080', gitlab.host)
