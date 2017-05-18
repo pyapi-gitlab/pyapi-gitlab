@@ -290,20 +290,35 @@ class Gitlab(object):
         elif request.status_code == 404:
             return False
 
-    def deleteuser(self, user_id):
+    def delete_user(self, user):
         """
-        Deletes an user by ID
+        Deletes a user. Available only for administrators.
+        This is an idempotent function, calling this function for a non-existent user id
+        still returns a status code 200 OK.
+        The JSON response differs if the user was actually deleted or not.
+        In the former the user is returned and in the latter not.
 
-        :param user_id: id of the user to delete
+        :param user: The ID of the user
+        :return: Empty Dict
+        :raise: HttpError: If invalid response returned
+        """
+        return self.delete('/users/{user}'.format(user=user), default_response={})
+
+    def deleteuser(self, user_id):  # TODO: Add deprecated decorator
+        """
+        Deletes a user. Available only for administrators.
+        This is an idempotent function, calling this function for a non-existent user id
+        still returns a status code 200 OK.
+        The JSON response differs if the user was actually deleted or not.
+        In the former the user is returned and in the latter not.
+
+        :param user_id: The ID of the user
         :return: True if it deleted, False if it couldn't
         """
-        request = requests.delete(
-            '{0}/{1}'.format(self.users_url, user_id),
-            headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
+        try:
+            self.delete_user(user_id)
             return True
-        else:
+        except exceptions.HttpError:
             return False
 
     def currentuser(self):
@@ -504,6 +519,7 @@ class Gitlab(object):
 
         :param project: The ID or URL-encoded path of the project
         :return: Dictionary containing the Project
+        :raise: HttpError: If invalid response returned
         """
         project = self._format_string(project)
 
@@ -1331,6 +1347,7 @@ class Gitlab(object):
         >>> gitlab.get_all_deploy_keys()
 
         :return: List of Dictionaries containing all deploy keys
+        :raise: HttpError: If invalid response returned
         """
         return self.get('/deploy_keys', default_response=[])
 
@@ -1345,6 +1362,7 @@ class Gitlab(object):
         :param project: The ID or URL-encoded path of the project owned by the authenticated user
         :param key_id: The ID of the deploy key
         :return: A dictionary containing deploy key details
+        :raise: HttpError: If invalid response returned
         """
         url = '/projects/{project}/deploy_keys/{key_id}/enable'.format(
             project=project, key_id=key_id)
@@ -1854,6 +1872,7 @@ class Gitlab(object):
         :param project_id: The ID of a project
         :param tag_name: The name of a tag
         :return: Dictionary containing delete tag
+        :raise: HttpError: If invalid response returned
         """
         return self.delete('/projects/{project_id}/repository/tags/{tag_name}'.format(
             project_id=project_id, tag_name=tag_name))
@@ -2032,6 +2051,7 @@ class Gitlab(object):
         :param from_id: the commit sha or branch name
         :param to_id: the commit sha or branch name
         :return: commit list and diff between two branches tags or commits provided by name
+        :raise: HttpError: If invalid response returned
         """
         data = {'from': from_id, 'to': to_id}
 
