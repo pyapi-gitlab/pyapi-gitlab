@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-coverage run -m unittest discover -s . && coverage html
+coverage run -m unittest discover -s gitlab_tests && coverage html
