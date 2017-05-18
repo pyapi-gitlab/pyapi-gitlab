@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+coverage run -m unittest discover -s integration_tests.tests_$1 && coverage html
