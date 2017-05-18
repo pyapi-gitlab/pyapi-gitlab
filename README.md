@@ -1,6 +1,6 @@
 # Looking for contributors
 
-If you are intrested in contributing to this wrapper we ask that all pull requests have an open issue that and they be referanced. We also ask that you submit unit tests for your changes to make sure there are no regrestions.
+If you are interested in contributing to this wrapper we ask that all pull requests have an open issue that and they be referenced. We also ask that you submit unit tests for your changes to make sure there are no regressions.
 
 # pyapi-gitlab
 
@@ -66,7 +66,7 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
  - Add editgroupmember (@)
  - Fix hook metadata creation #137 (@jzelinskie)
  - Fix addprojectmember (@btall)
- - Fix Raise exception instead of returing it in creategroup (@brenard)
+ - Fix Raise exception instead of returning it in creategroup (@brenard)
 
 # 7.8.4
 
@@ -80,7 +80,7 @@ pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
 # 7.5.3
 
  - New function wrapper ``getall`` to get all results from any function that provides pagination [Anirudh Dutt]
- - Remove pagination params from ``getdeploykeys``, ``getbranches`` and ``getsshkeys`` as they dont support it [Anirudh Dutt]
+ - Remove pagination params from ``getdeploykeys``, ``getbranches`` and ``getsshkeys`` as they don't support it [Anirudh Dutt]
  - Add oAuth tokens to the login method [Ken Cochrane]
  - You can now add the type of hook when creating it [tonicbupt]
  - Allow Project Issues to be filtered by passing kwargs [Nick Whyte]
