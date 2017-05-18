@@ -242,7 +242,7 @@ class Gitlab(object):
         :param search: Optional search query
         :param page: Page number (default: 1)
         :param per_page: Number of items to list per page (default: 20, max: 100)
-        :return: returs a dictionary of the users, false if there is an error
+        :return: returns a dictionary of the users, false if there is an error
         """
         try:
             return self.get_users(search=search, page=page, per_page=per_page, **kwargs)
@@ -700,7 +700,7 @@ class Gitlab(object):
         :param query: Optional search query
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
-        :return: the projects memebers, false if there is an error
+        :return: the projects members, false if there is an error
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -1391,7 +1391,7 @@ class Gitlab(object):
         :param project_id: project id
         :param title: title of the key
         :param key: the key itself
-        :return: true if sucess, false if not
+        :return: true if success, false if not
         """
         data = {'id': project_id, 'title': title, 'key': key}
 
@@ -1779,7 +1779,7 @@ class Gitlab(object):
         protecting an already protected repository branch still returns a 200 OK status code.
 
         :param project_id: project id
-        :param branch: branch to protech
+        :param branch: branch to protect
         :return: dict with the branch
         """
         request = requests.put(
@@ -1917,7 +1917,7 @@ class Gitlab(object):
 
         :param project_id: The ID of a project
         :param sha1: The commit hash or name of a repository branch or tag
-        :return: dic tof commit
+        :return: dict of commit
         """
         request = requests.get(
             '{0}/{1}/repository/commits/{2}'.format(self.projects_url, project_id, sha1),
@@ -1952,7 +1952,7 @@ class Gitlab(object):
         :param project_id: The ID of a project
         :param path: The path inside repository. Used to get contend of subdirectories
         :param ref_name: The name of a repository branch or tag or if not given the default branch
-        :return: dcit with the tree
+        :return: dict with the tree
         """
         data = {}
 
@@ -2556,7 +2556,7 @@ class Gitlab(object):
         :param search: Optional search query
         :param page: Which page to return (default is 1)
         :param per_page: Number of items to return per page (default is 20)
-        :return: returs a list of namespaces, false if there is an error
+        :return: returns a list of namespaces, false if there is an error
         """
         data = {'page': page, 'per_page': per_page}
 
