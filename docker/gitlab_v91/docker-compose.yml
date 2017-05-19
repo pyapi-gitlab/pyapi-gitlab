@@ -58,7 +58,7 @@ services:
     - GITLAB_SECRETS_SECRET_KEY_BASE=long-and-random-alphanumeric-string
     - GITLAB_SECRETS_OTP_KEY_BASE=long-and-random-alphanumeric-string
 
-    - GITLAB_ROOT_PASSWORD=5iveL!fe
+    - GITLAB_ROOT_PASSWORD=1WmA1a3ONs9F
     - GITLAB_ROOT_EMAIL=
 
     - GITLAB_NOTIFY_ON_BROKEN_BUILDS=true
