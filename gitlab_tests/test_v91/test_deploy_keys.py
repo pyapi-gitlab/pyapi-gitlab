@@ -6,10 +6,6 @@ from response_data.deploy_keys import *
 
 
 class TestGetAllDeployKeys(BaseTest):
-    def setUp(self):
-        super(TestGetAllDeployKeys, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
-
     @responses.activate
     def test_get_all_deploy_keys(self):
         responses.add(
@@ -43,11 +39,8 @@ class TestGetAllDeployKeys(BaseTest):
 
         self.assertRaises(HttpError, self.gitlab.get_all_deploy_keys)
 
-class TestEnableDeployKeys(BaseTest):
-    def setUp(self):
-        super(TestEnableDeployKeys, self).setUp()
-        self.gitlab.login(user=self.user, password=self.password)
 
+class TestEnableDeployKeys(BaseTest):
     @responses.activate
     def test_enable_deploy_key(self):
         responses.add(
