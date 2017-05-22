@@ -88,7 +88,7 @@ class Gitlab(object):
         >>> password = 'MyTestPassword1'
         >>> email = 'example@example.com'
         >>> data = {'name': 'test', 'username': 'test1', 'password': password, 'email': email}
-        >>> gitlab.post('/users/5')
+        >>> gitlab.post('/users/5', **data)
 
         :param uri: String with the URI for the endpoint to POST to
         :param default_response: Return value if JSONDecodeError
@@ -189,19 +189,13 @@ class Gitlab(object):
         else:
             raise ValueError('Neither username nor email provided to login')
 
-        request = requests.post(
-            '{0}/api/v3/session'.format(self.host),
-            data=data, verify=self.verify_ssl, auth=self.auth,
-            timeout=self.timeout, headers={'connection': 'close'})
+        self.headers = {'connection': 'close'}
+        response = self.post('/session', **data)
 
-        if request.status_code == 201:
-            self.token = request.json()['private_token']
-            self.headers = {'PRIVATE-TOKEN': self.token,
-                            'connection': 'close'}
-            return True
-        else:
-            msg = request.json()['message']
-            raise exceptions.HttpError(msg)
+        self.token = response['private_token']
+        self.headers = {'PRIVATE-TOKEN': self.token,
+                        'connection': 'close'}
+        return response
 
     def setsudo(self, user=None):
         """
