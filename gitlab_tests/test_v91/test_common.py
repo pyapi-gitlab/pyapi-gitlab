@@ -6,6 +6,7 @@ from gitlab import Gitlab
 from gitlab.exceptions import HttpError
 from gitlab_tests.base import BaseTest
 from response_data.users import *
+from response_data.common import *
 
 
 class TestSuccessOrRaise(BaseTest):
@@ -31,14 +32,38 @@ class TestSuccessOrRaise(BaseTest):
 
 
 class TestLogin(BaseTest):
+    @responses.activate
     def test_login(self):
-        self.assertTrue(self.gitlab.login(user=self.user, password=self.password))
+        responses.add(
+            responses.POST,
+            self.gitlab.api_url + '/session',
+            json=login,
+            status=201,
+            content_type='application/json')
 
+        self.assertEqual(
+            login, self.gitlab.login(user=self.user, password=self.password))
+
+    @responses.activate
     def test_login_email(self):
-        self.assertRaises(
-            HttpError, self.gitlab.login, email='test@test.com', password='test')
+        responses.add(
+            responses.POST,
+            self.gitlab.api_url + '/session',
+            json=login,
+            status=201,
+            content_type='application/json')
 
+        self.assertEqual(
+            login, self.gitlab.login(email='admin@example.com', password='test'))
+
+    @responses.activate
     def test_login_with_no_values(self):
+        responses.add(
+            responses.POST,
+            self.gitlab.api_url + '/session',
+            body=get_users,
+            status=404,
+            content_type='application/json')
         self.assertRaises(ValueError, self.gitlab.login)
 
 
