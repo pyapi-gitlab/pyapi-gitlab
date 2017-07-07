@@ -137,19 +137,22 @@ class Gitlab(object):
             return quote_plus(string)
         return string
 
-    @staticmethod
-    def success_or_raise(response, default_response=None):
+    def success_or_raise(self, response, default_response=None):
         """
         Check if request was successful or raises an HttpError
 
         :param response: Response Object to check
         :param default_response: Return value if JSONDecodeError
-        :return: Dictionary containing response data
+        :returns dict: Dictionary containing response data
+        :returns bool: :obj:`False` on failure when exceptions are suppressed
         :raises requests.exceptions.HTTPError: If invalid response returned
         """
         response_json = default_response or {}
 
-        response.raise_for_status()
+        if self.suppress_http_error and not response.ok:
+            response_json = False
+        else:
+            response.raise_for_status()
 
         try:
             response_json = response.json()
