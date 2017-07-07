@@ -77,7 +77,7 @@ class Gitlab(object):
                                 verify=self.verify_ssl, auth=self.auth,
                                 timeout=self.timeout)
 
-        return self.success_or_raise(response, [200], default_response=default_response)
+        return self.success_or_raise(response, default_response=default_response)
 
     def post(self, uri, default_response=None, **kwargs):
         """
@@ -105,7 +105,7 @@ class Gitlab(object):
             url, headers=self.headers, data=kwargs,
             verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
 
-        return self.success_or_raise(response, [201], default_response=default_response)
+        return self.success_or_raise(response, default_response=default_response)
 
     def delete(self, uri, default_response=None):
         """
@@ -128,8 +128,7 @@ class Gitlab(object):
             url, headers=self.headers, verify=self.verify_ssl,
             auth=self.auth, timeout=self.timeout)
 
-        return self.success_or_raise(
-            response, [204, 200], default_response=default_response)
+        return self.success_or_raise(response, default_response=default_response)
 
     @staticmethod
     def _format_string(string):
@@ -144,12 +143,11 @@ class Gitlab(object):
         return string
 
     @staticmethod
-    def success_or_raise(response, status_codes, default_response=None):
+    def success_or_raise(response, default_response=None):
         """
         Check if request was successful or raises an HttpError
 
         :param response: Response Object to check
-        :param status_codes: List of Ints, Valid status codes to check for
         :param default_response: Return value if JSONDecodeError
         :return: Dictionary containing response data
         :raises requests.exceptions.HTTPError: If invalid response returned
