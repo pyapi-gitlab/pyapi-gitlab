@@ -147,12 +147,12 @@ class Gitlab(object):
         :returns bool: :obj:`False` on failure when exceptions are suppressed
         :raises requests.exceptions.HTTPError: If invalid response returned
         """
+        if self.suppress_http_error and not response.ok:
+            return False
+
         response_json = default_response
         if response_json is None:
             response_json = {}
-
-        if self.suppress_http_error and not response.ok:
-            return False
 
         response.raise_for_status()
 
