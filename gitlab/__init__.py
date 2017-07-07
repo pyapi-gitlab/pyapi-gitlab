@@ -296,10 +296,11 @@ class Gitlab(object):
         :param user_id: The ID of the user
         :return: True if it deleted, False if it couldn't
         """
-        try:
-            self.delete_user(user_id)
+        deleted = self.delete_user(user_id)
+
+        if deleted:
             return True
-        except exceptions.HttpError:
+        else:
             return False
 
     def currentuser(self):
