@@ -152,24 +152,18 @@ class Gitlab(object):
         :param status_codes: List of Ints, Valid status codes to check for
         :param default_response: Return value if JSONDecodeError
         :return: Dictionary containing response data
-        :raise: HttpError: If invalid response returned
+        :raises requests.exceptions.HTTPError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
+        response_json = default_response or {}
 
-        if response.status_code in status_codes:
-            try:
-                return response.json()
-            except JSONDecodeError:
-                return default_response
+        response.raise_for_status()
 
-        raise exceptions.HttpError(
-            ('Something went wrong, '
-             'status code: {status_code}, '
-             'text response: {json}').format(
-                 status_code=response.status_code,
-                 json=response.text)
-            )
+        try:
+            response_json = response.json()
+        except JSONDecodeError:
+            pass
+
+        return response_json
 
     def login(self, email=None, password=None, user=None):
         """
