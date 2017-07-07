@@ -228,10 +228,7 @@ class Gitlab(object):
         :param per_page: Number of items to list per page (default: 20, max: 100)
         :return: returns a dictionary of the users, false if there is an error
         """
-        try:
-            return self.get_users(search=search, page=page, per_page=per_page, **kwargs)
-        except exceptions.HttpError:
-            return False
+        return self.get_users(search=search, page=page, per_page=per_page, **kwargs)
 
     def getuser(self, user_id):
         """
