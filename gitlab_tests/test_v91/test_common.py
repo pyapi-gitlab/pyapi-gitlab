@@ -1,12 +1,13 @@
 from unittest import mock
 
+import requests
 import responses
+from requests.exceptions import HTTPError
 
 from gitlab import Gitlab
-from gitlab.exceptions import HttpError
 from gitlab_tests.base import BaseTest
-from response_data.users import *
 from response_data.common import *
+from response_data.users import *
 
 
 class TestSuccessOrRaise(BaseTest):
@@ -21,14 +22,13 @@ class TestSuccessOrRaise(BaseTest):
         self.gitlab.success_or_raise(response, [200])
 
     def test_success_or_raise_with_error(self):
-        response = mock.MagicMock()
-        response_config = {
-            'status_code': 404,
-            'text': post_users_error
-        }
-        response.configure_mock(**response_config)
+        response = requests.models.Response()
+        response.status_code = 400
+        response._content = post_users_error
 
-        self.assertRaises(HttpError, self.gitlab.success_or_raise, response, [200])
+        self.gitlab.suppress_http_error = False
+        self.assertRaises(HTTPError, self.gitlab.success_or_raise, response)
+        self.gitlab.suppress_http_error = True
 
 
 class TestLogin(BaseTest):
@@ -89,7 +89,9 @@ class TestGet(BaseTest):
             status=404,
             content_type='application/json')
 
-        self.assertRaises(HttpError, self.gitlab.get, '/users')
+        self.gitlab.suppress_http_error = False
+        self.assertRaises(HTTPError, self.gitlab.get, '/users')
+        self.gitlab.suppress_http_error = True
 
 
 class TestPost(BaseTest):
@@ -126,7 +128,9 @@ class TestPost(BaseTest):
             'email': 'example@example.com'
         }
 
-        self.assertRaises(HttpError, self.gitlab.post, '/users', **data)
+        self.gitlab.suppress_http_error = False
+        self.assertRaises(HTTPError, self.gitlab.post, '/users', **data)
+        self.gitlab.suppress_http_error = True
 
 
 class TestDelete(BaseTest):
@@ -151,7 +155,9 @@ class TestDelete(BaseTest):
             status=409,
             content_type='application/json')
 
-        self.assertRaises(HttpError, self.gitlab.post, '/users')
+        self.gitlab.suppress_http_error = False
+        self.assertRaises(HTTPError, self.gitlab.post, '/users')
+        self.gitlab.suppress_http_error = True
 
 
 class TestFormatString(BaseTest):

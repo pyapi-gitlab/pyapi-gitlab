@@ -17,13 +17,17 @@ class Gitlab(object):
     """
     Gitlab class
     """
-    def __init__(self, host, token="", oauth_token="", verify_ssl=True, auth=None, timeout=None):
+    def __init__(self, host, token="", oauth_token="", verify_ssl=True, auth=None, timeout=None, suppress_http_error=True):
         """
         On init we setup the token used for all the api calls and all the urls
 
         :param host: host of gitlab
         :param token: token
+        :param suppress_http_error: Use :obj:`False` to unsuppress
+            :class:`requests.exceptions.HTTPError` exceptions on failure
         """
+        self.suppress_http_error = suppress_http_error
+
         if token is not '':
             self.token = token
             self.headers = {'PRIVATE-TOKEN': self.token}
@@ -69,15 +73,12 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
-
         url = self.api_url + uri
         response = requests.get(url, params=kwargs, headers=self.headers,
                                 verify=self.verify_ssl, auth=self.auth,
                                 timeout=self.timeout)
 
-        return self.success_or_raise(response, [200], default_response=default_response)
+        return self.success_or_raise(response, default_response=default_response)
 
     def post(self, uri, default_response=None, **kwargs):
         """
@@ -96,16 +97,13 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
-
         url = self.api_url + uri
 
         response = requests.post(
             url, headers=self.headers, data=kwargs,
             verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
 
-        return self.success_or_raise(response, [201], default_response=default_response)
+        return self.success_or_raise(response, default_response=default_response)
 
     def delete(self, uri, default_response=None):
         """
@@ -120,16 +118,12 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
-
         url = self.api_url + uri
         response = requests.delete(
             url, headers=self.headers, verify=self.verify_ssl,
             auth=self.auth, timeout=self.timeout)
 
-        return self.success_or_raise(
-            response, [204, 200], default_response=default_response)
+        return self.success_or_raise(response, default_response=default_response)
 
     @staticmethod
     def _format_string(string):
@@ -143,33 +137,31 @@ class Gitlab(object):
             return quote_plus(string)
         return string
 
-    @staticmethod
-    def success_or_raise(response, status_codes, default_response=None):
+    def success_or_raise(self, response, default_response=None):
         """
         Check if request was successful or raises an HttpError
 
         :param response: Response Object to check
-        :param status_codes: List of Ints, Valid status codes to check for
         :param default_response: Return value if JSONDecodeError
-        :return: Dictionary containing response data
-        :raise: HttpError: If invalid response returned
+        :returns dict: Dictionary containing response data
+        :returns bool: :obj:`False` on failure when exceptions are suppressed
+        :raises requests.exceptions.HTTPError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
+        if self.suppress_http_error and not response.ok:
+            return False
 
-        if response.status_code in status_codes:
-            try:
-                return response.json()
-            except JSONDecodeError:
-                return default_response
+        response_json = default_response
+        if response_json is None:
+            response_json = {}
 
-        raise exceptions.HttpError(
-            ('Something went wrong, '
-             'status code: {status_code}, '
-             'text response: {json}').format(
-                 status_code=response.status_code,
-                 json=response.text)
-            )
+        response.raise_for_status()
+
+        try:
+            response_json = response.json()
+        except JSONDecodeError:
+            pass
+
+        return response_json
 
     def login(self, email=None, password=None, user=None):
         """
@@ -238,10 +230,7 @@ class Gitlab(object):
         :param per_page: Number of items to list per page (default: 20, max: 100)
         :return: returns a dictionary of the users, false if there is an error
         """
-        try:
-            return self.get_users(search=search, page=page, per_page=per_page, **kwargs)
-        except exceptions.HttpError:
-            return False
+        return self.get_users(search=search, page=page, per_page=per_page, **kwargs)
 
     def getuser(self, user_id):
         """
@@ -309,11 +298,12 @@ class Gitlab(object):
         :param user_id: The ID of the user
         :return: True if it deleted, False if it couldn't
         """
-        try:
-            self.delete_user(user_id)
-            return True
-        except exceptions.HttpError:
+        deleted = self.delete_user(user_id)
+
+        if deleted is False:
             return False
+        else:
+            return True
 
     def currentuser(self):
         """
@@ -526,10 +516,7 @@ class Gitlab(object):
         :param project_id: id or namespace/project_name of the project
         :return: False if not found, a dictionary if found
         """
-        try:
-            return self.get_project(project_id)
-        except exceptions.HttpError:
-            return False
+        return self.get_project(project_id)
 
     def getprojectevents(self, project_id, page=1, per_page=20):
         """
@@ -663,10 +650,7 @@ class Gitlab(object):
         :param project_id: project id
         :return: always true
         """
-        try:
-            self.delete_project(project_id)
-        except exceptions.HttpError:
-            pass
+        self.delete_project(project_id)
         return True
 
     def createprojectuser(self, user_id, name, **kwargs):

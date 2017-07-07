@@ -1,6 +1,6 @@
 import responses
+from requests.exceptions import HTTPError
 
-from gitlab.exceptions import HttpError
 from gitlab_tests.base import BaseTest
 from response_data.tags import *
 
@@ -26,4 +26,6 @@ class TestDeleteRepositoryTag(BaseTest):
             status=404,
             content_type='application/json')
 
-        self.assertRaises(HttpError, self.gitlab.delete_repository_tag, 5, 'test')
+        self.gitlab.suppress_http_error = False
+        self.assertRaises(HTTPError, self.gitlab.delete_repository_tag, 5, 'test')
+        self.gitlab.suppress_http_error = True
