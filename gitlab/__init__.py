@@ -150,9 +150,9 @@ class Gitlab(object):
         response_json = default_response or {}
 
         if self.suppress_http_error and not response.ok:
-            response_json = False
-        else:
-            response.raise_for_status()
+            return False
+
+        response.raise_for_status()
 
         try:
             response_json = response.json()
