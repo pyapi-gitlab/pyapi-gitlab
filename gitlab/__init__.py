@@ -514,10 +514,7 @@ class Gitlab(object):
         :param project_id: id or namespace/project_name of the project
         :return: False if not found, a dictionary if found
         """
-        try:
-            return self.get_project(project_id)
-        except exceptions.HttpError:
-            return False
+        return self.get_project(project_id)
 
     def getprojectevents(self, project_id, page=1, per_page=20):
         """
