@@ -69,9 +69,6 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
-
         url = self.api_url + uri
         response = requests.get(url, params=kwargs, headers=self.headers,
                                 verify=self.verify_ssl, auth=self.auth,
@@ -96,9 +93,6 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
-
         url = self.api_url + uri
 
         response = requests.post(
@@ -120,9 +114,6 @@ class Gitlab(object):
         :return: Dictionary containing response data
         :raise: HttpError: If invalid response returned
         """
-        if default_response is None:
-            default_response = {}
-
         url = self.api_url + uri
         response = requests.delete(
             url, headers=self.headers, verify=self.verify_ssl,
