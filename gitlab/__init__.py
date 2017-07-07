@@ -17,13 +17,17 @@ class Gitlab(object):
     """
     Gitlab class
     """
-    def __init__(self, host, token="", oauth_token="", verify_ssl=True, auth=None, timeout=None):
+    def __init__(self, host, token="", oauth_token="", verify_ssl=True, auth=None, timeout=None, suppress_http_error=True):
         """
         On init we setup the token used for all the api calls and all the urls
 
         :param host: host of gitlab
         :param token: token
+        :param suppress_http_error: Use :obj:`False` to unsuppress
+            :class:`requests.exceptions.HTTPError` exceptions on failure
         """
+        self.suppress_http_error = suppress_http_error
+
         if token is not '':
             self.token = token
             self.headers = {'PRIVATE-TOKEN': self.token}
