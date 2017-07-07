@@ -648,10 +648,7 @@ class Gitlab(object):
         :param project_id: project id
         :return: always true
         """
-        try:
-            self.delete_project(project_id)
-        except exceptions.HttpError:
-            pass
+        self.delete_project(project_id)
         return True
 
     def createprojectuser(self, user_id, name, **kwargs):
