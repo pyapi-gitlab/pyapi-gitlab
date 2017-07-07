@@ -298,10 +298,10 @@ class Gitlab(object):
         """
         deleted = self.delete_user(user_id)
 
-        if deleted:
-            return True
-        else:
+        if deleted is False:
             return False
+        else:
+            return True
 
     def currentuser(self):
         """
