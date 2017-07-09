@@ -4,8 +4,6 @@ pyapi-gitlab, a gitlab python wrapper for the gitlab API
 by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 Check the license on the LICENSE file
 """
-from json import JSONDecodeError
-
 import requests
 
 from . import exceptions
@@ -158,7 +156,7 @@ class Gitlab(object):
 
         try:
             response_json = response.json()
-        except JSONDecodeError:
+        except ValueError:
             pass
 
         return response_json
