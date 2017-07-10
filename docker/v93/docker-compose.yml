@@ -2,7 +2,7 @@ version: "2"
 
 services:
   sut:
-    build: .
+    build: ../../.
     links:
       - gitlab
     depends_on:
@@ -14,3 +14,5 @@ services:
       - "80"
     environment:
       GITLAB_OMNIBUS_CONFIG: gitlab_rails['initial_root_password'] = "5iveL!fe"
+    logging:
+      driver: none

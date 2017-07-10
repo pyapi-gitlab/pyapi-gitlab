@@ -6,10 +6,11 @@ from gitlab import Gitlab
 
 
 def log_to_term(var_name, response):
-    try:
-        print('\r\r{}: {}\r\r'.format(var_name, response.keys()))
-    except:
-        print('\r\r{}: {}\r\r'.format(var_name, response))
+    print('\r\r', var_name, ':', response, '\r\r')
+    # try:
+    #     print('\r\n\r\n{}: {}\r\n\r\n'.format(var_name, response.keys()))
+    # except:
+    #     print('\r\r{}: {}\r\r'.format(var_name, response))
 
 
 class BaseTest(TestCase):
