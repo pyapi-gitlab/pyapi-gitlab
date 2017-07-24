@@ -1,11 +1,13 @@
 env:
   - DOCKER_COMPOSE_VERSION=1.14.0
 
+language: python
+
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
-  - docker-compose build
+  - docker-compose -f docker/v93/docker-compose.yml build
   - docker-compose -f docker/v93/docker-compose.yml up --abort-on-container-exit
