@@ -1,25 +1,10 @@
 env:
-  - gitlab_user=root gitlab_password=5iveL!fe gitlab_host=http://localhost:8080
-services:
-  - redis-server
-language: python
-python:
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-rvm:
-  - 2.1.0
-# install local gitlab
+  - DOCKER_COMPOSE_VERSION=1.14.0
+
 before_install:
-  - gem install bundler --no-ri --no-rdoc
-  - scripts/prepare_test_env.sh
-  - scripts/install_gitlab.sh
-# command to install dependencies
-install:
-  - pip install -r test-requirements.txt
-  - pip install coveralls
-# command to run tests
-script: coverage run --source=gitlab setup.py test
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 after_success:
   coveralls
