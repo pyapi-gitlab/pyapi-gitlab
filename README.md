@@ -1,6 +1,33 @@
 # Looking for contributors
 
-If you are interested in contributing to this wrapper we ask that all pull requests have an open issue that and they be referenced. We also ask that you submit unit tests for your changes to make sure there are no regressions.
+If you are interested in contributing to this wrapper we ask that all pull requests have an open issue that and they
+be referenced. We also ask that you submit unit tests for your changes to make sure there are no regressions.
+
+## Pull Requests
+
+We are currently working on getting pyapi-gitlab to 100% coverage in both unittests and integration tests. Well the
+integration testing is not fully flushed out yet the unittests are so we ask that all new pull requests have unittests
+with them.
+
+## Setting up for development
+
+If you wish to setup your system for development you will need to install the test requirements and we ask that you
+consider docker for integration testing.
+
+To install the test requirements you will need to run the following command `pip install -Ur test-requirements.txt`.
+This will install both the `requirements.txt` and the `test-requirements.txt`.
+
+To run the test simply run `./cov` from the project root directory.
+
+To review the cover open the `index.html` file in the `coverage_html_report`.
+
+To run the integration test run the commands below. This will build the docker containers and then start them. The
+containers will shutdown after the tests finish.
+
+```
+docker-compose -f docker/v93/docker-compose.yml build
+docker-compose -f docker/v93/docker-compose.yml up --abort-on-container-exit
+```
 
 # pyapi-gitlab
 
@@ -15,7 +42,6 @@ pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabh
 [![Docs](https://readthedocs.org/projects/pyapi-gitlab/badge/?version=latest)](http://pyapi-gitlab.readthedocs.org/)
 
 
-
 ## Requirements
 
 - requests
@@ -23,7 +49,8 @@ pyapi-gitlab is a python wrapper for the [Gitlab API](https://github.com/gitlabh
 
 ## Naming convention
 
-pyapi-gitlab has its own versioning in which the 2 first numbers indicates the Gitlab version that its supported for that library. a 7.5 version means that its compatible with the Gitlab 7.5 and lower API versions.
+pyapi-gitlab has its own versioning in which the 2 first numbers indicates the Gitlab version that its supported for
+that library. a 7.5 version means that its compatible with the Gitlab 7.5 and lower API versions.
 
 ## Installation
 
@@ -31,7 +58,7 @@ pyapi-gitlab has its own versioning in which the 2 first numbers indicates the G
 pip install pyapi-gitlab
 ```
 
-pyapi-gitlab supports python version 2.6, 2.7, 3.3 and 3.4
+pyapi-gitlab supports python version 2.7, 3.3, 3.4, 3.5, 3.5-dev, 3.6, 3.6-dev, 3.7-dev, and the nightly build
 
 
 # Versions tested
