@@ -14,7 +14,7 @@ python:
 
 matrix:
   include:
-  - perl: "nightly"
+  - python: "nightly"
     env: INTEGRATION_TEST=1
 
 before_install:
@@ -23,4 +23,4 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
-script: ./travis_run_script.sh
+script: bash travis_run_script.sh
