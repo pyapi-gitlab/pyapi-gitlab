@@ -1,4 +1,4 @@
-from unittest import mock
+from mock import Mock
 
 import responses
 
@@ -11,7 +11,7 @@ from response_data.common import *
 
 class TestSuccessOrRaise(BaseTest):
     def test_success_or_raise_without_error(self):
-        response = mock.MagicMock()
+        response = Mock()
         response_config = {
             'status_code': 200,
             'json.return_value': post_users_error
@@ -21,7 +21,7 @@ class TestSuccessOrRaise(BaseTest):
         self.gitlab.success_or_raise(response, [200])
 
     def test_success_or_raise_with_error(self):
-        response = mock.MagicMock()
+        response = Mock()
         response_config = {
             'status_code': 404,
             'text': post_users_error

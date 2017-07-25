@@ -160,7 +160,7 @@ class Gitlab(object):
         if response.status_code in status_codes:
             try:
                 return response.json()
-            except json.JSONDecodeError:
+            except ValueError:
                 return default_response
 
         raise exceptions.HttpError(
@@ -183,7 +183,7 @@ class Gitlab(object):
         :raise: ValueError
         """
         if user is not None:
-            data = {'login': user, 'password': password}
+            data = {'login': user, 'pasword': password}
         elif email is not None:
             data = {'email': email, 'password': password}
         else:

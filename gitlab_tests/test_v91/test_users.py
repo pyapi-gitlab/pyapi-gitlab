@@ -1,9 +1,5 @@
-import os
-from unittest import TestCase
-
 import responses
 
-from gitlab import Gitlab
 from gitlab.exceptions import HttpError
 from gitlab_tests.base import BaseTest
 from response_data.users import *
