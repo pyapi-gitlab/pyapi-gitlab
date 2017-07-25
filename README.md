@@ -12,7 +12,7 @@ with them.
 ## Setting up for development
 
 If you wish to setup your system for development you will need to install the test requirements and we ask that you
-consider docker for integration testing.
+consider docker and docker-compose for integration testing.
 
 To install the test requirements you will need to run the following command `pip install -Ur test-requirements.txt`.
 This will install both the `requirements.txt` and the `test-requirements.txt`.
