@@ -173,7 +173,7 @@ class Gitlab(object):
         :raise: ValueError
         """
         if user is not None:
-            data = {'login': user, 'pasword': password}
+            data = {'login': user, 'password': password}
         elif email is not None:
             data = {'email': email, 'password': password}
         else:
