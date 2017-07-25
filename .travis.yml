@@ -11,5 +11,6 @@ before_install:
 
   - docker-compose -f docker/v93/docker-compose.yml build
   - docker-compose -f docker/v93/docker-compose.yml up --abort-on-container-exit
+  - pip install -Ur test-requirements.txt
 
 script: ./cov
