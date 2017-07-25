@@ -1,6 +1,3 @@
-env:
-  - DOCKER_COMPOSE_VERSION=1.14.0
-
 language: python
 
 python:
@@ -8,18 +5,13 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.5-dev"
   - "3.6"
+  - "3.6-dev"
+  - "3.7-dev"
   - "nightly"
 
-matrix:
-  include:
-  - python: "integration"
-    env: INTEGRATION_TEST=1
-
-before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+install:
+  - pip install -Ur test-requirements.txt
 
 script: bash travis_run_script.sh
