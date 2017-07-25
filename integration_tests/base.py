@@ -13,7 +13,7 @@ class BaseTest(TestCase):
     def setUp(self):
         self.user = os.environ.get('gitlab_user', 'root')
         self.password = os.environ.get('gitlab_password', '5iveL!fe')
-        self.host = os.environ.get('gitlab_host', 'http://gitlab:20')
+        self.host = os.environ.get('gitlab_host', 'http://gitlab:80')
 
         self.gitlab = Gitlab(host=self.host, verify_ssl=False)
 
