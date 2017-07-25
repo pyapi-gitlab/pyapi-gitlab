@@ -1,4 +1,4 @@
-from unittest import mock
+from mock import Mock
 
 import requests
 import responses
@@ -12,7 +12,7 @@ from response_data.users import *
 
 class TestSuccessOrRaise(BaseTest):
     def test_success_or_raise_without_error(self):
-        response = mock.MagicMock()
+        response = Mock()
         response_config = {
             'status_code': 200,
             'json.return_value': post_users_error

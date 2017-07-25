@@ -1,6 +1,3 @@
-import os
-from unittest import TestCase
-
 import responses
 from requests.exceptions import HTTPError
 
