@@ -4,11 +4,6 @@ pyapi-gitlab, a gitlab python wrapper for the gitlab API
 by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 Check the license on the LICENSE file
 """
-<<<<<<< HEAD
-=======
-import json
-
->>>>>>> 9b127b78ea1175a9153accf981f858c17db94f21
 import requests
 
 from . import exceptions
