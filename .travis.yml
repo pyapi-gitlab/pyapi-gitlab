@@ -14,4 +14,4 @@ python:
 install:
   - pip install -Ur test-requirements.txt
 
-script: bash travis_run_script.sh
+script: bash cov
