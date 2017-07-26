@@ -2615,7 +2615,7 @@ class Gitlab(object):
             return False
 
     @staticmethod
-    def getall(fn, *args, page=None, **kwargs):
+    def getall(fn, page=None, *args, **kwargs):
         """
         Auto-iterate over the paginated results of various methods of the API.
         Pass the GitLabAPI method as the first argument, followed by the
@@ -2625,8 +2625,8 @@ class Gitlab(object):
 
 
         :param fn: Actual method to call
-        :param args: Positional arguments to actual method
         :param page: Optional, page number to start at, defaults to 1
+        :param args: Positional arguments to actual method
         :param kwargs: Keyword arguments to actual method
         :return: Yields each item in the result until exhausted, and then implicit StopIteration; or no elements if error
         """
