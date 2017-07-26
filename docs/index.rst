@@ -142,9 +142,10 @@ API doc
 
 We are working to get back to a 1:1 translation of the Gitlab API.
 
-.. automodule:: gitlab
+Gitlab
+------------------
 
-.. autoclass:: Gitlab
+.. autoclass:: gitlab.Gitlab
     :members:
 
 Indices and tables
