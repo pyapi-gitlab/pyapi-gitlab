@@ -14,4 +14,4 @@ python:
 install:
   - pip install -Ur test-requirements.txt
 
-script: bash cov
+script: bash cov ignore

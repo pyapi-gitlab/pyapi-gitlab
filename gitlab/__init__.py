@@ -4,11 +4,31 @@ pyapi-gitlab, a gitlab python wrapper for the gitlab API
 by Itxaka Serrano Garcia <itxakaserrano@gmail.com>
 Check the license on the LICENSE file
 """
+import warnings
+
 import requests
 
 from . import exceptions
 
 from six.moves.urllib.parse import quote_plus
+
+
+def deprecated(func):
+    """
+    This is a decorator which can be used to mark functions as deprecated. It will result in a warning being emitted
+    when the function is used.
+
+    :param func: The function to run
+    :return: function
+    """
+    def deprecation_warning(*args, **kwargs):
+        warnings.warn('Call to deprecated function {}'.format(func.__name__),
+                      category=DeprecationWarning)
+        return func(*args, **kwargs)
+    deprecation_warning.__name__ = func.__name__
+    deprecation_warning.__doc__ = func.__doc__
+    deprecation_warning.__dict__ = func.__dict__
+    return deprecation_warning
 
 
 class Gitlab(object):
@@ -217,11 +237,12 @@ class Gitlab(object):
 
         return self.get('/users', page=page, per_page=per_page, **kwargs)
 
-    def getusers(self, search=None, page=1, per_page=20, **kwargs):  # TODO: Add deprecated decorator
+    @deprecated
+    def getusers(self, search=None, page=1, per_page=20, **kwargs):
         """
         Returns a list of users from the Gitlab server
 
-        Warning this is being deprecated
+        .. warning: Warning this is being deprecated
 
         :param search: Optional search query
         :param page: Page number (default: 1)
@@ -285,13 +306,16 @@ class Gitlab(object):
         """
         return self.delete('/users/{user}'.format(user=user), default_response={})
 
-    def deleteuser(self, user_id):  # TODO: Add deprecated decorator
+    @deprecated
+    def deleteuser(self, user_id):
         """
         Deletes a user. Available only for administrators.
         This is an idempotent function, calling this function for a non-existent user id
         still returns a status code 200 OK.
         The JSON response differs if the user was actually deleted or not.
         In the former the user is returned and in the latter not.
+
+        .. warning: Warning this is being deprecated
 
         :param user_id: The ID of the user
         :return: True if it deleted, False if it couldn't
@@ -641,11 +665,12 @@ class Gitlab(object):
         else:
             return response
 
-    def deleteproject(self, project_id):  # TODO: Add deprecated decorator
+    @deprecated
+    def deleteproject(self, project_id):
         """
         Delete a project
 
-        Warning this is being deprecated
+        .. warning: Warning this is being deprecated
 
         :param project_id: project id
         :return: always true
@@ -2621,8 +2646,6 @@ class Gitlab(object):
         Pass the GitLabAPI method as the first argument, followed by the
         other parameters as normal. Include `page` to determine first page to poll.
         Remaining kwargs are passed on to the called method, including `per_page`.
-
-
 
         :param fn: Actual method to call
         :param page: Optional, page number to start at, defaults to 1
