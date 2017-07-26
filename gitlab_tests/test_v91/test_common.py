@@ -5,6 +5,7 @@ import responses
 from requests.exceptions import HTTPError
 
 from gitlab import Gitlab
+from gitlab.helper import format_string
 from gitlab_tests.base import BaseTest
 from response_data.common import *
 from response_data.users import *
@@ -162,8 +163,8 @@ class TestDelete(BaseTest):
 
 class TestFormatString(BaseTest):
     def test__format_string(self):
-        self.assertEqual('foo%2Fbar', self.gitlab._format_string('foo/bar'))
-        self.assertEqual(1, self.gitlab._format_string(1))
+        self.assertEqual('foo%2Fbar', format_string('foo/bar'))
+        self.assertEqual(1, format_string(1))
 
 
 class TestInit(BaseTest):
