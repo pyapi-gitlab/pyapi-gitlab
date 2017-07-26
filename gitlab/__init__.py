@@ -448,6 +448,8 @@ class Gitlab(object):
         """
         Returns a dictionary of all the projects
 
+        :param page: Page number
+        :param per_page: Records per page
         :return: list with the repo name, description, last activity,web url, ssh url, owner and if its public
         """
         data = {'page': page, 'per_page': per_page}
@@ -782,6 +784,8 @@ class Gitlab(object):
         """Get all the hooks from a project
 
         :param project_id: project id
+        :param page: Page number
+        :param per_page: Records per page
         :return: the hooks
         """
         data = {'page': page, 'per_page': per_page}
@@ -813,7 +817,7 @@ class Gitlab(object):
     def addprojecthook(self, project_id, url, push=False, issues=False, merge_requests=False, tag_push=False):
         """
         add a hook to a project
-        :param id_: project id
+        :param project_id: project id
         :param url: url of the hook
         :return: True if success
         """
@@ -1118,6 +1122,8 @@ class Gitlab(object):
         """
         Return a global list of issues for your user.
 
+        :param page: Page number
+        :param per_page: Records per page
         :return: list of issues
         """
         data = {'page': page, 'per_page': per_page}
@@ -1136,6 +1142,9 @@ class Gitlab(object):
         Return a list of issues for project id.
 
         :param: project_id: The id for the project.
+        :param page: Page number
+        :param per_page: Records per page
+        :param kwargs: Extra data to send
         :return: list of issues
         """
         kwargs['page'] = page
@@ -1444,6 +1453,8 @@ class Gitlab(object):
         Retrieve group information
 
         :param group_id: Specify a group. Otherwise, all groups are returned
+        :param page: Page Number
+        :param per_page: Records Per Page
         :return: list of groups
         """
         data = {'page': page, 'per_page': per_page}
@@ -1479,6 +1490,8 @@ class Gitlab(object):
         Get all the merge requests for a project.
 
         :param project_id: ID of the project to retrieve merge requests for
+        :param page: Page Number
+        :param per_page: Records per page
         :param state: Passes merge request state to filter them by it
         :return: list with all the merge requests
         """
@@ -2212,10 +2225,10 @@ class Gitlab(object):
         """
         Deletes a LDAP group link (for a specific LDAP provider if given)
 
-        :param id: The ID of a group
+        :param group_id: The ID of a group
         :param cn: The CN of a LDAP group
         :param provider: Name of a LDAP provider
-        :return True if success
+        :return: True if success
         """
         url = '{base}/{gid}/ldap_group_links/{provider}{cn}'.format(
             base=self.groups_url, gid=group_id, cn=cn,
@@ -2228,6 +2241,11 @@ class Gitlab(object):
     def getissuewallnotes(self, project_id, issue_id, page=1, per_page=20):
         """
         Get the notes from the wall of a issue
+
+        :param project_id: Project ID
+        :param issue_id: Issue ID
+        :param page: Page Number
+        :param per_page: Records per page
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -2284,6 +2302,11 @@ class Gitlab(object):
     def getsnippetwallnote(self, project_id, snippet_id, note_id):
         """
         Get one note from the wall of the snippet
+
+        :param project_id: Project ID
+        :param snippet_id: Snippet ID
+        :param note_id: Note ID
+        :return: Json or False
         """
         request = requests.get(
             '{0}/{1}/snippets/{2}/notes/{3}'.format(self.projects_url, project_id, snippet_id, note_id),
@@ -2297,6 +2320,11 @@ class Gitlab(object):
     def createsnippetewallnote(self, project_id, snippet_id, content):
         """
         Create a new note
+
+        :param project_id: Project ID
+        :param snippet_id: Snippet ID
+        :param content: Content
+        :return: Json or False
         """
         data = {'body': content}
 
@@ -2312,6 +2340,12 @@ class Gitlab(object):
     def getmergerequestwallnotes(self, project_id, merge_request_id, page=1, per_page=20):
         """
         Get the notes from the wall of a merge request
+
+        :param project_id: Project ID
+        :param merge_request_id: Merger Request ID
+        :param page: Page number
+        :param per_page: Records per page
+        :return: Json or False
         """
         data = {'page': page, 'per_page': per_page}
 
@@ -2327,6 +2361,11 @@ class Gitlab(object):
     def getmergerequestwallnote(self, project_id, merge_request_id, note_id):
         """
         Get one note from the wall of the merge request
+
+        :param project_id: Project ID
+        :param merge_request_id: Merger Request ID
+        :param note_id: Note ID
+        :return: Json or False
         """
         request = requests.get(
             '{0}/{1}/merge_requests/{2}/notes/{3}'.format(self.projects_url, project_id, merge_request_id, note_id),
@@ -2340,6 +2379,11 @@ class Gitlab(object):
     def createmergerequestewallnote(self, project_id, merge_request_id, content):
         """
         Create a new note
+
+        :param project_id: Project ID
+        :param merge_request_id: Merger Request ID
+        :param content: Content
+        :return: Json or False
         """
         data = {'body': content}
 
@@ -2465,6 +2509,9 @@ class Gitlab(object):
         """
         Delete GitLab CI service settings
 
+        :param project_id: Project ID
+        :param token: Token
+        :param project_url: Project URL
         :return: true if success, false if not
         """
         request = requests.delete(
@@ -2568,21 +2615,23 @@ class Gitlab(object):
             return False
 
     @staticmethod
-    def getall(fn, *args, **kwargs):
+    def getall(fn, *args, page=None, **kwargs):
         """
         Auto-iterate over the paginated results of various methods of the API.
         Pass the GitLabAPI method as the first argument, followed by the
         other parameters as normal. Include `page` to determine first page to poll.
         Remaining kwargs are passed on to the called method, including `per_page`.
 
+
+
         :param fn: Actual method to call
-        :param *args: Positional arguments to actual method
+        :param args: Positional arguments to actual method
         :param page: Optional, page number to start at, defaults to 1
-        :param **kwargs: Keyword arguments to actual method
-        :return: Yields each item in the result until exhausted, and then
-        implicit StopIteration; or no elements if error
+        :param kwargs: Keyword arguments to actual method
+        :return: Yields each item in the result until exhausted, and then implicit StopIteration; or no elements if error
         """
-        page = kwargs.pop('page', 1)
+        if not page:
+            page = 1
 
         while True:
             results = fn(*args, page=page, **kwargs)
