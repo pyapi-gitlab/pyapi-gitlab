@@ -1,7 +1,7 @@
 import responses
 from requests.exceptions import HTTPError
 
-from gitlab_tests.base import BaseTest
+from gitlab_tests.base_test import BaseTest
 from response_data.projects import *
 
 
