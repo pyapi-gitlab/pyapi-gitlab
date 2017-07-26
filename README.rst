@@ -73,7 +73,6 @@ pyapi-gitlab supports python version 2.7, 3.3, 3.4, 3.5, 3.5-dev, 3.6,
 
 Versions tested
 ===============
-
 +------------------+------------------------+
 | Gitlab version   | Status                 |
 +==================+========================+
@@ -81,25 +80,26 @@ Versions tested
 +------------------+------------------------+
 | 7.9.X            | :x:2                   |
 +------------------+------------------------+
-| 7.8.X            | :heavy_check_mark:     |
+| 7.8.X            | :heavy_check_mark:0    |
 +------------------+------------------------+
-| 7.7.X            | :heavy_check_mark:     |
+| 7.7.X            | :heavy_check_mark:0    |
 +------------------+------------------------+
-| 7.6.X            | :heavy_check_mark:     |
+| 7.6.X            | :heavy_check_mark:0    |
 +------------------+------------------------+
-| 7.5.X            | :heavy_check_mark:     |
+| 7.5.X            | :heavy_check_mark:0    |
 +------------------+------------------------+
-| 7.4.X            | :heavy_check_mark:     |
+| 7.4.X            | :heavy_check_mark:0    |
 +------------------+------------------------+
-| 7.3.X            | :heavy_check_mark:     |
+| 7.3.X            | :heavy_check_mark:0    |
 +------------------+------------------------+
-| 7.2.X            | :heavy_check_mark:     |
+| 7.2.X            | :heavy_check_mark:0    |
 +------------------+------------------------+
 | 7.1.X            | :x:3                   |
 +------------------+------------------------+
 | 7.0.X            | :x:4                   |
 +------------------+------------------------+
 
+0. Placeholder to get :heavy_check_mark: working
 1. Currently under development
 2. 3 out of 17 tests failing: Seems that create snippet wall note now
    returns true/false instead of the created snippet. Snippet creating
