@@ -147,6 +147,21 @@ Gitlab
 
 .. autoclass:: gitlab.Gitlab
     :members:
+    :inherited-members:
+
+Session
+------------------
+
+.. autoclass:: gitlab.base.Base
+:members:
+
+Base
+------------------
+
+.. autoclass:: gitlab.base.Base
+    :members:
+
+
 
 Indices and tables
 ==================
