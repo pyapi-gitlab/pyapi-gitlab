@@ -42,7 +42,6 @@ class Gitlab(Session, Users):
         else:
             self.headers['SUDO'] = user
 
-
     def getsshkeys(self):
         """
         Gets all the ssh keys for the current user

@@ -3,9 +3,8 @@ import requests
 
 from. base import Base
 
+
 class Users(Base):
-
-
     def get_users(self, search=None, page=1, per_page=20, **kwargs):
         """
         Returns a list of users from the Gitlab server
