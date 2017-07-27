@@ -12,6 +12,9 @@ python:
   - "nightly"
 
 install:
+  - pip install codecov
   - pip install -Ur test-requirements.txt
 
 script: bash cov ignore
+after_success:
+  - codecov
