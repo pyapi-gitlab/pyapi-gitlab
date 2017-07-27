@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import requests
 
-from. base import Base
+from .base import Base
+from .helper import deprecated
 
 
 class Users(Base):
