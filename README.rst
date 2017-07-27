@@ -208,8 +208,8 @@ has helped making development much faster!
 
 .. |Build Status| image:: https://travis-ci.org/pyapi-gitlab/pyapi-gitlab.svg?branch=develop
    :target: https://travis-ci.org/pyapi-gitlab/pyapi-gitlab
-.. |Coverage Status| image:: https://coveralls.io/repos/github/pyapi-gitlab/pyapi-gitlab/badge.svg?branch=develop
-   :target: https://coveralls.io/github/pyapi-gitlab/pyapi-gitlab?branch=develop
+.. |Coverage Status| image:: https://codecov.io/gh/pyapi-gitlab/pyapi-gitlab/branch/develop/graph/badge.svg
+  :target: https://codecov.io/gh/pyapi-gitlab/pyapi-gitlab
 .. |PyPI| image:: https://img.shields.io/pypi/v/pyapi-gitlab.svg
    :target: https://pypi.python.org/pypi/pyapi-gitlab
 .. |PyPi downloads| image:: https://img.shields.io/pypi/dm/pyapi-gitlab.svg
