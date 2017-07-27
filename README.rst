@@ -206,7 +206,7 @@ has helped making development much faster!
 
 |Pycharm|
 
-.. |Build Status| image:: https://travis-ci.org/pyapi-gitlab/pyapi-gitlab.svg?branch=master
+.. |Build Status| image:: https://travis-ci.org/pyapi-gitlab/pyapi-gitlab.svg?branch=develop
    :target: https://travis-ci.org/pyapi-gitlab/pyapi-gitlab
 .. |Coverage Status| image:: https://coveralls.io/repos/github/pyapi-gitlab/pyapi-gitlab/badge.svg?branch=develop
    :target: https://coveralls.io/github/pyapi-gitlab/pyapi-gitlab?branch=develop
