@@ -206,10 +206,10 @@ has helped making development much faster!
 
 |Pycharm|
 
-.. |Build Status| image:: https://travis-ci.org/Itxaka/pyapi-gitlab.svg?branch=develop
-   :target: https://travis-ci.org/Itxaka/pyapi-gitlab
-.. |Coverage Status| image:: https://coveralls.io/repos/Itxaka/pyapi-gitlab/badge.png?branch=develop
-   :target: https://coveralls.io/r/Itxaka/pyapi-gitlab?branch=develop
+.. |Build Status| image:: https://travis-ci.org/pyapi-gitlab/pyapi-gitlab.svg?branch=master
+   :target: https://travis-ci.org/pyapi-gitlab/pyapi-gitlab
+.. |Coverage Status| image:: https://coveralls.io/repos/github/pyapi-gitlab/pyapi-gitlab/badge.svg?branch=develop
+   :target: https://coveralls.io/github/pyapi-gitlab/pyapi-gitlab?branch=develop
 .. |PyPI| image:: https://img.shields.io/pypi/v/pyapi-gitlab.svg
    :target: https://pypi.python.org/pypi/pyapi-gitlab
 .. |PyPi downloads| image:: https://img.shields.io/pypi/dm/pyapi-gitlab.svg
