@@ -57,22 +57,6 @@ class Gitlab(Session, Users, Keys):
         else:
             return False
 
-    def getsshkey(self, key_id):
-        """
-        Get a single ssh key identified by key_id
-
-        :param key_id: the id of the key
-        :return: the key itself
-        """
-        request = requests.get(
-            '{0}/{1}'.format(self.keys_url, key_id),
-            headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
     def addsshkey(self, title, key):
         """
         Add a new ssh key for the current user
