@@ -149,18 +149,23 @@ Gitlab
     :members:
     :inherited-members:
 
-Session
-------------------
-
-.. autoclass:: gitlab.base.Base
-:members:
-
 Base
 ------------------
 
 .. autoclass:: gitlab.base.Base
     :members:
 
+Session
+------------------
+
+.. autoclass:: gitlab.session.Session
+    :members:
+
+Keys
+------------------
+
+.. autoclass:: gitlab.keys.Keys
+    :members:
 
 
 Indices and tables

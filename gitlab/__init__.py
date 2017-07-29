@@ -9,10 +9,11 @@ import requests
 from . import exceptions
 from .session import Session
 from .users import Users
+from .keys import Keys
 from .helper import deprecated, format_string
 
 
-class Gitlab(Session, Users):
+class Gitlab(Session, Users, Keys):
     """
     Gitlab class
 
@@ -41,130 +42,6 @@ class Gitlab(Session, Users):
                 pass
         else:
             self.headers['SUDO'] = user
-
-    def getsshkeys(self):
-        """
-        Gets all the ssh keys for the current user
-
-        :return: a dictionary with the lists
-        """
-        request = requests.get(
-            self.keys_url, headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
-    def getsshkey(self, key_id):
-        """
-        Get a single ssh key identified by key_id
-
-        :param key_id: the id of the key
-        :return: the key itself
-        """
-        request = requests.get(
-            '{0}/{1}'.format(self.keys_url, key_id),
-            headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
-    def addsshkey(self, title, key):
-        """
-        Add a new ssh key for the current user
-
-        :param title: title of the new key
-        :param key: the key itself
-        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
-        """
-        data = {'title': title, 'key': key}
-
-        request = requests.post(
-            self.keys_url, headers=self.headers, data=data,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 201:
-            return True
-        else:
-            return False
-
-    def addsshkeyuser(self, user_id, title, key):
-        """
-        Add a new ssh key for the user identified by id
-
-        :param user_id: id of the user to add the key to
-        :param title: title of the new key
-        :param key: the key itself
-        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
-        """
-        data = {'title': title, 'key': key}
-
-        request = requests.post(
-            '{0}/{1}/keys'.format(self.users_url, user_id), headers=self.headers,
-            data=data, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 201:
-            return True
-        else:
-            return False
-
-    def deletesshkey(self, key_id):
-        """
-        Deletes an sshkey for the current user identified by id
-
-        :param key_id: the id of the key
-        :return: False if it didn't delete it, True if it was deleted
-        """
-        request = requests.delete(
-            '{0}/{1}'.format(self.keys_url, key_id), headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.content == b'null':
-            return False
-        else:
-            return True
-
-    def getprojects(self, page=1, per_page=20):
-        """
-        Returns a dictionary of all the projects
-
-        :param page: Page number
-        :param per_page: Records per page
-        :return: list with the repo name, description, last activity,web url, ssh url, owner and if its public
-        """
-        data = {'page': page, 'per_page': per_page}
-
-        request = requests.get(
-            self.projects_url, params=data, headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
-    def getprojectsall(self, page=1, per_page=20):
-        """
-        Returns a dictionary of all the projects for admins only
-
-        :param page: Page number
-        :param per_page: Records per page
-        :return: list with the repo name, description, last activity,web url, ssh url, owner and if its public
-        """
-        data = {'page': page, 'per_page': per_page}
-
-        request = requests.get(
-            '{0}/all'.format(self.projects_url), params=data, headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
     def getprojectsowned(self, page=1, per_page=20):
         """
         Returns a dictionary of all the projects for the current user
