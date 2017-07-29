@@ -22,6 +22,11 @@ class TestKeys(BaseTest):
             get_keys
         )
 
+        self.assertEqual(
+            self.gitlab.getsshkey(1),
+            get_keys
+        )
+
     @responses.activate
     def test_keys_with_bad_data(self):
         responses.add(
@@ -40,4 +45,7 @@ class TestKeys(BaseTest):
         # Don't raise exception when suppress http error is True
         self.gitlab.suppress_http_error = True
         self.assertFalse(self.gitlab.keys(1))
+
+        # Deprecated version test
+        self.assertFalse(self.gitlab.getsshkey(1))
         self.gitlab.suppress_http_error = False
