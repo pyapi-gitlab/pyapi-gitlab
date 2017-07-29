@@ -43,20 +43,6 @@ class Gitlab(Session, Users, Keys):
         else:
             self.headers['SUDO'] = user
 
-    def getsshkeys(self):
-        """
-        Gets all the ssh keys for the current user
-
-        :return: a dictionary with the lists
-        """
-        request = requests.get(
-            self.keys_url, headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
     def getsshkey(self, key_id):
         """
         Get a single ssh key identified by key_id
@@ -73,60 +59,6 @@ class Gitlab(Session, Users, Keys):
         else:
             return False
 
-    def addsshkey(self, title, key):
-        """
-        Add a new ssh key for the current user
-
-        :param title: title of the new key
-        :param key: the key itself
-        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
-        """
-        data = {'title': title, 'key': key}
-
-        request = requests.post(
-            self.keys_url, headers=self.headers, data=data,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 201:
-            return True
-        else:
-            return False
-
-    def addsshkeyuser(self, user_id, title, key):
-        """
-        Add a new ssh key for the user identified by id
-
-        :param user_id: id of the user to add the key to
-        :param title: title of the new key
-        :param key: the key itself
-        :return: true if added, false if it didn't add it (it could be because the name or key already exists)
-        """
-        data = {'title': title, 'key': key}
-
-        request = requests.post(
-            '{0}/{1}/keys'.format(self.users_url, user_id), headers=self.headers,
-            data=data, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 201:
-            return True
-        else:
-            return False
-
-    def deletesshkey(self, key_id):
-        """
-        Deletes an sshkey for the current user identified by id
-
-        :param key_id: the id of the key
-        :return: False if it didn't delete it, True if it was deleted
-        """
-        request = requests.delete(
-            '{0}/{1}'.format(self.keys_url, key_id), headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.content == b'null':
-            return False
-        else:
-            return True
 
     def getprojectsowned(self, page=1, per_page=20):
         """
