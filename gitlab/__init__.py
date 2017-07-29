@@ -9,10 +9,11 @@ import requests
 from . import exceptions
 from .session import Session
 from .users import Users
+from .keys import Keys
 from .helper import deprecated, format_string
 
 
-class Gitlab(Session, Users):
+class Gitlab(Session, Users, Keys):
     """
     Gitlab class
 
@@ -126,44 +127,6 @@ class Gitlab(Session, Users):
             return False
         else:
             return True
-
-    def getprojects(self, page=1, per_page=20):
-        """
-        Returns a dictionary of all the projects
-
-        :param page: Page number
-        :param per_page: Records per page
-        :return: list with the repo name, description, last activity,web url, ssh url, owner and if its public
-        """
-        data = {'page': page, 'per_page': per_page}
-
-        request = requests.get(
-            self.projects_url, params=data, headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
-    def getprojectsall(self, page=1, per_page=20):
-        """
-        Returns a dictionary of all the projects for admins only
-
-        :param page: Page number
-        :param per_page: Records per page
-        :return: list with the repo name, description, last activity,web url, ssh url, owner and if its public
-        """
-        data = {'page': page, 'per_page': per_page}
-
-        request = requests.get(
-            '{0}/all'.format(self.projects_url), params=data, headers=self.headers,
-            verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
 
     def getprojectsowned(self, page=1, per_page=20):
         """
