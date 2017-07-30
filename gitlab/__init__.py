@@ -43,22 +43,6 @@ class Gitlab(Session, Users, Keys):
         else:
             self.headers['SUDO'] = user
 
-    def getsshkey(self, key_id):
-        """
-        Get a single ssh key identified by key_id
-
-        :param key_id: the id of the key
-        :return: the key itself
-        """
-        request = requests.get(
-            '{0}/{1}'.format(self.keys_url, key_id),
-            headers=self.headers, verify=self.verify_ssl, auth=self.auth, timeout=self.timeout)
-
-        if request.status_code == 200:
-            return request.json()
-        else:
-            return False
-
     def getprojectsowned(self, page=1, per_page=20):
         """
         Returns a dictionary of all the projects for the current user
